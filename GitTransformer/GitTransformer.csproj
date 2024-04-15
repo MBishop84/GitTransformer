@@ -4,23 +4,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-		<RunAOTCompilation>true</RunAOTCompilation>
+		<!--<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>-->
+		<!--<RunAOTCompilation>true</RunAOTCompilation>-->
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Content Remove="wwwroot\data\JsTransforms.json" />
-		<Content Remove="wwwroot\data\quotes.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Resource Include="wwwroot\data\JsTransforms.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Resource>
-		<Resource Include="wwwroot\data\quotes.json">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Resource>
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="BlazorMonaco" Version="3.2.0" />
@@ -36,6 +22,15 @@
 
 	<ItemGroup>
 		<Folder Include="wwwroot\images\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="wwwroot\data\JsTransforms.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="wwwroot\data\quotes.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>
