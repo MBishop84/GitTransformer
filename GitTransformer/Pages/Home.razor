@@ -1,0 +1,57 @@
+﻿@page "/"
+@inject HttpClient Http
+@using System.Text.Json
+@rendermode InteractiveWebAssembly
+
+<PageTitle>Home</PageTitle>
+
+<RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="10px">
+    <RadzenImage Path="images/stoic.png" Style="width: 25%" AlternateText="stoic" />
+    <br />
+    @if (_loading)
+    {
+        <RadzenText TextStyle="TextStyle.Subtitle1">Seeking Wisdom...</RadzenText>
+        <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Secondary" Style="width: 50%; height: 3px"
+                           Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+    }
+    else
+    {
+        <RadzenText TextStyle="TextStyle.Subtitle1" Style="max-width: 50%">@_quote.Text</RadzenText>
+        <RadzenText TextStyle="TextStyle.Subtitle2">@_quote.Author.Name</RadzenText>
+    }
+    <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" Click="@GetQuote" Text="Refresh Quote" ButtonStyle="ButtonStyle.Secondary" />
+</RadzenStack>
+
+@code{
+    record Author(int Id, string Name);
+    record Quote(int Id, string Text, Author Author);
+    Quote _quote = new(0, "Seeking Wisdom...", new Author(0, "Unknown"));
+    List<Quote>? _quotes = new();
+    bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _quotes = await Http.GetFromJsonAsync<List<Quote>>("data/quotes.json");
+        await GetQuote();
+    }
+
+    private async Task GetQuote()
+    {
+        _loading = true;
+        try
+        {
+            _quote = _quotes?.ElementAt(new Random().Next(0, _quotes.Count()))
+            ?? new Quote(0, "Sorry, no wisdom to be found.", new Author(0, "Unknown"));
+        }
+        catch(Exception ex)
+        {
+            _quote = new Quote(0, "An error occurred while seeking wisdom.", new Author(0, ex.Message));
+        }
+        finally
+        {
+            _loading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

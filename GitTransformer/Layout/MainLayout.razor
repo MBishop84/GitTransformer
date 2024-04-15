@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+@rendermode InteractiveWebAssembly
+
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+            <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
+            <RadzenLabel Text="Transformer" />
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenSidebar @bind-Expanded="@_sidebar1Expanded">
+        <NavMenu @rendermode="InteractiveWebAssembly"/>
+    </RadzenSidebar>
+    <RadzenBody>
+        @Body
+    </RadzenBody>
+    <RadzenFooter>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Style="height: 20px">
+            <RadzenLink Path="https://www.radzen.com" Text="Go to url" target="_blank">
+                <RadzenImage Style="height: 20px"
+                    Path="https://www.radzen.com/assets/radzen-logo-top-b2d6e9dcacf7d344bbab515b8748c5f4d702c6c5bfc349bd9ff9003016a3a6ee.svg" />
+            </RadzenLink>
+            <RadzenLink Path="https://github.com/MBishop84/BlazorServer_Razden.git" Text="This Repo" Icon="code" target="_blank">
+            </RadzenLink>
+        </RadzenStack>
+    </RadzenFooter>
+</RadzenLayout>
+<RadzenComponents />
+
+@code {
+    bool _sidebar1Expanded = true;
+}

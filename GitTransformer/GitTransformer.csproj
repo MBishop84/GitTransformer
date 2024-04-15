@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+		<RunAOTCompilation>true</RunAOTCompilation>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Remove="wwwroot\data\JsTransforms.json" />
+		<Content Remove="wwwroot\data\quotes.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="wwwroot\data\JsTransforms.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="wwwroot\data\quotes.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="BlazorMonaco" Version="3.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.4" PrivateAssets="all" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Radzen.Blazor" Version="4.29.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="wwwroot\images\" />
+	</ItemGroup>
+
+</Project>
