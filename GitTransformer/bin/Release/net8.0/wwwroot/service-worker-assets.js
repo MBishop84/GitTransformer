@@ -41,7 +41,7 @@
       "url": "images\/stoic.png"
     },
     {
-      "hash": "sha256-AwujTe7\/waBNpXyeSpQsgzZJioW78c2aPd8NwtIJTyo=",
+      "hash": "sha256-8e7w1VaEyFRrqPi8JCtSiOZxy7ZOkuFOQJ7+lFYsc8M=",
       "url": "index.html"
     },
     {
@@ -2289,5 +2289,5 @@
       "url": "_content\/BlazorMonaco\/lib\/monaco-editor\/min\/vs\/loader.min.js"
     }
   ],
-  "version": "yf8DpVz\/"
+  "version": "5bp+RXps"
 };

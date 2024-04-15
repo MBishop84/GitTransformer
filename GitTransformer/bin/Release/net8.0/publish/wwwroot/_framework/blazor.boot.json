@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "GitTransformer",
   "resources": {
-    "hash": "sha256-4/1zciSzQgCXo+Cj+snOyzz9uympuO1ntwrDqq0HyGY=",
+    "hash": "sha256-jSRBfeKfYGSMCcJ0DdxnzTTnmYa9CD9DHG6ZyzJcj90=",
     "jsModuleNative": {
       "dotnet.native.8.0.4.41gvhh3kyd.js": "sha256-d/Z/aDiptxBNM1HwppUbrWXfkTvMwuOgDMgwwwAt2Rc="
     },
@@ -9,7 +9,7 @@
       "dotnet.runtime.8.0.4.ogva3chynz.js": "sha256-JeVsECOqOie/Pe89n9PJNJaMmb5vJsAAxfXY8INN64A="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-CyuvAJ1+NYvYUtuQ0R+MvxUrO2kA45yiqSxu6Xr1SvA="
+      "dotnet.native.wasm": "sha256-wELLrHz4cZiKYiLpJoyDOnltZXtDrr760VBdWTYNeHU="
     },
     "icu": {
       "icudt_CJK.dat": "sha256-SZLtQnRc0JkwqHab0VUVP7T3uBPSeYzxzDnpxPpUnHk=",
@@ -18,7 +18,7 @@
     },
     "assembly": {
       "BlazorMonaco.wasm": "sha256-Ror3QOMwP8ju3jnvYpqX7VBSOF9xXoK9QrBwKN+EEW8=",
-      "GitTransformer.wasm": "sha256-FTwPI50Zn4U3JvkqfBrpsqdSTa9qC81lWXb4nwLoAdg=",
+      "GitTransformer.wasm": "sha256-7N/Zxaja5e5ziyaA6jSXK1JBC3mfdTPOwp01PlUIEco=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-OfGyCjbW7X2CykcWDxo5dYVqyO6JnReuHFoBoevztGY=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-rjdlCwIVfnrvs09Rt0NnxGU/s2kJhn/yJUWlcRV+DKI=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-xH2wjG0RFL7lwdme5JGvuaO7ywXW5A5K1CSSHFFmlvc=",

@@ -41,7 +41,7 @@
       "url": "images\/stoic.png"
     },
     {
-      "hash": "sha256-AwujTe7\/waBNpXyeSpQsgzZJioW78c2aPd8NwtIJTyo=",
+      "hash": "sha256-8e7w1VaEyFRrqPi8JCtSiOZxy7ZOkuFOQJ7+lFYsc8M=",
       "url": "index.html"
     },
     {
@@ -293,7 +293,7 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-9SrQn4Z4WZQPkb8Wdeku31DNQsDz0m7qePhKO9TbRPE=",
+      "hash": "sha256-qLifHZg9rkhahhFhU82Tompyuiujj0Wzo1cQI\/0td48=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -301,7 +301,7 @@
       "url": "_framework\/dotnet.native.8.0.4.41gvhh3kyd.js"
     },
     {
-      "hash": "sha256-CyuvAJ1+NYvYUtuQ0R+MvxUrO2kA45yiqSxu6Xr1SvA=",
+      "hash": "sha256-wELLrHz4cZiKYiLpJoyDOnltZXtDrr760VBdWTYNeHU=",
       "url": "_framework\/dotnet.native.wasm"
     },
     {
@@ -309,7 +309,7 @@
       "url": "_framework\/BlazorMonaco.wasm"
     },
     {
-      "hash": "sha256-FTwPI50Zn4U3JvkqfBrpsqdSTa9qC81lWXb4nwLoAdg=",
+      "hash": "sha256-7N\/Zxaja5e5ziyaA6jSXK1JBC3mfdTPOwp01PlUIEco=",
       "url": "_framework\/GitTransformer.wasm"
     },
     {
@@ -1781,5 +1781,5 @@
       "url": "_content\/Radzen.Blazor\/Radzen.Blazor.js"
     }
   ],
-  "version": "Vo0D5MuJ"
+  "version": "vC8wvXve"
 };

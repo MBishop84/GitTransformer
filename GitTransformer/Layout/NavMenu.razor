@@ -2,8 +2,8 @@
 @inject NavigationManager NavigationManager
 
 <RadzenPanelMenu Multiple="true">
-    <RadzenPanelMenuItem Text="Home" Path="/" Icon="psychology"></RadzenPanelMenuItem>
-    <RadzenPanelMenuItem Text="Transformer" Path="/transformer" Icon="functions"></RadzenPanelMenuItem>
+    <RadzenPanelMenuItem Text="Home" Path="@($"{NavigationManager.BaseUri}/")" Icon="psychology"></RadzenPanelMenuItem>
+    <RadzenPanelMenuItem Text="Transformer" Path="@($"{NavigationManager.BaseUri}/transformer")" Icon="functions"></RadzenPanelMenuItem>
 </RadzenPanelMenu>
 <hr />
 <RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
