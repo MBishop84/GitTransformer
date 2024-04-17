@@ -11,10 +11,11 @@
     <link href="GitTransformer.styles.css" rel="stylesheet" /> -->
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
     <link href="manifest.webmanifest" rel="manifest" />
-    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
-    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png?" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?" />
+    <link rel="icon" href="favicon.ico?" type="image/x-icon" />
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/dark.css" id="theme">
-    <script>
+    <script type="text/javascript">
         window.onload = function () {
             var theme = localStorage.getItem('RadzenTheme');
             if (!theme) {
@@ -23,6 +24,16 @@
             var themeLink = document.getElementById('theme');
             themeLink.href = `_content/Radzen.Blazor/css/${theme}.css`;
         }
+            (function (l) {
+                if (l.search[1] === '/') {
+                    var decoded = l.search.slice(1).split('&').map(function (s) {
+                        return s.replace(/~and~/g, '&')
+                    }).join('?');
+                    window.history.replaceState(null, null,
+                        l.pathname.slice(0, -1) + decoded + l.hash
+                    );
+                }
+            }(window.location))
     </script>
 </head>
 

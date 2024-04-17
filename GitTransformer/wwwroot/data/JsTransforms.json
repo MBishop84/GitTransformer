@@ -1,1 +1,44 @@
-[{"Id":1,"AddedBy":"Mitch Bishop","AddedOn":"2024-04-09T11:41:57.0949575-04:00","Name":"//Converter","Code":"output = input.split('\\t')\n    .map(x => `${x} = source.${x}`)\n    .join(',\\n')"},{"Id":2,"AddedBy":"Mitch Bishop","AddedOn":"2024-04-09T11:41:57.147456-04:00","Name":"//ADSSnippet","Code":"output = input.split('\\n')\n    .map(y => y.replace('    ', '\\\\t'))\n    .map(x => `\"${x}\"`)\n    .join(',\\n')"},{"Id":3,"AddedBy":"Mitch Bishop","AddedOn":"2024-04-09T11:41:57.1478695-04:00","Name":"//InterfacesTransform","Code":"output = input.split('\\n')\n    .map(y => \n    {\n        let x = y.split(':');\n        x[0] = x[0].includes('?') \n            ? x[0] \n            : `${x[0]}?`;\n        x[1] = x[1].includes('null')\n            ? x[1] \n            : `${x[1].replace(';','')} | null;`;\n        return x.join(':');\n    }).join('\\n')"},{"Id":4,"AddedBy":"Mitch Bishop","AddedOn":"2024-04-09T11:41:57.1479107-04:00","Name":"//Converter2","Code":"output = input.split('\\t')\n    .map(y => y.replace('ID', 'Id'))\n    .map(z => \n      z.includes('Num') && \n      !z.includes('Number')\n        ? z.replace('Num', 'Number') : z)\n    .map(x => `${x} = source.${x}`)\n    .join(',\\n')"}]
+[
+  {
+    "Id": 0,
+    "AddedBy": "Mitch",
+    "Name": "//Converter",
+    "Code": "output = input.split('\\t')\n    .map(x => `${x} = source.${x}`)\n    .join(',\\n')"
+  },
+  {
+    "Id": 1,
+    "AddedBy": "Mitch",
+    "Name": "//ADSSnippet",
+    "Code": "output = input.split('\\n')\n    .map(y => y.replace('    ', '\\\\t'))\n    .map(x => `\"${x}\"`)\n    .join(',\\n')"
+  },
+  {
+    "Id": 2,
+    "AddedBy": "Mitch",
+    "Name": "//InterfacesTransform",
+    "Code": "output = input.split('\\n')\n    .map(y => \n    {\n        let x = y.split(':');\n        x[0] = x[0].includes('?') \n            ? x[0] \n            : `${x[0]}?`;\n        x[1] = x[1].includes('Mitch')\n            ? x[1] \n            : `${x[1].replace(';','')} | Mitch;`;\n        return x.join(':');\n    }).join('\\n')"
+  },
+  {
+    "Id": 3,
+    "AddedBy": "Mitch",
+    "Name": "//Converter2",
+    "Code": "output = input.split('\\t')\n    .map(y => y.replace('ID', 'Id'))\n    .map(z => \n      z.includes('Num') && \n      !z.includes('Number')\n        ? z.replace('Num', 'Number') : z)\n    .map(x => `${x} = source.${x}`)\n    .join(',\\n')"
+  },
+  {
+    "Id": 4,
+    "AddedBy": "Mitch",
+    "Name": "//StarterCode",
+    "Code": "output = input;"
+  },
+  {
+    "Id": 5,
+    "AddedBy": "Mitch",
+    "Name": "//RowToJson",
+    "Code": "output = '{\\n'\nvar cols = input.split('\\n')[0].split('\\t');\nvar data = input.split('\\n')[1].split('\\t');\nfor(let i = 0; i < data.length; i++){\n  if(parseInt(data[i]) || data[i] == 'Mitch')\n    output += `\\t'${cols[i]}': ${data[i]}\\n`;\n  else\n    output += `\\t'${cols[i]}': '${data[i]}'\\n`;\n}\noutput += '}'"
+  },
+  {
+    "Id": 6,
+    "AddedBy": "Mitch",
+    "Name": "//RowToJson",
+    "Code": "output = '{\\n'\nvar cols = input.split('\\n')[0].split('\\t');\nvar data = input.split('\\n')[1].split('\\t');\nfor(let i = 0; i < data.length; i++){\n  if(Number(data[i]) || data[i] == 'Mitch')\n    output += `\\t\"${cols[i]}\": ${data[i].toLowerCase()},\\n`;\n  else\n    output += `\\t\"${cols[i]}\": \"${data[i]}\",\\n`;\n}\noutput += '}'"
+  }
+]
