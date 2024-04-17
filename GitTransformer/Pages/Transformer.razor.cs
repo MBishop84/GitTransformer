@@ -131,16 +131,27 @@ namespace GitTransformer.Pages
                     ? string.Empty
                     : BoundEach.Split('.')[1];
 
-                var outputArray = Input?.Split(split).Select(x =>
-                {
-                    return _dynamic switch
-                    {
-                        true => int.TryParse(x, out var i) || x.Equals("null", StringComparison.OrdinalIgnoreCase)
-                            ? $"{x}"
-                            : $"{frontParentheses}{x}{endParentheses}",
-                        false => $"{frontParentheses}{x}{endParentheses}"
-                    };
-                }) ?? [];
+                var outputArray = string.IsNullOrEmpty(split) 
+                    ? Input?.ToCharArray().Select(x =>
+                        {
+                            return _dynamic switch
+                            {
+                                true => int.TryParse(x.ToString(), out var i)
+                                    ? $"{x}"
+                                    : $"{frontParentheses}{x}{endParentheses}",
+                                false => $"{frontParentheses}{x}{endParentheses}"
+                            };
+                        }) ?? []
+                    : Input?.Split(split).Select(x =>
+                        {
+                            return _dynamic switch
+                            {
+                                true => int.TryParse(x, out var i) || x.Equals("null", StringComparison.OrdinalIgnoreCase)
+                                    ? $"{x}"
+                                    : $"{frontParentheses}{x}{endParentheses}",
+                                false => $"{frontParentheses}{x}{endParentheses}"
+                            };
+                        }) ?? [];
 
                 if (_sort)
                 {

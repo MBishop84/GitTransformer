@@ -28,6 +28,7 @@
     private async Task ChangeTheme(string theme)
     {
         await JsRuntime.InvokeVoidAsync("localStorage.setItem", "RadzenTheme", theme);
+        NavigationManager.NavigateTo(NavigationManager.BaseUri);
         NavigationManager.Refresh(true);
     }
 }
