@@ -82,11 +82,13 @@ namespace GitTransformer.Pages
             {
                 await ChangeTheme(theme);
             }
-
+            JsTransforms = await ApiClient.GetFromJsonAsync<List<JsTransform>>("data/JsTransforms.json") ?? [];
             var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
-            JsTransforms = string.IsNullOrEmpty(localTransforms) 
-                ? await ApiClient.GetFromJsonAsync<List<JsTransform>>("data/JsTransforms.json") ?? []
-                : JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms) ?? [];
+            if (!string.IsNullOrEmpty(localTransforms))
+            {
+                var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
+                JsTransforms.AddRange(items.Where(x => !JsTransforms.Select(y => y.Name).Contains(x.Name)));
+            }
 
             await InvokeAsync(StateHasChanged);
         }
@@ -131,7 +133,7 @@ namespace GitTransformer.Pages
                     ? string.Empty
                     : BoundEach.Split('.')[1];
 
-                var outputArray = string.IsNullOrEmpty(split) 
+                var outputArray = string.IsNullOrEmpty(split)
                     ? Input?.ToCharArray().Select(x =>
                         {
                             return _dynamic switch
@@ -752,6 +754,9 @@ namespace GitTransformer.Pages
 
                 if (string.IsNullOrEmpty(_entry))
                     throw new ArgumentException("Name is Empty");
+
+                if (JsTransforms.Any(x => x.Name == name))
+                    JsTransforms.Remove(JsTransforms.FirstOrDefault(x => x.Name == name)!);
 
                 var newTransform = new JsTransform(0, _entry, name, userCode);
                 JsTransforms.Add(newTransform);
