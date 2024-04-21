@@ -535,13 +535,7 @@ namespace GitTransformer.Pages
                 if (!userCode.Contains("= input"))
                     throw new ArgumentException("You must use the input.");
 
-                const string userBox = "const input = document.getElementById('input').value;\nlet output = '';\n[***]\ndocument.getElementById('output').value = output;";
-                var task = JS.InvokeAsync<string>("runUserScript", userBox.Replace("[***]", userCode)).AsTask();
-                if (await Task.WhenAny(task, Task.Delay(3)) != task)
-                {
-                    throw new ArgumentException("JavaScript Timeout. Please simplify your code.");
-                }
-                await task;
+                await JS.InvokeVoidAsync("runUserScript", userCode);
             }
             catch (Exception ex)
             {

@@ -144,7 +144,20 @@
     function GetHeight() {
         return document.getElementById('container').offsetHeight;
     };
-    function runUserScript(userCode) {
-        eval(userCode);
+    self.runUserScript = (userCode) => {
+        const input = document.getElementById('input').value;
+        const myWorker = new Worker('js/JavaScriptWorker.js');
+
+        const timer = setTimeout(() => {
+            myWorker.terminate();
+            alert('Script took too long to execute. Terminated.');
+        }, 1000);
+        
+        myWorker.onmessage = (e) => {
+            document.getElementById('output').value = `${e.data}`;
+            clearTimeout(timer)
+        };
+
+        myWorker.postMessage({ code: userCode, input: input });
     };
 </script>
