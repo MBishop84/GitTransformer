@@ -158,6 +158,11 @@
             clearTimeout(timer)
         };
 
+        myWorker.onerror = (e) => {
+            myWorker.terminate();
+            alert(e.data);
+        };
+
         myWorker.postMessage({ code: userCode, input: input });
     };
 </script>

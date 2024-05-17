@@ -530,9 +530,9 @@ namespace GitTransformer.Pages
 
                 if (string.IsNullOrEmpty(userCode))
                     throw new ArgumentException("Please enter or choose a function.");
-                if (!userCode.Contains("output ="))
+                if (!userCode.Contains("output"))
                     throw new ArgumentException("Please assign a value to output");
-                if (!userCode.Contains("= input"))
+                if (!userCode.Contains("input"))
                     throw new ArgumentException("You must use the input.");
 
                 await JS.InvokeVoidAsync("runUserScript", userCode);
