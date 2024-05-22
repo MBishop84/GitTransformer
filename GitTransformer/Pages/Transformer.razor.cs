@@ -272,7 +272,7 @@ namespace GitTransformer.Pages
             {
                 if (string.IsNullOrEmpty(Input))
                     throw new ArgumentException("Input is Empty");
-                if (!Input.StartsWith("{"))
+                if (!Input.StartsWith('{'))
                     Input = $"{{{Input}}}";
                 dynamic? jsonObject = System.Text.Json.JsonSerializer.Deserialize<dynamic>(Input);
                 if (jsonObject is null) return;
@@ -296,7 +296,10 @@ namespace GitTransformer.Pages
                         JsonValueKind.Array =>
                             $"public ICollection<{name}> {name} {{ get; set; }}\n\n",
                         JsonValueKind.Object =>
-                            $"public {name} {name} {{ get; set; }}\n\n"
+                            $"public {name} {name} {{ get; set; }}\n\n",
+                        JsonValueKind.Undefined => string.Empty,
+                        JsonValueKind.Null => string.Empty,
+                        _ => string.Empty
                     });
                 }
                 Output = result.ToString();
