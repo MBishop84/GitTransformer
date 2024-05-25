@@ -753,8 +753,8 @@ namespace GitTransformer.Pages
                 if (string.IsNullOrEmpty(_entry))
                     throw new ArgumentException("Name is Empty");
 
-                if (JsTransforms.Any(x => x.Name == name))
-                    JsTransforms.Remove(JsTransforms.FirstOrDefault(x => x.Name == name)!);
+                if (JsTransforms.Exists(x => x.Name == name))
+                    JsTransforms.Remove(JsTransforms.Find(x => x.Name == name)!);
 
                 var newTransform = new JsTransform(0, _entry, name, userCode);
                 JsTransforms.Add(newTransform);
