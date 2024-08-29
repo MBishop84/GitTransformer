@@ -18,26 +18,30 @@ namespace GitTransformer.Pages
         #region Injected Services
 
         [Inject]
-        private IJSRuntime JS { get; init; }
+        private IJSRuntime JS { get; init; } = null!;
         [Inject]
-        private DialogService DialogService { get; init; }
+        private DialogService DialogService { get; init; } = null!;
         [Inject]
-        private HttpClient ApiClient { get; init; }
+        private HttpClient ApiClient { get; init; } = null!;
         [Inject]
-        private IConfiguration Configuration { get; init; }
+        private IConfiguration Configuration { get; init; } = null!;
+
+        #endregion
+
+        #region Properties
+
+        private sealed record JsTransform(int Id, string AddedBy, string Name, string Code);
+        private StandaloneCodeEditor Editor { get; set; } = null!;
 
         #endregion
 
         #region Feilds
 
-        private record JsTransform(int Id, string AddedBy, string Name, string Code);
-        private StandaloneCodeEditor _editor { get; set; }
-        private List<string> MonacoThemes = [];
-        private List<JsTransform> JsTransforms = [];
+        private List<string> _monacoThemes = [];
+        private List<JsTransform> _jsTransforms = [];
         private int _height = 1000;
         private bool _dynamic, _sort;
-        public string? Input, Output, Split, Join, BoundAll, BoundEach, MonacoTheme;
-        private string? _entry;
+        private string? _input, _output, _split, _join, _boundAll, _boundEach, _monacoTheme, _entry;
 
         #endregion
 
@@ -52,15 +56,15 @@ namespace GitTransformer.Pages
             await base.OnInitializedAsync();
             try
             {
-                MonacoThemes = (await ApiClient.GetFromJsonAsync<Dictionary<string, string>>("themes/themelist.json") ?? [])
+                _monacoThemes = (await ApiClient.GetFromJsonAsync<Dictionary<string, string>>("themes/themelist.json") ?? [])
                     .Select(x => x.Value).ToList();
-                MonacoThemes.AddRange(["vs-dark", "vs-light"]);
+                _monacoThemes.AddRange(["vs-dark", "vs-light"]);
                 DialogService.OnClose += DialogClose;
             }
             catch (Exception ex)
             {
-                Input = ex.Message;
-                Output = ex.Message;
+                _input = ex.Message;
+                _output = ex.Message;
             }
         }
 
@@ -83,12 +87,12 @@ namespace GitTransformer.Pages
             {
                 await ChangeTheme(theme);
             }
-            JsTransforms = await ApiClient.GetFromJsonAsync<List<JsTransform>>("data/JsTransforms.json") ?? [];
+            _jsTransforms = await ApiClient.GetFromJsonAsync<List<JsTransform>>("data/JsTransforms.json") ?? [];
             var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
             if (!string.IsNullOrEmpty(localTransforms))
             {
                 var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
-                JsTransforms.AddRange(items.Where(x => !JsTransforms.Select(y => y.Name).Contains(x.Name)));
+                _jsTransforms.AddRange(items.Where(x => !_jsTransforms.Select(y => y.Name).Contains(x.Name)));
             }
 
             await InvokeAsync(StateHasChanged);
@@ -112,30 +116,30 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(_input))
                     throw new ArgumentException("Input is Empty");
-                if (!string.IsNullOrEmpty(BoundAll) && BoundAll.Split('.').Length != 2)
+                if (!string.IsNullOrEmpty(_boundAll) && _boundAll.Split('.').Length != 2)
                     throw new ArgumentException("Bound-All must be separated by a period(.)");
-                if (!string.IsNullOrEmpty(BoundEach) && BoundEach.Split('.').Length != 2)
+                if (!string.IsNullOrEmpty(_boundEach) && _boundEach.Split('.').Length != 2)
                     throw new ArgumentException("Bound-Each must be separated by a period(.)");
-                var split = Split?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
-                var join = Join?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
+                var split = _split?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
+                var join = _join?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
 
-                var frontBracket = string.IsNullOrEmpty(BoundAll)
+                var frontBracket = string.IsNullOrEmpty(_boundAll)
                     ? string.Empty
-                    : BoundAll.Split('.')[0];
-                var endBracket = string.IsNullOrEmpty(BoundAll)
+                    : _boundAll.Split('.')[0];
+                var endBracket = string.IsNullOrEmpty(_boundAll)
                     ? string.Empty
-                    : BoundAll.Split('.')[1];
-                var frontParentheses = string.IsNullOrEmpty(BoundEach)
+                    : _boundAll.Split('.')[1];
+                var frontParentheses = string.IsNullOrEmpty(_boundEach)
                     ? string.Empty
-                    : BoundEach.Split('.')[0];
-                var endParentheses = string.IsNullOrEmpty(BoundEach)
+                    : _boundEach.Split('.')[0];
+                var endParentheses = string.IsNullOrEmpty(_boundEach)
                     ? string.Empty
-                    : BoundEach.Split('.')[1];
+                    : _boundEach.Split('.')[1];
 
                 var outputArray = string.IsNullOrEmpty(split)
-                    ? Input?.ToCharArray().Select(x =>
+                    ? _input?.ToCharArray().Select(x =>
                         {
                             return _dynamic switch
                             {
@@ -145,7 +149,7 @@ namespace GitTransformer.Pages
                                 false => $"{frontParentheses}{x}{endParentheses}"
                             };
                         }) ?? []
-                    : Input?.Split(split).Select(x =>
+                    : _input?.Split(split).Select(x =>
                         {
                             return _dynamic switch
                             {
@@ -161,7 +165,7 @@ namespace GitTransformer.Pages
                     outputArray = outputArray.OrderBy(x => x).ToImmutableList();
                 }
 
-                Output = $"{frontBracket}{string.Join(join, outputArray)}{endBracket}";
+                _output = $"{frontBracket}{string.Join(join, outputArray)}{endBracket}";
             }
             catch (Exception ex)
             {
@@ -184,8 +188,40 @@ namespace GitTransformer.Pages
         /// Clears the selected public field.
         /// </summary>
         /// <param name="field"></param>
-        private void ClearField(string field) =>
-            GetType().GetField(field)?.SetValue(this, default);
+        private void ClearField(string field)
+        {
+            switch (field)
+            {
+                case nameof(_input):
+                    _input = null;
+                    break;
+                case nameof(_output):
+                    _output = null;
+                    break;
+                case nameof(_split):
+                    _split = null;
+                    break;
+                case nameof(_join):
+                    _join = null;
+                    break;
+                case nameof(_boundAll):
+                    _boundAll = null;
+                    break;
+                case nameof(_boundEach):
+                    _boundEach = null;
+                    break;
+                case nameof(_monacoTheme):
+                    _monacoTheme = null;
+                    break;
+                case nameof(_entry):
+                    _entry = null;
+                    break;
+                default:
+                    break;
+            }
+            StateHasChanged();
+        }
+
 
         /// <summary>
         /// Converts the results of a SQL query to a C# class.
@@ -197,11 +233,11 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(_input))
                 {
                     throw new ArgumentException("Input is Empty");
                 }
-                var lines = Input.Split("\n");
+                var lines = _input.Split("\n");
                 var result = new StringBuilder();
 
                 foreach (var line in lines)
@@ -243,7 +279,7 @@ namespace GitTransformer.Pages
                             break;
                     }
                 }
-                Output = result.ToString();
+                _output = result.ToString();
             }
             catch (Exception ex)
             {
@@ -271,11 +307,11 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(_input))
                     throw new ArgumentException("Input is Empty");
-                if (!Input.StartsWith('{'))
-                    Input = $"{{{Input}}}";
-                dynamic? jsonObject = System.Text.Json.JsonSerializer.Deserialize<dynamic>(Input);
+                if (!_input.StartsWith('{'))
+                    _input = $"{{{_input}}}";
+                dynamic? jsonObject = System.Text.Json.JsonSerializer.Deserialize<dynamic>(_input);
                 if (jsonObject is null) return;
                 var result = new StringBuilder();
                 foreach (JsonProperty i in jsonObject.EnumerateObject())
@@ -290,7 +326,7 @@ namespace GitTransformer.Pages
                         {
                             var b when DateTime.TryParse(b.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var itemDate) =>
                                 $"public DateTime? {name} {{ get; set; }}\n\n",
-                            _ => $"public string {name} {{ get; set; }} = string.Empty\n\n"
+                            _ => $"public string {name} {{ get; set; }} = string.Empty;\n\n"
                         },
                         JsonValueKind.True or JsonValueKind.False =>
                             $"public bool {name} {{ get; set; }}\n\n",
@@ -303,7 +339,7 @@ namespace GitTransformer.Pages
                         _ => string.Empty
                     });
                 }
-                Output = result.ToString();
+                _output = result.ToString();
             }
             catch (Exception ex)
             {
@@ -332,20 +368,16 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(_input))
                     throw new ArgumentException("Input is Empty");
 
-                if (Input.Contains("&lt;") || Input.Contains("&gt;"))
-                    Input = Input.Replace("&lt;", "<").Replace("&gt;", ">");
+                if (_input.Contains("&lt;") || _input.Contains("&gt;"))
+                    _input = _input.Replace("&lt;", "<").Replace("&gt;", ">");
 
                 var xml = new XmlDocument();
-                xml.LoadXml(Input);
+                xml.LoadXml(_input);
                 var result = new StringBuilder();
-                var xmlRoot = xml.DocumentElement;
-
-                if (xmlRoot == null)
-                    throw new ArgumentException("XML must have a root element");
-
+                var xmlRoot = xml.DocumentElement ?? throw new ArgumentException("XML must have a root element");
                 result.Append(
                     $"public class {xmlRoot.Name}\n{{\n");
 
@@ -380,8 +412,8 @@ namespace GitTransformer.Pages
                             });
                     }
                 }
-                result.Append("}");
-                Output = result.ToString();
+                result.Append('}');
+                _output = result.ToString();
             }
             catch (Exception ex)
             {
@@ -411,18 +443,18 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(_input))
                     throw new ArgumentException("Input is Empty");
-                if (!Input.StartsWith("{"))
-                    Input = $"{{{Input}}}";
-                var doc = JsonConvert.DeserializeXmlNode("{\"DefaultRoot\":" + $"{Input}}}");
+                if (!_input.StartsWith('{'))
+                    _input = $"{{{_input}}}";
+                var doc = JsonConvert.DeserializeXmlNode("{\"DefaultRoot\":" + $"{_input}}}");
                 using var sw = new StringWriter();
                 var writer = new XmlTextWriter(sw)
                 {
                     Formatting = System.Xml.Formatting.Indented
                 };
                 doc?.WriteContentTo(writer);
-                Output = sw.ToString();
+                _output = sw.ToString();
             }
             catch (Exception ex)
             {
@@ -450,11 +482,11 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(_input))
                     throw new ArgumentException("Input is Empty");
                 var doc = new XmlDocument();
-                doc.LoadXml(Input);
-                Output = JsonConvert.SerializeObject(doc, Newtonsoft.Json.Formatting.Indented);
+                doc.LoadXml(_input);
+                _output = JsonConvert.SerializeObject(doc, Newtonsoft.Json.Formatting.Indented);
             }
             catch (Exception ex)
             {
@@ -499,7 +531,7 @@ namespace GitTransformer.Pages
         /// <param name="theme"></param>
         private async Task ChangeTheme(string theme)
         {
-            MonacoTheme = theme;
+            _monacoTheme = theme;
             try
             {
                 var myTheme = theme;
@@ -527,10 +559,10 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(Input))
+                if (string.IsNullOrEmpty(_input))
                     throw new ArgumentException("Input is Empty");
 
-                var userCode = await _editor.GetValue();
+                var userCode = await Editor.GetValue();
 
                 if (string.IsNullOrEmpty(userCode))
                     throw new ArgumentException("Please enter or choose a function.");
@@ -564,9 +596,9 @@ namespace GitTransformer.Pages
         /// <param name="jsTransform"></param>
         private Task UpdateUserCode(string jsTransform)
         {
-            var fullString = JsTransforms.Where(x => x.Code == jsTransform)
+            var fullString = _jsTransforms.Where(x => x.Code == jsTransform)
                 .Select(y => $"{y.Name}\n{y.Code}").FirstOrDefault();
-            return _editor.SetValue(fullString);
+            return Editor.SetValue(fullString);
         }
 
         /// <summary>
@@ -576,17 +608,17 @@ namespace GitTransformer.Pages
         {
             try
             {
-                var userCode = await _editor.GetValue();
+                var userCode = await Editor.GetValue();
                 if (string.IsNullOrEmpty(userCode))
-                    userCode = $"{JsTransforms[0].Name}\n{JsTransforms[0].Code}";
+                    userCode = $"{_jsTransforms[0].Name}\n{_jsTransforms[0].Code}";
                 else
                 {
-                    var index = JsTransforms.FindIndex(x => x.Name == userCode.Split("\n")[0]);
-                    userCode = index < JsTransforms.Count - 1
-                        ? $"{JsTransforms[index + 1].Name}\n{JsTransforms[index + 1].Code}"
-                        : $"{JsTransforms[0].Name}\n{JsTransforms[0].Code}";
+                    var index = _jsTransforms.FindIndex(x => x.Name == userCode.Split("\n")[0]);
+                    userCode = index < _jsTransforms.Count - 1
+                        ? $"{_jsTransforms[index + 1].Name}\n{_jsTransforms[index + 1].Code}"
+                        : $"{_jsTransforms[0].Name}\n{_jsTransforms[0].Code}";
                 }
-                await _editor.SetValue(userCode);
+                await Editor.SetValue(userCode);
             }
             catch (Exception ex)
             {
@@ -612,20 +644,20 @@ namespace GitTransformer.Pages
         {
             try
             {
-                var userCode = await _editor.GetValue();
+                var userCode = await Editor.GetValue();
                 if (string.IsNullOrEmpty(userCode))
-                    userCode = $"{JsTransforms[0].Name}\n{JsTransforms[0].Code}";
+                    userCode = $"{_jsTransforms[0].Name}\n{_jsTransforms[0].Code}";
                 else
                 {
-                    var index = JsTransforms.FindIndex(x => x.Name == userCode.Split("\n")[0]);
+                    var index = _jsTransforms.FindIndex(x => x.Name == userCode.Split("\n")[0]);
                     if (index > 0)
                     {
-                        userCode = $"{JsTransforms[index - 1].Name}\n{JsTransforms[index - 1].Code}";
+                        userCode = $"{_jsTransforms[index - 1].Name}\n{_jsTransforms[index - 1].Code}";
                     }
                     else
-                        userCode = $"{JsTransforms[^1].Name}\n{JsTransforms[^1].Code}";
+                        userCode = $"{_jsTransforms[^1].Name}\n{_jsTransforms[^1].Code}";
                 }
-                await _editor.SetValue(userCode);
+                await Editor.SetValue(userCode);
             }
             catch (Exception ex)
             {
@@ -655,9 +687,9 @@ namespace GitTransformer.Pages
         {
             try
             {
-                var userCode = await _editor.GetValue();
+                var userCode = await Editor.GetValue();
                 var name = userCode.Split("\n")[0];
-                var jsTransform = JsTransforms.FirstOrDefault(x => x.Name == name);
+                var jsTransform = _jsTransforms.Find(x => x.Name == name);
                 var deleteMessage = $"{name} has been deleted from this instance.";
                 if (jsTransform == null)
                     throw new ArgumentException("No code found to delete.");
@@ -682,9 +714,9 @@ namespace GitTransformer.Pages
                     {
                         deleteMessage = $"{name} has been permanently deleted.";
                     }
-                    JsTransforms.Remove(jsTransform);
-                    await JS.InvokeAsync<string>("localStorage.setItem", "JsTransforms", JsTransforms);
-                    await _editor.SetValue(string.Empty);
+                    _jsTransforms.Remove(jsTransform);
+                    await JS.InvokeAsync<string>("localStorage.setItem", "JsTransforms", _jsTransforms);
+                    await Editor.SetValue(string.Empty);
                     await InvokeAsync(StateHasChanged);
                     await DialogService.Alert(deleteMessage, "Success!");
                 }
@@ -717,7 +749,7 @@ namespace GitTransformer.Pages
         {
             try
             {
-                var userCode = await _editor.GetValue();
+                var userCode = await Editor.GetValue();
                 if (string.IsNullOrEmpty(userCode))
                     throw new ArgumentException("Input is Empty");
                 var name = userCode.Split("\n")[0];
@@ -753,12 +785,12 @@ namespace GitTransformer.Pages
                 if (string.IsNullOrEmpty(_entry))
                     throw new ArgumentException("Name is Empty");
 
-                if (JsTransforms.Exists(x => x.Name == name))
-                    JsTransforms.Remove(JsTransforms.Find(x => x.Name == name)!);
+                if (_jsTransforms.Exists(x => x.Name == name))
+                    _jsTransforms.Remove(_jsTransforms.Find(x => x.Name == name)!);
 
                 var newTransform = new JsTransform(0, _entry, name, userCode);
-                JsTransforms.Add(newTransform);
-                await JS.InvokeAsync<string>("localStorage.setItem", "JsTransforms", JsonConvert.SerializeObject(JsTransforms));
+                _jsTransforms.Add(newTransform);
+                await JS.InvokeAsync<string>("localStorage.setItem", "JsTransforms", JsonConvert.SerializeObject(_jsTransforms));
                 await InvokeAsync(StateHasChanged);
                 await DialogService.Alert(
                     JsonConvert.SerializeObject(newTransform, Newtonsoft.Json.Formatting.Indented),

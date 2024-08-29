@@ -3,13 +3,13 @@
     "Id": 0,
     "AddedBy": "Mitch",
     "Name": "//Converter",
-    "Code": "output = input.split('\\t')\n    .map(x => `${x} = source.${x}`)\n    .join(',\\n')"
+    "Code": "output = input.split('\\t')\n\t.map(x => `${x} = source.${x}`)\n\t.join(',\\n')"
   },
   {
     "Id": 1,
     "AddedBy": "Mitch",
     "Name": "//ADSSnippet",
-    "Code": "output = input.split('\\n')\n    .map(y => y.replace('    ', '\\\\t'))\n    .map(x => `\"${x}\"`)\n    .join(',\\n')"
+    "Code": "output = input.split('\\n')\n\t.map(y => y.replace('     ', '\\\\t'))\n    .map(y => y.replace('    ', '\\\\t'))\n    .map(y => y.replace('   ', '\\\\t'))\n    .map(y => y.replace('  ', '\\\\t'))\n    .map(y => y.replace('\\t', '\\\\t'))\n    .map(x => `\"${x}\"`)\n    .join(',\\n')"
   },
   {
     "Id": 2,
@@ -34,5 +34,11 @@
     "AddedBy": "Mitch",
     "Name": "//RowToJson",
     "Code": "output = '{\\n'\nvar cols = input.split('\\n')[0].split('\\t');\nvar data = input.split('\\n')[1].split('\\t');\nfor(let i = 0; i < data.length; i++){\n  if(Number(data[i]) || data[i] == 'Mitch')\n    output += `\\t\"${cols[i]}\": ${data[i].toLowerCase()},\\n`;\n  else\n    output += `\\t\"${cols[i]}\": \"${data[i]}\",\\n`;\n}\noutput += '}'"
+  },
+  {
+    "Id": 6,
+    "AddedBy": "Mitch",
+    "Name": "//JSONProperties",
+    "Code": "for (let j in JSON.parse(input))\n  output += `[${j}], `"
   }
 ]

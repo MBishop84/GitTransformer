@@ -6,7 +6,7 @@
 <PageTitle>Transformer</PageTitle>
 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.Stretch" Gap="10px">
     <RadzenFieldset Text="Input" Style="width: 33%">
-        <RadzenTextArea @bind-Value="@Input" id="input" class="w-100" Rows="@(_height / 22)" />
+        <RadzenTextArea @bind-Value="@_input" id="input" class="w-100" Rows="@(_height / 22)" />
     </RadzenFieldset>
     <RadzenFieldset Text="Transforms" Style="width: 33%; height: 85vh" id="container">
         <RadzenAccordion>
@@ -15,17 +15,17 @@
                     <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.SpaceBetween">
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.SpaceBetween" Gap="10px">
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" 
-                                          Click="@(_ => ClearField("Split"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
+                                          Click="@(_ => ClearField("_split"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" 
-                                          Click="@(_ => ClearField("Join"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
+                                          Click="@(_ => ClearField("_join"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" 
-                                          Click="@(_ => ClearField("BoundAll"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
+                                          Click="@(_ => ClearField("_boundAll"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" 
-                                          Click="@(_ => ClearField("BoundEach"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
+                                          Click="@(_ => ClearField("_boundEach"))" Text="Clear" ButtonStyle="ButtonStyle.Info" Style="width: 24%" />
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
                             <RadzenFormField Text="Split" Variant="Variant.Outlined" Style="width: 24%;">
-                                <RadzenRadioButtonList @bind-Value="@Split" TValue="string" Orientation="Orientation.Vertical" class="rz-mx-2">
+                                <RadzenRadioButtonList @bind-Value="@_split" TValue="string" Orientation="Orientation.Vertical" class="rz-mx-2">
                                     <Items>
                                         <RadzenRadioButtonListItem Text="," Value=@(",") />
                                         <RadzenRadioButtonListItem Text="\n" Value=@(@"\n") />
@@ -34,7 +34,7 @@
                                 </RadzenRadioButtonList>
                             </RadzenFormField>
                             <RadzenFormField Text="Join" Variant="Variant.Outlined" Style="width: 24%">
-                                <RadzenRadioButtonList @bind-Value="@Join" TValue="string" Orientation="Orientation.Vertical" class="rz-mx-2">
+                                <RadzenRadioButtonList @bind-Value="@_join" TValue="string" Orientation="Orientation.Vertical" class="rz-mx-2">
                                     <Items>
                                         <RadzenRadioButtonListItem Text="," Value=@(",") />
                                         <RadzenRadioButtonListItem Text="\n" Value=@(@"\n") />
@@ -43,7 +43,7 @@
                                 </RadzenRadioButtonList>
                             </RadzenFormField>
                             <RadzenFormField Text="Bound-All" Variant="Variant.Outlined" Style="width: 24%">
-                                <RadzenRadioButtonList @bind-Value="@BoundAll" TValue="string" Orientation="Orientation.Vertical" class="rz-mx-2">
+                                <RadzenRadioButtonList @bind-Value="@_boundAll" TValue="string" Orientation="Orientation.Vertical" class="rz-mx-2">
                                     <Items>
                                         <RadzenRadioButtonListItem Text="(.)" Value=@("(.)") />
                                         <RadzenRadioButtonListItem Text="[.]" Value=@("[.]") />
@@ -53,7 +53,7 @@
                             </RadzenFormField>
                             <RadzenFormField Text="Bound-Each" Variant="Variant.Outlined" Style="width: 24%">
                                 <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="0">
-                                    <RadzenRadioButtonList @bind-Value="@BoundEach" TValue="string" Orientation="Orientation.Vertical">
+                                    <RadzenRadioButtonList @bind-Value="@_boundEach" TValue="string" Orientation="Orientation.Vertical">
                                         <Items>
                                             <RadzenRadioButtonListItem Text="@("\".\"")" Value=@("\".\"") />
                                             <RadzenRadioButtonListItem Text="'.'" Value=@("'.'") />
@@ -65,10 +65,10 @@
                             </RadzenFormField>
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.SpaceBetween" Gap="10px">
-                            <RadzenTextBox @bind-Value="@Split" TValue="string?" Placeholder="User Split" Style="width: 90%" />
-                            <RadzenTextBox @bind-Value="@Join" TValue="string?" Placeholder="User Join" Style="width: 90%" />
-                            <RadzenTextBox @bind-Value="@BoundAll" TValue="string?" Placeholder="User B-All" Style="width: 90%" />
-                            <RadzenTextBox @bind-Value="@BoundEach" TValue="string?" Placeholder="User B-Each" Style="width: 90%" />
+                            <RadzenTextBox @bind-Value="@_split" TValue="string?" Placeholder="User Split" Style="width: 90%" />
+                            <RadzenTextBox @bind-Value="@_join" TValue="string?" Placeholder="User Join" Style="width: 90%" />
+                            <RadzenTextBox @bind-Value="@_boundAll" TValue="string?" Placeholder="User B-All" Style="width: 90%" />
+                            <RadzenTextBox @bind-Value="@_boundEach" TValue="string?" Placeholder="User B-Each" Style="width: 90%" />
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center" Gap="10px">
                             <RadzenLabel Component="SortCheck" Text="Sort?" />
@@ -94,14 +94,14 @@
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" 
                                           Click="@XmlToJson" Text="XML->Json" ButtonStyle="ButtonStyle.Primary" Style="width: 33%" />
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" Text="Clear" ButtonStyle="ButtonStyle.Warning"
-                                          Click="@(_ => { ClearField("Input"); ClearField("Output"); })" Style="width: 33%" />
+                                          Click="@(_ => { ClearField("_input"); ClearField("_output"); })" Style="width: 33%" />
                         </RadzenStack>
                     </RadzenStack>
                 </RadzenAccordionItem>
                 <RadzenAccordionItem Text="JavaScript" Icon="code">
                     <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.SpaceBetween" class="w-100">
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.SpaceBetween" class="w-100">
-                            <RadzenDropDown Data="@JsTransforms"
+                            <RadzenDropDown Data="@_jsTransforms"
                                             Placeholder="Saved Transforms"
                                             Style="width: 29%"
                                             TValue="JsTransform"
@@ -116,17 +116,17 @@
                                           Click="@SaveJs" Text="Save" ButtonStyle="ButtonStyle.Secondary" Style="width: 29%" />
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.SpaceBetween" class="w-100">
-                            <RadzenDropDown Data="@MonacoThemes"
+                            <RadzenDropDown Data="@_monacoThemes"
                                             Style="width: 29%"
                                             TValue="string"
-                                            Value="@MonacoTheme"
+                                            Value="@_monacoTheme"
                                             Change="@(async x => await ChangeTheme($"{x}"))" />
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" Icon="delete" Style="width: 29%"
                                           Click="@DeleteJs" Text="Delete" ButtonStyle="ButtonStyle.Danger" />
                             <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" Style="width: 29%"
                                           Click="@JavaScript" Text="Execute" ButtonStyle="ButtonStyle.Success" />
                         </RadzenStack>
-                        <StandaloneCodeEditor Id="user_code" ConstructionOptions="EditorConstructionOptions" @ref="_editor" />
+                        <StandaloneCodeEditor Id="user_code" ConstructionOptions="EditorConstructionOptions" @ref="Editor" />
                     </RadzenStack>
                 </RadzenAccordionItem>
             </Items>
@@ -137,7 +137,7 @@
         </RadzenStack>
     </RadzenFieldset>
     <RadzenFieldset Text="Output" Style="width: 33%">
-        <RadzenTextArea @bind-Value="@Output" id="output" class="w-100" Rows="@(_height / 22)"/>
+        <RadzenTextArea @bind-Value="@_output" id="output" class="w-100" Rows="@(_height / 22)"/>
     </RadzenFieldset>
 </RadzenStack>
 <script type="text/javascript">
