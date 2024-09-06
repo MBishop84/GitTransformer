@@ -32,6 +32,7 @@ namespace GitTransformer.Pages
 
         private sealed record JsTransform(int Id, string AddedBy, string Name, string Code);
         private StandaloneCodeEditor Editor { get; set; } = null!;
+        private Orientation Orientation { get; set; } = Orientation.Horizontal;
 
         #endregion
 
@@ -39,8 +40,9 @@ namespace GitTransformer.Pages
 
         private List<string> _monacoThemes = [];
         private List<JsTransform> _jsTransforms = [];
-        private int _height = 1000;
-        private bool _dynamic, _sort;
+        private int _height = 1000, _width = 1000;
+        private bool _dynamic, _sort, _dupes;
+        private IEnumerable<int> _options = [];
         private string? _input, _output, _split, _join, _boundAll, _boundEach, _monacoTheme, _entry;
 
         #endregion
@@ -78,6 +80,10 @@ namespace GitTransformer.Pages
                 return;
 
             _height = await JS.InvokeAsync<int>("GetHeight");
+            _width = await JS.InvokeAsync<int>("GetWidth");
+            if (_height > _width)
+                Orientation = Orientation.Vertical;
+
             var theme = await JS.InvokeAsync<string>("localStorage.getItem", "MonacoTheme");
             if (string.IsNullOrEmpty(theme))
             {
@@ -160,9 +166,13 @@ namespace GitTransformer.Pages
                             };
                         }) ?? [];
 
-                if (_sort)
+                if (_options.Any(x => x == 1))
                 {
                     outputArray = outputArray.OrderBy(x => x).ToImmutableList();
+                }
+                if (_options.Any(x => x == 2))
+                {
+                    outputArray = outputArray.Distinct().ToImmutableList();
                 }
 
                 _output = $"{frontBracket}{string.Join(join, outputArray)}{endBracket}";
@@ -812,6 +822,19 @@ namespace GitTransformer.Pages
                 });
             }
         }
+
+        private Task OutputModalView() =>
+            DialogService.OpenAsync<CustomDialog>(
+                "Output",
+                new Dictionary<string, object>
+                {
+                    { "Message", _output ?? "" }
+                },
+                new DialogOptions()
+                {
+                    Width = "max-content",
+                    Height = "90vh"
+                });
 
         #endregion
     }

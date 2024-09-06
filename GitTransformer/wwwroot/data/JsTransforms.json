@@ -33,7 +33,7 @@
     "Id": 5,
     "AddedBy": "Mitch",
     "Name": "//RowToJson",
-    "Code": "output = '{\\n'\nvar cols = input.split('\\n')[0].split('\\t');\nvar data = input.split('\\n')[1].split('\\t');\nfor(let i = 0; i < data.length; i++){\n  if(Number(data[i]) || data[i] == 'Mitch')\n    output += `\\t\"${cols[i]}\": ${data[i].toLowerCase()},\\n`;\n  else\n    output += `\\t\"${cols[i]}\": \"${data[i]}\",\\n`;\n}\noutput += '}'"
+    "Code": "output = '{\\n'\nvar cols = input.split('\\n')[0].split('\\t');\nvar data = input.split('\\n')[1].split('\\t');\nfor(let i = 0; i < data.length; i++){\n  if(['NULL', ''].includes(data[i])) continue;\n  if(Number(data[i]))\n    output += `\\t\"${cols[i]}\": ${data[i].toLowerCase()},\\n`;\n  else if (data[i] === '0')\n    output += `\\t\"${cols[i]}\": false,\\n`;\n  else if (data[i] === '1')\n    output += `\\t\"${cols[i]}\": true,\\n`;\n  else\n    output += `\\t\"${cols[i]}\": \"${data[i]}\",\\n`;\n}\noutput += '}'"
   },
   {
     "Id": 6,

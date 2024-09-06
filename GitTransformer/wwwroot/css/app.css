@@ -80,3 +80,7 @@ code {
     width: 100%;
     height: 300px;
 }
+
+.rz-textarea {
+    resize: none;
+}
