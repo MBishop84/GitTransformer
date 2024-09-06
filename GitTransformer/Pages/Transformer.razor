@@ -285,18 +285,24 @@
                 </RadzenAccordionItem>
             </Items>
         </RadzenAccordion>
-        <div class="d-sm-none d-md-block">
-            <br />
-            <RadzenStack Orientation="Orientation.Vertical"
-                         AlignItems="AlignItems.Center"
-                         JustifyContent="JustifyContent.End"
-                         Gap="10px"
-                         Style="margin: 50px">
+        <RadzenStack Orientation="Orientation.Vertical"
+                     AlignItems="AlignItems.Center"
+                     JustifyContent="JustifyContent.End"
+                     Style="margin-top: 20px">
+            <RadzenButton Variant="Variant.Outlined"
+                          Shade="Shade.Darker"
+                          Click="@(() => Orientation = Orientation == Orientation.Horizontal
+                                            ? Orientation.Vertical : Orientation.Horizontal)"
+                          Text="Change Orientation"
+                          ButtonStyle="ButtonStyle.Secondary" />
+            @if (Orientation == Orientation.Horizontal)
+            {
                 <RadzenImage Path="images/Autobots.png"
                              Style="width: 50%; opacity: 0.5"
                              AlternateText="transformer" />
-            </RadzenStack>
-        </div>
+            }
+
+        </RadzenStack>
     </RadzenFieldset>
     <RadzenFieldset class="col-12 col-md">
         <HeaderTemplate>
@@ -304,8 +310,7 @@
                           Shade="Shade.Darker"
                           Click="@OutputModalView"
                           Text="View Output in Modal"
-                          ButtonStyle="ButtonStyle.Success"
-                          Style="width:100%" />
+                          ButtonStyle="ButtonStyle.Secondary" />
         </HeaderTemplate>
         <ChildContent>
             <RadzenTextArea @bind-Value="@_output"
