@@ -823,7 +823,7 @@ namespace GitTransformer.Pages
             }
         }
 
-        private Task OutputModalView() =>
+        private Task<dynamic> OutputModalView() =>
             DialogService.OpenAsync<CustomDialog>(
                 "Output",
                 new Dictionary<string, object>
@@ -832,8 +832,11 @@ namespace GitTransformer.Pages
                 },
                 new DialogOptions()
                 {
-                    Width = "max-content",
-                    Height = "90vh"
+                    Resizable = true,
+                    Draggable = true,
+                    CloseDialogOnOverlayClick = true,
+                    Width = "80vw",
+                    Height = "80vh"
                 });
 
         #endregion
