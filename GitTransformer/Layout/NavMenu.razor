@@ -13,7 +13,13 @@
 </RadzenStack>
 
 @code {
-    readonly string[] _themes = ["dark", "software", "humanistic", "default", "standard"];
+    readonly string[] _themes = [
+        "default",
+        "dark",
+        "software",
+        "humanistic-dark",
+        "standard"
+    ];
     string _theme = "Select Theme";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

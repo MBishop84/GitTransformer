@@ -7,18 +7,19 @@
     <title>GitTransformer</title>
     <base href="/" />
     <link rel="stylesheet" href="css/app.css" />
-    <link href="GitTransformer.styles.css" rel="stylesheet" />
+    <!--<link href="GitTransformer.styles.css" rel="stylesheet" />-->
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
     <link href="manifest.webmanifest" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png?" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?" />
     <link rel="icon" href="favicon.ico?" type="image/x-icon" />
+    <link rel="stylesheet" href="_content/Radzen.Blazor/css/default.css">
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/dark.css" id="theme">
 </head>
 
 <body>
     <div id="app">
-        
+
     </div>
 
     <div id="blazor-error-ui">
@@ -32,21 +33,27 @@
         window.onload = () => {
             var theme = localStorage.getItem('RadzenTheme');
             if (!theme) {
-                theme = 'dark';
+                const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+                if (darkThemeMq.matches) {
+                    theme = 'dark';
+                } else {
+                    theme = 'default';
+                }
+                localStorage.setItem('RadzenTheme', theme);
             }
             var themeLink = document.getElementById('theme');
             themeLink.href = `_content/Radzen.Blazor/css/${theme}.css`;
         }
-            function windowLocation(l) {
-                if (l.search[1] === '/') {
-                    var decoded = l.search.slice(1).split('&').map(function (s) {
-                        return s.replace(/~and~/g, '&')
-                    }).join('?');
-                    window.history.replaceState(null, null,
-                        l.pathname.slice(0, -1) + decoded + l.hash
-                    );
-                }
-            }(window.location)
+        function windowLocation(l) {
+            if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function (s) {
+                    return s.replace(/~and~/g, '&')
+                }).join('?');
+                window.history.replaceState(null, null,
+                    l.pathname.slice(0, -1) + decoded + l.hash
+                );
+            }
+        } (window.location)
     </script>
     <script src="_content/BlazorMonaco/jsInterop.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
