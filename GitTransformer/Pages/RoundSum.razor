@@ -1,0 +1,91 @@
+﻿@page "/round_sum"
+@page "/GitTransformer/round_sum"
+@rendermode InteractiveWebAssembly
+
+<RadzenCard class="rz-my-6">
+    <RadzenStack Orientation="Orientation.Horizontal"
+                 AlignItems="AlignItems.Center"
+                 JustifyContent="JustifyContent.Center"
+                 Wrap="FlexWrap.Wrap" Gap="4px">
+        <RadzenFormField Text="Players" Variant="Variant.Outlined">
+            <RadzenNumeric @bind-Value="@_cols"
+                           TValue="int"
+                           TextAlign="TextAlign.Center"
+                           Change="@(_ => ChangeSetup())" />
+        </RadzenFormField>
+        <RadzenFormField Text="Rounds" Variant="Variant.Outlined">
+            <RadzenNumeric @bind-Value="@_rows"
+                           TValue="int"
+                           TextAlign="TextAlign.Center"
+                           Change="@(_ => ChangeSetup())" />
+        </RadzenFormField>
+    </RadzenStack>
+</RadzenCard>
+<RadzenStack Orientation="Orientation.Horizontal"
+             AlignItems="AlignItems.Center"
+             JustifyContent="JustifyContent.Center"
+             Wrap="FlexWrap.Wrap" Gap="10px">
+    @if (loading)
+    {
+        <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Primary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+    }
+    else
+    {
+        @foreach (var c in Enumerable.Range(0, _cols))
+        {
+            <RadzenFieldset Text="@($"Player{c + 1}")" Style="@($"border-color:{borders[c]}")">
+                <RadzenStack Orientation="Orientation.Vertical"
+                             AlignItems="AlignItems.Center"
+                             Wrap="FlexWrap.Wrap" Gap="4px">
+                    <RadzenFormField Text="Name" Variant="Variant.Outlined">
+                        <RadzenTextBox Placeholder="@($"Player{c + 1}")" />
+                    </RadzenFormField>
+                    @foreach (var r in Enumerable.Range(0, _rows))
+                    {
+                        <RadzenFormField Text="@($"Round {r + 1}")" Variant="Variant.Outlined">
+                            <RadzenNumeric @bind-Value="@scores[c][r]"
+                                           TextAlign="TextAlign.Center"
+                                           TValue="int"
+                                           Change="@(_ => UpdateScores(c))" />
+                        </RadzenFormField>
+                    }
+                    <RadzenFormField Text="Total" Variant="Variant.Outlined">
+                        <RadzenNumeric Value="@sums[c]"
+                                       ShowUpDown="false"
+                                       TextAlign="TextAlign.Center"
+                                       Disabled="true" />
+                    </RadzenFormField>
+                </RadzenStack>
+            </RadzenFieldset>
+        }
+    }
+</RadzenStack>
+
+@code {
+    int _cols = 2;
+    int _rows = 10;
+    bool loading = true;
+    List<string> borders = [];
+    List<int> sums = [];
+    Dictionary<int, List<int>> scores = [];
+
+    protected override void OnInitialized()
+    {
+        sums = Enumerable.Range(0, _cols).Select(_ => 0).ToList();
+        scores = Enumerable.Range(0, _cols).ToDictionary(c => c, c => Enumerable.Range(0, _rows).Select(_ => 0).ToList());
+        borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-primary)").ToList();
+        loading = false;
+    }
+
+    void ChangeSetup()
+    {
+        loading = true;
+        sums = Enumerable.Range(0, _cols).Select(_ => 0).ToList();
+        scores = Enumerable.Range(0, _cols).ToDictionary(c => c, c => Enumerable.Range(0, _rows).Select(_ => 0).ToList());
+        borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-primary)").ToList();
+        loading = false;
+        StateHasChanged();
+    }
+
+    void UpdateScores(int c) => sums[c] = scores[c].Sum();
+}
