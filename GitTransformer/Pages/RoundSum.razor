@@ -24,7 +24,7 @@
 <RadzenStack Orientation="Orientation.Horizontal"
              AlignItems="AlignItems.Center"
              JustifyContent="JustifyContent.Center"
-             Wrap="FlexWrap.Wrap" Gap="10px">
+             Wrap="FlexWrap.NoWrap" Gap="10px">
     @if (loading)
     {
         <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Primary" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
@@ -38,7 +38,7 @@
                              AlignItems="AlignItems.Center"
                              Wrap="FlexWrap.Wrap" Gap="4px">
                     <RadzenFormField Text="Name" Variant="Variant.Outlined">
-                        <RadzenTextBox Placeholder="@($"Player{c + 1}")" />
+                        <RadzenTextBox Placeholder="@($"Player{c + 1}")" Style="width: 100px" />
                     </RadzenFormField>
                     @foreach (var r in Enumerable.Range(0, _rows))
                     {
@@ -46,14 +46,16 @@
                             <RadzenNumeric @bind-Value="@scores[c][r]"
                                            TextAlign="TextAlign.Center"
                                            TValue="int"
-                                           Change="@(_ => UpdateScores(c))" />
+                                           Change="@(_ => UpdateScores(c))"
+                                           Style="width: 100px" />
                         </RadzenFormField>
                     }
                     <RadzenFormField Text="Total" Variant="Variant.Outlined">
                         <RadzenNumeric Value="@sums[c]"
                                        ShowUpDown="false"
                                        TextAlign="TextAlign.Center"
-                                       Disabled="true" />
+                                       Disabled="true"
+                                       Style="width: 100px" />
                     </RadzenFormField>
                 </RadzenStack>
             </RadzenFieldset>
