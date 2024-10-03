@@ -19,6 +19,12 @@
                            TextAlign="TextAlign.Center"
                            Change="@(_ => ChangeSetup())" />
         </RadzenFormField>
+        <RadzenButton Variant="Variant.Outlined"
+                      Shade="Shade.Darker"
+                      Click="@(_ => ClearScores())"
+                      Text="Clear Scores"
+                      ButtonStyle="ButtonStyle.Primary"
+                      class="rz-mt-3" />
     </RadzenStack>
 </RadzenCard>
 <RadzenStack Orientation="Orientation.Horizontal"
@@ -38,7 +44,7 @@
                              AlignItems="AlignItems.Center"
                              Wrap="FlexWrap.Wrap" Gap="4px">
                     <RadzenFormField Text="Name" Variant="Variant.Outlined">
-                        <RadzenTextBox Placeholder="@($"Player{c + 1}")" Style="width: 100px" />
+                        <RadzenTextBox Placeholder="@($"Player{c + 1}")" />
                     </RadzenFormField>
                     @foreach (var r in Enumerable.Range(0, _rows))
                     {
@@ -46,16 +52,14 @@
                             <RadzenNumeric @bind-Value="@scores[c][r]"
                                            TextAlign="TextAlign.Center"
                                            TValue="int"
-                                           Change="@(_ => UpdateScores(c))"
-                                           Style="width: 100px" />
+                                           Change="@(_ => UpdateScores(c))" />
                         </RadzenFormField>
                     }
                     <RadzenFormField Text="Total" Variant="Variant.Outlined">
                         <RadzenNumeric Value="@sums[c]"
                                        ShowUpDown="false"
                                        TextAlign="TextAlign.Center"
-                                       Disabled="true"
-                                       Style="width: 100px" />
+                                       Disabled="true" />
                     </RadzenFormField>
                 </RadzenStack>
             </RadzenFieldset>
@@ -75,7 +79,7 @@
     {
         sums = Enumerable.Range(0, _cols).Select(_ => 0).ToList();
         scores = Enumerable.Range(0, _cols).ToDictionary(c => c, c => Enumerable.Range(0, _rows).Select(_ => 0).ToList());
-        borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-primary)").ToList();
+        borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-secondary)").ToList();
         loading = false;
     }
 
@@ -84,10 +88,31 @@
         loading = true;
         sums = Enumerable.Range(0, _cols).Select(_ => 0).ToList();
         scores = Enumerable.Range(0, _cols).ToDictionary(c => c, c => Enumerable.Range(0, _rows).Select(_ => 0).ToList());
-        borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-primary)").ToList();
+        borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-secondary)").ToList();
         loading = false;
         StateHasChanged();
     }
 
-    void UpdateScores(int c) => sums[c] = scores[c].Sum();
+    void UpdateScores(int c)
+    {
+        sums[c] = scores[c].Sum();
+        var max = scores.Select(x => x.Value.Sum()).Max();
+        var indexes = scores.Where(x => x.Value.Sum() == max);
+        if (indexes.Count() == 1)
+        {
+            borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-secondary)").ToList();
+            borders[indexes.First().Key] = "var(--rz-primary)";
+        }
+        else
+        {
+            borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-secondary)").ToList();
+        }
+    }
+
+    void ClearScores()
+    {
+        sums = Enumerable.Range(0, _cols).Select(_ => 0).ToList();
+        scores = Enumerable.Range(0, _cols).ToDictionary(c => c, c => Enumerable.Range(0, _rows).Select(_ => 0).ToList());
+        borders = Enumerable.Range(0, _cols).Select(_ => "var(--rz-secondary)").ToList();
+    }
 }
