@@ -38,12 +38,21 @@ namespace GitTransformer.Pages
 
         #region Feilds
 
+        public class Bounds(string? Prefix = null, string? Suffix = null)
+        {
+            public string Prefix { get; set; } = Prefix ?? string.Empty;
+            public string Suffix { get; set; } = Suffix ?? string.Empty;
+        }
+        private Bounds _boundEach = new();
+        private Bounds _boundAll = new();
         private List<string> _monacoThemes = [];
         private List<JsTransform> _jsTransforms = [];
         private int _height = 1000, _width = 1000;
         private bool _dynamic, _sort, _dupes;
         private IEnumerable<int> _options = [];
-        private string? _input, _output, _split, _join, _boundAll, _boundEach, _monacoTheme, _entry;
+        private string? _input, _output, _split, _join,
+            _monacoTheme, _entry,
+            _prefixAll, _suffixAll;
 
         #endregion
 
@@ -122,60 +131,25 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(_input))
-                    throw new ArgumentException("Input is Empty");
-                if (!string.IsNullOrEmpty(_boundAll) && _boundAll.Split('.').Length != 2)
-                    throw new ArgumentException("Bound-All must be separated by a period(.)");
-                if (!string.IsNullOrEmpty(_boundEach) && _boundEach.Split('.').Length != 2)
-                    throw new ArgumentException("Bound-Each must be separated by a period(.)");
+                ArgumentException.ThrowIfNullOrEmpty(_input);
+
                 var split = _split?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
                 var join = _join?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
 
-                var frontBracket = string.IsNullOrEmpty(_boundAll)
-                    ? string.Empty
-                    : _boundAll.Split('.')[0];
-                var endBracket = string.IsNullOrEmpty(_boundAll)
-                    ? string.Empty
-                    : _boundAll.Split('.')[1];
-                var frontParentheses = string.IsNullOrEmpty(_boundEach)
-                    ? string.Empty
-                    : _boundEach.Split('.')[0];
-                var endParentheses = string.IsNullOrEmpty(_boundEach)
-                    ? string.Empty
-                    : _boundEach.Split('.')[1];
-
                 var outputArray = string.IsNullOrEmpty(split)
-                    ? _input?.ToCharArray().Select(x =>
-                        {
-                            return _dynamic switch
-                            {
-                                true => int.TryParse(x.ToString(), out var i)
-                                    ? $"{x}"
-                                    : $"{frontParentheses}{x}{endParentheses}",
-                                false => $"{frontParentheses}{x}{endParentheses}"
-                            };
-                        }) ?? []
-                    : _input?.Split(split).Select(x =>
-                        {
-                            return _dynamic switch
-                            {
-                                true => int.TryParse(x, out var i) || x.Equals("null", StringComparison.OrdinalIgnoreCase)
-                                    ? $"{x}"
-                                    : $"{frontParentheses}{x}{endParentheses}",
-                                false => $"{frontParentheses}{x}{endParentheses}"
-                            };
-                        }) ?? [];
+                    ? _input?.ToCharArray().Select(x => SplitFunction(x.ToString())) ?? []
+                    : _input?.Split(split).Select(x => SplitFunction(x)) ?? [];
 
                 if (_options.Any(x => x == 1))
                 {
-                    outputArray = outputArray.OrderBy(x => x).ToImmutableList();
+                    outputArray = [.. outputArray.OrderBy(x => x)];
                 }
                 if (_options.Any(x => x == 2))
                 {
-                    outputArray = outputArray.Distinct().ToImmutableList();
+                    outputArray = [.. outputArray.Distinct()];
                 }
 
-                _output = $"{frontBracket}{string.Join(join, outputArray)}{endBracket}";
+                _output = $"{_boundAll.Prefix}{string.Join(join, outputArray)}{_boundAll.Suffix}";
             }
             catch (Exception ex)
             {
@@ -193,6 +167,13 @@ namespace GitTransformer.Pages
                     });
             }
         }
+
+        private string SplitFunction(string input)
+            => _dynamic
+            ? int.TryParse(input, out var _)
+                ? $"{input}"
+                : $"{_boundEach.Prefix}{input}{_boundEach.Suffix}"
+            : $"{_boundEach.Prefix}{input}{_boundEach.Suffix}";
 
         /// <summary>
         /// Clears the selected public field.

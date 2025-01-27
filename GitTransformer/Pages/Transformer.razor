@@ -23,7 +23,8 @@
                                  JustifyContent="JustifyContent.SpaceBetween">
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Stretch"
-                                     JustifyContent="JustifyContent.SpaceBetween" Gap="10px">
+                                     JustifyContent="JustifyContent.SpaceBetween"
+                                     Gap="1px">
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
                                           Click="@(_ => ClearField("_split"))"
@@ -38,23 +39,25 @@
                                           Style="width: 24%" />
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
-                                          Click="@(_ => ClearField("_boundAll"))"
+                                          Click="@(_ => _boundAll = new())"
                                           Text="Clear"
                                           ButtonStyle="ButtonStyle.Info"
                                           Style="width: 24%" />
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
-                                          Click="@(_ => ClearField("_boundEach"))"
+                                          Click="@(_ => _boundEach = new())"
                                           Text="Clear"
                                           ButtonStyle="ButtonStyle.Info"
                                           Style="width: 24%" />
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Center"
-                                     JustifyContent="JustifyContent.Center">
+                                     JustifyContent="JustifyContent.Center"
+                                     Style="width: 100%"
+                                     Gap="1px">
                             <RadzenFormField Text="Split"
                                              Variant="Variant.Outlined"
-                                             Style="width: 24%;">
+                                             Style="width: 100%">
                                 <RadzenRadioButtonList @bind-Value="@_split"
                                                        TValue="string"
                                                        Orientation="Orientation.Vertical"
@@ -69,7 +72,7 @@
                             </RadzenFormField>
                             <RadzenFormField Text="Join"
                                              Variant="Variant.Outlined"
-                                             Style="width: 24%">
+                                             Style="width: 100%">
                                 <RadzenRadioButtonList @bind-Value="@_join"
                                                        TValue="string"
                                                        Orientation="Orientation.Vertical"
@@ -84,33 +87,36 @@
                             </RadzenFormField>
                             <RadzenFormField Text="Bound-All"
                                              Variant="Variant.Outlined"
-                                             Style="width: 24%">
+                                             Style="width: 100%">
                                 <RadzenRadioButtonList @bind-Value="@_boundAll"
-                                                       TValue="string"
+                                                       TValue="Bounds"
                                                        Orientation="Orientation.Vertical"
                                                        class="rz-mx-2">
                                     <Items>
-                                        <RadzenRadioButtonListItem Text="(.)" Value=@("(.)") />
-                                        <RadzenRadioButtonListItem Text="[.]" Value=@("[.]") />
-                                        <RadzenRadioButtonListItem Text="{.}" Value=@("{.}") />
-                                        <RadzenRadioButtonListItem Text="<.>" Value=@("<.>") />
+                                        <RadzenRadioButtonListItem Text="(...)" Value=@(new Bounds("(", ")")) />
+                                        <RadzenRadioButtonListItem Text="[...]" Value=@(new Bounds("[", "]")) />
+                                        <RadzenRadioButtonListItem Text="{...}" Value=@(new Bounds("{", "}")) />
+                                        <RadzenRadioButtonListItem Text="<...>" Value=@(new Bounds("<", ">")) />
                                     </Items>
                                 </RadzenRadioButtonList>
                             </RadzenFormField>
                             <RadzenFormField Text="Bound-Each"
                                              Variant="Variant.Outlined"
-                                             Style="width: 24%">
+                                             Style="width: 100%">
                                 <RadzenStack Orientation="Orientation.Vertical"
                                              AlignItems="AlignItems.Center"
                                              JustifyContent="JustifyContent.Center"
-                                             Gap="0">
+                                             Gap="1px">
                                     <RadzenRadioButtonList @bind-Value="@_boundEach"
-                                                           TValue="string"
+                                                           TValue="Bounds"
                                                            Orientation="Orientation.Vertical">
                                         <Items>
-                                            <RadzenRadioButtonListItem Text="@("[.]")" Value=@("[.]") />
-                                            <RadzenRadioButtonListItem Text="@("\".\"")" Value=@("\".\"") />
-                                            <RadzenRadioButtonListItem Text="'.'" Value=@("'.'") />
+                                            <RadzenRadioButtonListItem Text="@("[...]")"
+                                                                       Value=@(new Bounds("[", "]")) />
+                                            <RadzenRadioButtonListItem Text="@("\"...\"")"
+                                                                       Value=@(new Bounds("\"", "\"")) />
+                                            <RadzenRadioButtonListItem Text="'...'"
+                                                                       Value=@(new Bounds("'", "'")) />
                                         </Items>
                                     </RadzenRadioButtonList>
                                     <RadzenLabel Component="Dynamic"
@@ -123,25 +129,47 @@
                             </RadzenFormField>
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal"
-                                     AlignItems="AlignItems.Start"
+                                     AlignItems="AlignItems.Stretch"
                                      JustifyContent="JustifyContent.SpaceBetween"
-                                     Gap="10px">
+                                     Style="width: 100%"
+                                     Gap="1px">
                             <RadzenTextBox @bind-Value="@_split"
                                            TValue="string?"
-                                           Placeholder="User Split"
-                                           Style="width: 90%" />
+                                           Style="width: 100%"
+                                           Placeholder="User Split" />
                             <RadzenTextBox @bind-Value="@_join"
                                            TValue="string?"
-                                           Placeholder="User Join"
-                                           Style="width: 90%" />
-                            <RadzenTextBox @bind-Value="@_boundAll"
-                                           TValue="string?"
-                                           Placeholder="User B-All"
-                                           Style="width: 90%" />
-                            <RadzenTextBox @bind-Value="@_boundEach"
-                                           TValue="string?"
-                                           Placeholder="User B-Each"
-                                           Style="width: 90%" />
+                                           Style="width: 100%"
+                                           Placeholder="User Join" />
+                            <RadzenStack Orientation="Orientation.Vertical"
+                                         AlignItems="AlignItems.Stretch"
+                                         JustifyContent="JustifyContent.SpaceBetween"
+                                         Style="width: 100%"
+                                         Gap="1px">
+                                <RadzenTextBox @bind-Value="@_boundAll.Prefix"
+                                               TValue="string"
+                                               Style="width: 100%"
+                                               Placeholder="Prefix All" />
+                                <RadzenTextBox @bind-Value="@_boundAll.Suffix"
+                                               TValue="string"
+                                               Style="width: 100%"
+                                               Placeholder="Suffix All" />
+                            </RadzenStack>
+                            <RadzenStack Orientation="Orientation.Vertical"
+                                         AlignItems="AlignItems.Stretch"
+                                         JustifyContent="JustifyContent.SpaceBetween"
+                                         Style="width: 100%"
+                                         Gap="1px">
+                                <RadzenTextBox @bind-Value="@_boundEach.Prefix"
+                                               TValue="string"
+                                               Style="width: 100%"
+                                               Placeholder="Prefix Each" />
+                                <RadzenTextBox @bind-Value="@_boundEach.Suffix"
+                                               TValue="string"
+                                               Style="width: 100%"
+                                               Placeholder="Suffix Each" />
+                            </RadzenStack>
+
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Center"
