@@ -20,35 +20,37 @@
                                      Selected="true">
                     <RadzenStack Orientation="Orientation.Vertical"
                                  AlignItems="AlignItems.Stretch"
-                                 JustifyContent="JustifyContent.SpaceBetween">
+                                 JustifyContent="JustifyContent.SpaceBetween"
+                                 Style="width: 100%">
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Stretch"
                                      JustifyContent="JustifyContent.SpaceBetween"
-                                     Gap="1px">
+                                     Gap="1px"
+                                     Style="width: 100%">
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
                                           Click="@(_ => ClearField("_split"))"
                                           Text="Clear"
                                           ButtonStyle="ButtonStyle.Info"
-                                          Style="width: 24%" />
+                                          Style="width: 100%" />
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
                                           Click="@(_ => ClearField("_join"))"
                                           Text="Clear"
                                           ButtonStyle="ButtonStyle.Info"
-                                          Style="width: 24%" />
+                                          Style="width: 100%" />
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
                                           Click="@(_ => _boundAll = new())"
                                           Text="Clear"
                                           ButtonStyle="ButtonStyle.Info"
-                                          Style="width: 24%" />
+                                          Style="width: 100%" />
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
                                           Click="@(_ => _boundEach = new())"
                                           Text="Clear"
                                           ButtonStyle="ButtonStyle.Info"
-                                          Style="width: 24%" />
+                                          Style="width: 100%" />
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Center"
@@ -133,14 +135,34 @@
                                      JustifyContent="JustifyContent.SpaceBetween"
                                      Style="width: 100%"
                                      Gap="1px">
-                            <RadzenTextBox @bind-Value="@_split"
-                                           TValue="string?"
-                                           Style="width: 100%"
-                                           Placeholder="User Split" />
-                            <RadzenTextBox @bind-Value="@_join"
-                                           TValue="string?"
-                                           Style="width: 100%"
-                                           Placeholder="User Join" />
+                            <RadzenStack Orientation="Orientation.Vertical"
+                                         AlignItems="AlignItems.Stretch"
+                                         JustifyContent="JustifyContent.SpaceBetween"
+                                         Style="width: 100%"
+                                         Gap="1px">
+                                <RadzenTextBox @bind-Value="@_split"
+                                               TValue="string?"
+                                               Style="width: 100%"
+                                               Placeholder="User Split" />
+                                <div class="rz-text-align-center">
+                                    <RadzenCheckBox @bind-Value=@_sort Name="Sort" />
+                                    <RadzenLabel Text="Sort?" Component="Sort" class="rz-ms-1" />
+                                </div>
+                            </RadzenStack>
+                            <RadzenStack Orientation="Orientation.Vertical"
+                                         AlignItems="AlignItems.Stretch"
+                                         JustifyContent="JustifyContent.SpaceBetween"
+                                         Style="width: 100%"
+                                         Gap="1px">
+                                <RadzenTextBox @bind-Value="@_join"
+                                               TValue="string?"
+                                               Style="width: 100%"
+                                               Placeholder="User Join" />
+                                <div class="rz-text-align-center">
+                                    <RadzenCheckBox @bind-Value=@_dupes Name="Dupes" />
+                                    <RadzenLabel Text="NoDupes?" Component="Dupes" class="rz-ms-1" />
+                                </div>
+                            </RadzenStack>
                             <RadzenStack Orientation="Orientation.Vertical"
                                          AlignItems="AlignItems.Stretch"
                                          JustifyContent="JustifyContent.SpaceBetween"
@@ -173,18 +195,8 @@
                         </RadzenStack>
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Center"
-                                     JustifyContent="JustifyContent.Start"
+                                     JustifyContent="JustifyContent.Center"
                                      Gap="10px">
-                            <RadzenCheckBoxList Orientation="@(Orientation == Orientation.Horizontal ? Orientation.Vertical: Orientation.Horizontal)"
-                                                TValue="int"
-                                                @bind-Value="@_options">
-                                <Items>
-                                    <RadzenCheckBoxListItem Text="Sort"
-                                                            Value="1" />
-                                    <RadzenCheckBoxListItem Text="Remove Dupes"
-                                                            Value="2" />
-                                </Items>
-                            </RadzenCheckBoxList>
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
                                           Click="@Transform"

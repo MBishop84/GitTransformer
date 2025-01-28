@@ -49,10 +49,8 @@ namespace GitTransformer.Pages
         private List<JsTransform> _jsTransforms = [];
         private int _height = 1000, _width = 1000;
         private bool _dynamic, _sort, _dupes;
-        private IEnumerable<int> _options = [];
         private string? _input, _output, _split, _join,
-            _monacoTheme, _entry,
-            _prefixAll, _suffixAll;
+            _monacoTheme, _entry;
 
         #endregion
 
@@ -140,13 +138,13 @@ namespace GitTransformer.Pages
                     ? _input?.ToCharArray().Select(x => SplitFunction(x.ToString())) ?? []
                     : _input?.Split(split).Select(x => SplitFunction(x)) ?? [];
 
-                if (_options.Any(x => x == 1))
+                if (_sort)
                 {
                     outputArray = [.. outputArray.OrderBy(x => x)];
                 }
-                if (_options.Any(x => x == 2))
+                if (_dupes)
                 {
-                    outputArray = [.. outputArray.Distinct()];
+                    outputArray = outputArray.Distinct();
                 }
 
                 _output = $"{_boundAll.Prefix}{string.Join(join, outputArray)}{_boundAll.Suffix}";
