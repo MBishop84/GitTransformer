@@ -1,6 +1,7 @@
 ﻿@page "/"
 @page "/GitTransformer/"
-@inject HttpClient Http
+@inject Services.LocalFileService FileService
+@inject Services.QuotableApiService QuotableService
 @using System.Text.Json
 @rendermode InteractiveWebAssembly
 
@@ -13,7 +14,7 @@
     {
         <RadzenText TextStyle="TextStyle.Subtitle1">Seeking Wisdom...</RadzenText>
         <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Secondary" Style="width: 50%; height: 3px"
-                           Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+        Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
     }
     else
     {
@@ -24,28 +25,27 @@
 </RadzenStack>
 
 @code{
-    record Author(int Id, string Name);
-    record Quote(int Id, string Text, Author Author);
     Quote _quote = new(0, "Seeking Wisdom...", new Author(0, "Unknown"));
-    List<Quote>? _quotes = new();
     bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        
         await base.OnInitializedAsync();
-        _quotes = await Http.GetFromJsonAsync<List<Quote>>("data/quotes.json");
         await GetQuote();
     }
 
-    private async Task GetQuote()
+    async Task GetQuote()
     {
         _loading = true;
+        await InvokeAsync(StateHasChanged);
         try
         {
-            _quote = _quotes?.ElementAt(new Random().Next(0, _quotes.Count()))
-            ?? new Quote(0, "Sorry, no wisdom to be found.", new Author(0, "Unknown"));
+            _quote = await QuotableService.GetRandomQuote();
+            if (_quote.Author.Name == "Unknown")
+                _quote = await FileService.GetRandomQuote();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _quote = new Quote(0, "An error occurred while seeking wisdom.", new Author(0, ex.Message));
         }
