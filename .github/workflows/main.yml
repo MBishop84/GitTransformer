@@ -1,4 +1,7 @@
 name: Deploy to GitHub Pages
+env:
+  NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 on:
   push:
     branches: [ master ]
@@ -11,10 +14,8 @@ jobs:
       uses: actions/setup-dotnet@v4.3.0
       with:
         dotnet-version: '9.0.x'
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Publish .NET Core Project
-      run: dotnet publish GitTransformer/GitTransformer.csproj -c Release -o release --nologo
+      run: dotnet publish GitTransformer/GitTransformer.csproj -c Release
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.7.2
       with:
