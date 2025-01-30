@@ -12,6 +12,8 @@ jobs:
       with:
         dotnet-version: '9.0.x'
         source-url: 'https://dotnet.microsoft.com/en-us/download/dotnet/9.0'
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Publish .NET Core Project
       run: dotnet publish GitTransformer.csproj -c Release -o release --nologo
     - name: Deploy to GitHub Pages
