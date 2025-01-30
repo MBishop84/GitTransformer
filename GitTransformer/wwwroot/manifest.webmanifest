@@ -2,7 +2,7 @@
   "name": "GitTransformer",
   "short_name": "GitTransformer",
   "id": "./",
-  "start_url": "./",
+  "start_url": "./GitTransformer",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#03173d",
