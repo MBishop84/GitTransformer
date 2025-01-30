@@ -20,7 +20,5 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@v4.7.2
       with:
         folder: GitTransformer/bin/Release/net9.0/wwwroot
-    - name: Change base-tag in index.html from / to GitTransformer
-      run: sed -i 's/<base href="\/" \/>/<base href="\/GitTransformer\/" \/>/g' GitTransformer/bin/Release/net9.0/wwwroot/index.html
     - name: Add .nojekyll file
       run: touch GitTransformer/bin/Release/net9.0/wwwroot/.nojekyll
