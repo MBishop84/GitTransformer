@@ -1,38 +1,21 @@
-name: Deploy Blazor WASM to GitHub Page
-env:
-  PUBLISH_DIR: GitTransformer/bin/Release/net8.0/publish/wwwroot
-
-# Controls when the action will run
+name: Deploy to GitHub Pages
 on:
   push:
     branches: [ master ]
-
 jobs:
-  build:
+  deploy-to-github-pages:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-
-    - name: Publish application
-      run: dotnet publish -c Release
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.3.0
+      with:
+        dotnet-version: '9.0.x'
+        source-url: 'https://dotnet.microsoft.com/en-us/download/dotnet/9.0'
+    - name: Publish .NET Core Project
+      run: dotnet publish GitTransformer.csproj -c Release -o release --nologo
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4.7.2
+      with:
+        folder: release/wwwroot
     
-    # base href url value should be changed so that resources like CSS and scripts can load properly. 
-    - name: Rewrite base href
-      if: success()
-      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
-      with:
-        html_path: ${{ env.PUBLISH_DIR }}/index.html
-        base_href: /GitTransformer/
-        
-    # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
-    - name: Add .nojekyll file
-      run: touch ${{ env.PUBLISH_DIR }}/.nojekyll
-
-    - name: Commit to GitHub pages Repo
-      if: success()
-      uses: crazy-max/ghaction-github-pages@v1.5.1
-      with:
-        target_branch: gh-pages
-        build_dir: ${{ env.PUBLISH_DIR }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
