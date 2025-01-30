@@ -11,7 +11,6 @@ jobs:
       uses: actions/setup-dotnet@v4.3.0
       with:
         dotnet-version: '9.0.x'
-        source-url: 'https://dotnet.microsoft.com/en-us/download/dotnet/9.0'
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Publish .NET Core Project
