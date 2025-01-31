@@ -21,6 +21,6 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.7.2
       with:
-        folder: GitTransformer/bin/Release/net9.0/wwwroot
+        folder: GitTransformer/bin/Release/net9.0/publish/wwwroot
     - name: Add .nojekyll file
       run: touch GitTransformer/bin/Release/net9.0/wwwroot/.nojekyll
