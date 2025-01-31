@@ -10,14 +10,9 @@ public class QuotableApiService([FromKeyedServices("quotable")] HttpClient httpC
     {
         try
         {
-            var result = await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "random"));
+            var result = await HttpClient.GetFromJsonAsync<SingleQuotableResponse>("random");
 
-            if (!result.IsSuccessStatusCode)
-                return new Quote();
-
-            var response = await result.Content.ReadFromJsonAsync<SingleQuotableResponse>();
-
-            return new Quote(response);
+            return new Quote(result);
         }
         catch
         {

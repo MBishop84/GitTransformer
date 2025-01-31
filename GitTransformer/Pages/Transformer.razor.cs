@@ -1,11 +1,11 @@
 ﻿using BlazorMonaco.Editor;
+using GitTransformer.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Radzen;
 using System.Collections.Immutable;
 using System.Globalization;
-using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -15,6 +15,12 @@ namespace GitTransformer.Pages
 {
     public partial class Transformer
     {
+        internal class Bounds(string? Prefix = null, string? Suffix = null)
+        {
+            public string Prefix { get; set; } = Prefix ?? string.Empty;
+            public string Suffix { get; set; } = Suffix ?? string.Empty;
+        }
+
         #region Injected Services
 
         [Inject]
@@ -22,7 +28,7 @@ namespace GitTransformer.Pages
         [Inject]
         private DialogService DialogService { get; init; } = null!;
         [Inject]
-        private HttpClient ApiClient { get; init; } = null!;
+        private LocalFileService ApiClient { get; init; } = null!;
         [Inject]
         private IConfiguration Configuration { get; init; } = null!;
 
@@ -30,7 +36,6 @@ namespace GitTransformer.Pages
 
         #region Properties
 
-        private sealed record JsTransform(int Id, string AddedBy, string Name, string Code);
         private StandaloneCodeEditor Editor { get; set; } = null!;
         private Orientation Orientation { get; set; } = Orientation.Horizontal;
 
@@ -38,15 +43,11 @@ namespace GitTransformer.Pages
 
         #region Feilds
 
-        public class Bounds(string? Prefix = null, string? Suffix = null)
-        {
-            public string Prefix { get; set; } = Prefix ?? string.Empty;
-            public string Suffix { get; set; } = Suffix ?? string.Empty;
-        }
+        private readonly string[] _defaultThemes = ["vs-dark", "vs-light"];
         private Bounds _boundEach = new();
         private Bounds _boundAll = new();
         private List<string> _monacoThemes = [];
-        private List<JsTransform> _jsTransforms = [];
+        private List<JsTransform?> _jsTransforms = [];
         private int _height = 1000, _width = 1000;
         private bool _dynamic, _sort, _dupes;
         private string? _input, _output, _split, _join,
@@ -65,9 +66,8 @@ namespace GitTransformer.Pages
             await base.OnInitializedAsync();
             try
             {
-                _monacoThemes = (await ApiClient.GetFromJsonAsync<Dictionary<string, string>>("themes/themelist.json") ?? [])
-                    .Select(x => x.Value).ToList();
-                _monacoThemes.AddRange(["vs-dark", "vs-light"]);
+                _monacoThemes = (await ApiClient.GetThemes()).Select(x => x.Value).ToList();
+                _monacoThemes.AddRange(_defaultThemes);
                 DialogService.OnClose += DialogClose;
             }
             catch (Exception ex)
@@ -100,12 +100,12 @@ namespace GitTransformer.Pages
             {
                 await ChangeTheme(theme);
             }
-            _jsTransforms = await ApiClient.GetFromJsonAsync<List<JsTransform>>("data/JsTransforms.json") ?? [];
+            _jsTransforms = await ApiClient.GetJsTransforms;
             var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
             if (!string.IsNullOrEmpty(localTransforms))
             {
                 var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
-                _jsTransforms.AddRange(items.Where(x => !_jsTransforms.Select(y => y.Name).Contains(x.Name)));
+                _jsTransforms.AddRange(items.Where(x => !_jsTransforms.Select(y => y?.Name).Contains(x.Name)));
             }
 
             await InvokeAsync(StateHasChanged);
@@ -167,11 +167,13 @@ namespace GitTransformer.Pages
         }
 
         private string SplitFunction(string input)
-            => _dynamic
-            ? int.TryParse(input, out var _)
-                ? $"{input}"
-                : $"{_boundEach.Prefix}{input}{_boundEach.Suffix}"
-            : $"{_boundEach.Prefix}{input}{_boundEach.Suffix}";
+            => _dynamic switch
+            {
+                true => int.TryParse(input, out var _)
+                    ? $"{input}"
+                    : $"{_boundEach.Prefix}{input}{_boundEach.Suffix}",
+                false => $"{_boundEach.Prefix}{input}{_boundEach.Suffix}",
+            };
 
         /// <summary>
         /// Clears the selected public field.
@@ -194,10 +196,10 @@ namespace GitTransformer.Pages
                     _join = null;
                     break;
                 case nameof(_boundAll):
-                    _boundAll = null;
+                    _boundAll = new();
                     break;
                 case nameof(_boundEach):
-                    _boundEach = null;
+                    _boundEach = new();
                     break;
                 case nameof(_monacoTheme):
                     _monacoTheme = null;
@@ -305,7 +307,7 @@ namespace GitTransformer.Pages
                 var result = new StringBuilder();
                 foreach (JsonProperty i in jsonObject.EnumerateObject())
                 {
-                    var name = char.ToUpper(i.Name[0]) + i.Name.Substring(1);
+                    var name = char.ToUpper(i.Name[0]) + i.Name[1..];
                     result.AppendFormat("///<summary>\n/// Gets/Sets the {0}.\n///</summary>\n", name);
                     result.Append(i.Value.ValueKind switch
                     {
@@ -313,7 +315,7 @@ namespace GitTransformer.Pages
                             $"public int {name} {{ get; set; }}\n\n",
                         JsonValueKind.String => i.Value switch
                         {
-                            var b when DateTime.TryParse(b.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var itemDate) =>
+                            var b when DateTime.TryParse(b.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var _) =>
                                 $"public DateTime? {name} {{ get; set; }}\n\n",
                             _ => $"public string {name} {{ get; set; }} = string.Empty;\n\n"
                         },
@@ -387,16 +389,16 @@ namespace GitTransformer.Pages
                             node.Name,
                             node.InnerText switch
                             {
-                                var a when int.TryParse(a, out var itemInt) => "int",
-                                var b when DateTime.TryParse(b, CultureInfo.InvariantCulture, DateTimeStyles.None, out var itemDate) => "DateTime",
-                                var c when bool.TryParse(c, out var iBool) => "bool",
+                                var a when int.TryParse(a, out var _) => "int",
+                                var b when DateTime.TryParse(b, CultureInfo.InvariantCulture, DateTimeStyles.None, out var _) => "DateTime",
+                                var c when bool.TryParse(c, out var _) => "bool",
                                 _ => "string"
                             },
                             node.InnerText switch
                             {
-                                var a when int.TryParse(a, out var itemInt) => "0",
-                                var b when DateTime.TryParse(b, CultureInfo.InvariantCulture, DateTimeStyles.None, out var itemDate) => "DateTime.MinValue",
-                                var c when bool.TryParse(c, out var iBool) => "false",
+                                var a when int.TryParse(a, out var _) => "0",
+                                var b when DateTime.TryParse(b, CultureInfo.InvariantCulture, DateTimeStyles.None, out var _) => "DateTime.MinValue",
+                                var c when bool.TryParse(c, out var _) => "false",
                                 _ => "string.Empty"
                             });
                     }
@@ -499,7 +501,7 @@ namespace GitTransformer.Pages
         /// </summary>
         /// <param name="editor"></param>
         /// <returns><see cref="StandaloneEditorConstructionOptions"/></returns>
-        private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+        private static StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
         {
             return new StandaloneEditorConstructionOptions
             {
@@ -524,10 +526,10 @@ namespace GitTransformer.Pages
             try
             {
                 var myTheme = theme;
-                if (!new[] { "vs-dark", "vs-light" }.Contains(theme))
+                if (!_defaultThemes.Contains(theme))
                 {
                     await Global.DefineTheme(JS, "thisTheme",
-                        await ApiClient.GetFromJsonAsync<StandaloneThemeData>($"themes/{theme}.json"));
+                        await ApiClient.GetStandaloneThemeData(theme));
                     myTheme = "thisTheme";
                 }
 
@@ -585,8 +587,8 @@ namespace GitTransformer.Pages
         /// <param name="jsTransform"></param>
         private Task UpdateUserCode(string jsTransform)
         {
-            var fullString = _jsTransforms.Where(x => x.Code == jsTransform)
-                .Select(y => $"{y.Name}\n{y.Code}").FirstOrDefault();
+            var fullString = _jsTransforms.Where(x => x?.Code == jsTransform)
+                .Select(y => $"{y?.Name}\n{y?.Code}").FirstOrDefault();
             return Editor.SetValue(fullString);
         }
 
@@ -599,13 +601,13 @@ namespace GitTransformer.Pages
             {
                 var userCode = await Editor.GetValue();
                 if (string.IsNullOrEmpty(userCode))
-                    userCode = $"{_jsTransforms[0].Name}\n{_jsTransforms[0].Code}";
+                    userCode = $"{_jsTransforms[0]?.Name} \n {_jsTransforms[0]?.Code}";
                 else
                 {
-                    var index = _jsTransforms.FindIndex(x => x.Name == userCode.Split("\n")[0]);
+                    var index = _jsTransforms.FindIndex(x => x?.Name == userCode.Split("\n")[0]);
                     userCode = index < _jsTransforms.Count - 1
-                        ? $"{_jsTransforms[index + 1].Name}\n{_jsTransforms[index + 1].Code}"
-                        : $"{_jsTransforms[0].Name}\n{_jsTransforms[0].Code}";
+                        ? $"{_jsTransforms[index + 1]?.Name}\n{_jsTransforms[index + 1]?.Code}"
+                        : $"{_jsTransforms[0]?.Name}\n{_jsTransforms[0]?.Code}";
                 }
                 await Editor.SetValue(userCode);
             }
@@ -635,16 +637,16 @@ namespace GitTransformer.Pages
             {
                 var userCode = await Editor.GetValue();
                 if (string.IsNullOrEmpty(userCode))
-                    userCode = $"{_jsTransforms[0].Name}\n{_jsTransforms[0].Code}";
+                    userCode = $"{_jsTransforms[0]?.Name}\n{_jsTransforms[0]?.Code}";
                 else
                 {
-                    var index = _jsTransforms.FindIndex(x => x.Name == userCode.Split("\n")[0]);
+                    var index = _jsTransforms.FindIndex(x => x?.Name == userCode.Split("\n")[0]);
                     if (index > 0)
                     {
-                        userCode = $"{_jsTransforms[index - 1].Name}\n{_jsTransforms[index - 1].Code}";
+                        userCode = $"{_jsTransforms[index - 1]?.Name}\n{_jsTransforms[index - 1]?.Code}";
                     }
                     else
-                        userCode = $"{_jsTransforms[^1].Name}\n{_jsTransforms[^1].Code}";
+                        userCode = $"{_jsTransforms[^1]?.Name}\n{_jsTransforms[^1]?.Code}";
                 }
                 await Editor.SetValue(userCode);
             }
@@ -678,7 +680,7 @@ namespace GitTransformer.Pages
             {
                 var userCode = await Editor.GetValue();
                 var name = userCode.Split("\n")[0];
-                var jsTransform = _jsTransforms.Find(x => x.Name == name);
+                var jsTransform = _jsTransforms.Find(x => x?.Name == name);
                 var deleteMessage = $"{name} has been deleted from this instance.";
                 if (jsTransform == null)
                     throw new ArgumentException("No code found to delete.");
@@ -696,10 +698,8 @@ namespace GitTransformer.Pages
 
                     if (string.IsNullOrEmpty(_entry))
                         throw new ArgumentException("Password is Empty");
-
-                    using var hash = SHA256.Create();
                     if ("+aGrr99mKAuTRZp/t0aSzvD6vSHtr0nNv4NFTVuxTH0="
-                        !.Equals(Convert.ToBase64String(hash.ComputeHash(Encoding.UTF8.GetBytes(_entry)))))
+                        !.Equals(Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(_entry)))))
                     {
                         deleteMessage = $"{name} has been permanently deleted.";
                     }
@@ -774,8 +774,8 @@ namespace GitTransformer.Pages
                 if (string.IsNullOrEmpty(_entry))
                     throw new ArgumentException("Name is Empty");
 
-                if (_jsTransforms.Exists(x => x.Name == name))
-                    _jsTransforms.Remove(_jsTransforms.Find(x => x.Name == name)!);
+                if (_jsTransforms.Exists(x => x?.Name == name))
+                    _jsTransforms.Remove(_jsTransforms.Find(x => x?.Name == name)!);
 
                 var newTransform = new JsTransform(0, _entry, name, userCode);
                 _jsTransforms.Add(newTransform);
