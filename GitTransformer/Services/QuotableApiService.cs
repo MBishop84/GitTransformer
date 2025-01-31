@@ -14,8 +14,9 @@ public class QuotableApiService([FromKeyedServices("quotable")] HttpClient httpC
 
             return new Quote(result);
         }
-        catch
+        catch(Exception ex)
         {
+            Console.WriteLine(ex.ToString());
             return new Quote();
         }
     }

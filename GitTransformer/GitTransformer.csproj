@@ -23,9 +23,6 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\images\" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Update="wwwroot\404.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

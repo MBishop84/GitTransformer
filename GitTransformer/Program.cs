@@ -11,10 +11,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services
     .AddScoped<QuotableApiService>()
     .AddScoped<LocalFileService>()
-    .AddKeyedScoped("quotable", (_, _) => new HttpClient
-    {
-        BaseAddress = new Uri("https://api.quotable.io/")
-    })
+    .AddKeyedScoped("quotable", (_, _) => {
+        return new HttpClient()
+        {
+            BaseAddress = new Uri("https://qapi.vercel.app/api/")
+        };})
     .AddKeyedScoped("local", (_, _) => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
     .AddRadzenComponents();
 
