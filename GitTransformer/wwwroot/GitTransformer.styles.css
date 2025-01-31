@@ -1,1 +1,10 @@
 ﻿
+.not-fount-image {
+    background-image: url("images/404Error.png");
+    background-color: var(--rz-base);
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-blend-mode: overlay
+}

@@ -2,7 +2,8 @@
 
 namespace GitTransformer.Services;
 
-public class QuotableApiService([FromKeyedServices("quotable")] HttpClient httpClient)
+public class QuotableApiService(
+    [FromKeyedServices("quotable")] HttpClient httpClient)
 {
     public HttpClient HttpClient { get; } = httpClient;
 
@@ -10,9 +11,8 @@ public class QuotableApiService([FromKeyedServices("quotable")] HttpClient httpC
     {
         try
         {
-            var result = await HttpClient.GetFromJsonAsync<SingleQuotableResponse>("random");
-
-            return new Quote(result);
+            return new Quote(
+                await HttpClient.GetFromJsonAsync<SingleQuotableResponse>("random"));
         }
         catch(Exception ex)
         {
