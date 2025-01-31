@@ -1,10 +1,10 @@
 {
   "mainAssemblyName": "GitTransformer",
   "resources": {
-    "hash": "sha256-bG+a45wwbDkKBtw8FsMOYMNrgWss4ehLUJa/1j5UQDk=",
+    "hash": "sha256-AOKIVZOs0LxaVgRX62E1TfTdmFowrAB2HWPa2K2cq34=",
     "fingerprinting": {
       "BlazorMonaco.ef1a4jimsf.wasm": "BlazorMonaco.wasm",
-      "GitTransformer.ks0my2qwi1.wasm": "GitTransformer.wasm",
+      "GitTransformer.s1zoaagfpu.wasm": "GitTransformer.wasm",
       "Microsoft.AspNetCore.Components.Forms.v4g6f2x2ly.wasm": "Microsoft.AspNetCore.Components.Forms.wasm",
       "Microsoft.AspNetCore.Components.56mjws2uyh.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.rriy5wh6zh.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
@@ -13,7 +13,7 @@
       "Microsoft.Extensions.Configuration.Abstractions.79qfazjlcu.wasm": "Microsoft.Extensions.Configuration.Abstractions.wasm",
       "Microsoft.Extensions.Configuration.Json.lo1485j0el.wasm": "Microsoft.Extensions.Configuration.Json.wasm",
       "Microsoft.Extensions.Configuration.7p4o2tpul4.wasm": "Microsoft.Extensions.Configuration.wasm",
-      "Microsoft.Extensions.DependencyInjection.Abstractions.f87af14hyw.wasm": "Microsoft.Extensions.DependencyInjection.Abstractions.wasm",
+      "Microsoft.Extensions.DependencyInjection.Abstractions.s7s8uiqk9b.wasm": "Microsoft.Extensions.DependencyInjection.Abstractions.wasm",
       "Microsoft.Extensions.DependencyInjection.v0zphyo4y2.wasm": "Microsoft.Extensions.DependencyInjection.wasm",
       "Microsoft.Extensions.Logging.Abstractions.sxddgq7smo.wasm": "Microsoft.Extensions.Logging.Abstractions.wasm",
       "Microsoft.Extensions.Logging.fugc9tzrx1.wasm": "Microsoft.Extensions.Logging.wasm",
@@ -105,7 +105,7 @@
     },
     "assembly": {
       "BlazorMonaco.ef1a4jimsf.wasm": "sha256-Ror3QOMwP8ju3jnvYpqX7VBSOF9xXoK9QrBwKN+EEW8=",
-      "GitTransformer.ks0my2qwi1.wasm": "sha256-hPfhHSUCOSdftnCkR6XTRfeuyL5YlJtVp1kRqUbFqiY=",
+      "GitTransformer.s1zoaagfpu.wasm": "sha256-cDkE2fUxy1V26aonjmhuxIHdfjLrGVxZfGF3rXQbEJk=",
       "Microsoft.AspNetCore.Components.Forms.v4g6f2x2ly.wasm": "sha256-0SHrDs/Le4fU8LzFdlsDvWMQWtqaKSiOhtIAuz7h2xc=",
       "Microsoft.AspNetCore.Components.56mjws2uyh.wasm": "sha256-A1l0/ufwpWrE4KsnauYDe92V2dlOTZdFHij1w954F2M=",
       "Microsoft.AspNetCore.Components.Web.rriy5wh6zh.wasm": "sha256-h8iZ9Red6Ychq/CY0JXsfmuQvhAKo4mm/ozcZXLnXrY=",
@@ -114,7 +114,7 @@
       "Microsoft.Extensions.Configuration.Abstractions.79qfazjlcu.wasm": "sha256-Vaey6KNbQjvV5f4sgTb9Z7DpC7i8fKGaG8HGFaV0O8k=",
       "Microsoft.Extensions.Configuration.Json.lo1485j0el.wasm": "sha256-e7KqvUYccR78CImWVq5kLp49gK7pPVNLuAnrrJ59tXE=",
       "Microsoft.Extensions.Configuration.7p4o2tpul4.wasm": "sha256-yxPiW+l2bwpbqQMt+LqIVyoudbaoHWuYPnD4DDJUr88=",
-      "Microsoft.Extensions.DependencyInjection.Abstractions.f87af14hyw.wasm": "sha256-4Sk9ND1jk/7wGllAoXi/C6fYOVV3xuymI2ITMp7tPPY=",
+      "Microsoft.Extensions.DependencyInjection.Abstractions.s7s8uiqk9b.wasm": "sha256-2EawVrnemPUFgCOxopYJILsm+gPxsg0afVl8NZXMk/Y=",
       "Microsoft.Extensions.DependencyInjection.v0zphyo4y2.wasm": "sha256-j3a87UIwMNlMwZsV9IMHIoLi7nkwWoSa0tUCexWk5OA=",
       "Microsoft.Extensions.Logging.Abstractions.sxddgq7smo.wasm": "sha256-MFB5EtcD1XqYwTheZ3IWOsPfIWutpvK0MzF+GSwrl8I=",
       "Microsoft.Extensions.Logging.fugc9tzrx1.wasm": "sha256-Rw3p7P7cbetsRUa1O+Q7ltdFAmR7kf26guR3xO9aq3s=",
