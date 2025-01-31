@@ -2,6 +2,7 @@ name: Deploy to GitHub Pages
 env:
   NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PUBLISH_DIR: GitTransformer/bin/Release/net9.0/publish/wwwroot
 on:
   push:
     branches: [ master ]
@@ -18,9 +19,12 @@ jobs:
       run: dotnet build -c release
     - name: Publish .NET Core Project
       run: dotnet publish
+    - name: Change base-tag in index.html from / to GitTransformer
+      run: sed -i 's/<base href="\/" \/>/<base href="\/GitTransformer\/" \/>/g' ${{ env.PUBLISH_DIR }}/index.html
+    - name: Add .nojekyll file
+      run: touch ${{ env.PUBLISH_DIR }}/.nojekyll
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.7.2
       with:
-        folder: GitTransformer/bin/Release/net9.0/publish/wwwroot
-    - name: Add .nojekyll file
-      run: touch GitTransformer/bin/Release/net9.0/wwwroot/.nojekyll
+        folder: ${{ env.PUBLISH_DIR }}
+    
