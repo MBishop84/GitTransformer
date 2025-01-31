@@ -359,13 +359,15 @@
         </ChildContent>
     </RadzenFieldset>
 </RadzenStack>
-<script type="text/javascript">
-    function GetHeight() {
+<script>
+     function GetHeight() {
         return window.innerHeight;
     };
+
     function GetWidth() {
         return window.innerWidth;
     };
+
     self.runUserScript = (userCode) => {
         const input = document.getElementById('input').value;
         const myWorker = new Worker('js/JavaScriptWorker.js');

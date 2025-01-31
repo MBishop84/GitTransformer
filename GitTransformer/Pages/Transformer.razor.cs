@@ -41,7 +41,7 @@ namespace GitTransformer.Pages
 
         #endregion
 
-        #region Feilds
+        #region Fields
 
         private readonly string[] _defaultThemes = ["vs-dark", "vs-light"];
         private Bounds _boundEach = new();

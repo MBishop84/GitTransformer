@@ -14,7 +14,7 @@
     {
         <RadzenText TextStyle="TextStyle.Subtitle1">Seeking Wisdom...</RadzenText>
         <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Secondary" Style="width: 50%; height: 3px"
-        Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+                           Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
     }
     else
     {
@@ -24,13 +24,12 @@
     <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" Click="@GetQuote" Text="Refresh Quote" ButtonStyle="ButtonStyle.Secondary" />
 </RadzenStack>
 
-@code{
+@code {
     Quote _quote = new(0, "Seeking Wisdom...", new Author(0, "Unknown"));
     bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        
         await base.OnInitializedAsync();
         await GetQuote();
     }
