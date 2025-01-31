@@ -1,10 +1,10 @@
 {
   "mainAssemblyName": "GitTransformer",
   "resources": {
-    "hash": "sha256-XtdsaTokIRxJjcTUobJryFGQlTMDlnjKMT8FqPYb8m8=",
+    "hash": "sha256-uCtmbpf9LQtVmpaLYIh8AswFwFBoLV6d7K3Sit65tYQ=",
     "fingerprinting": {
       "BlazorMonaco.ef1a4jimsf.wasm": "BlazorMonaco.wasm",
-      "GitTransformer.muqinc9uh0.wasm": "GitTransformer.wasm",
+      "GitTransformer.k1n3z8810w.wasm": "GitTransformer.wasm",
       "Microsoft.AspNetCore.Components.Forms.v4g6f2x2ly.wasm": "Microsoft.AspNetCore.Components.Forms.wasm",
       "Microsoft.AspNetCore.Components.56mjws2uyh.wasm": "Microsoft.AspNetCore.Components.wasm",
       "Microsoft.AspNetCore.Components.Web.rriy5wh6zh.wasm": "Microsoft.AspNetCore.Components.Web.wasm",
@@ -43,6 +43,7 @@
       "System.IO.Pipelines.twix2pm6u4.wasm": "System.IO.Pipelines.wasm",
       "System.Linq.Dynamic.Core.v56k5wbbs8.wasm": "System.Linq.Dynamic.Core.wasm",
       "System.Linq.Expressions.3lxuq11cpx.wasm": "System.Linq.Expressions.wasm",
+      "System.Linq.Parallel.uxtirwswaj.wasm": "System.Linq.Parallel.wasm",
       "System.Linq.Queryable.l7ml2j7mu8.wasm": "System.Linq.Queryable.wasm",
       "System.Linq.u0ijdwagha.wasm": "System.Linq.wasm",
       "System.Memory.00zfd6eyoh.wasm": "System.Memory.wasm",
@@ -50,7 +51,7 @@
       "System.Net.Http.gxcdd1vu92.wasm": "System.Net.Http.wasm",
       "System.Net.Primitives.bg60hpoftx.wasm": "System.Net.Primitives.wasm",
       "System.ObjectModel.qvcsqjp3v3.wasm": "System.ObjectModel.wasm",
-      "System.Private.CoreLib.ltl824i78x.wasm": "System.Private.CoreLib.wasm",
+      "System.Private.CoreLib.jcxaorbpia.wasm": "System.Private.CoreLib.wasm",
       "System.Private.Uri.bii5nodwws.wasm": "System.Private.Uri.wasm",
       "System.Private.Xml.Linq.6d04y9r62v.wasm": "System.Private.Xml.Linq.wasm",
       "System.Private.Xml.fxmkkbho9j.wasm": "System.Private.Xml.wasm",
@@ -99,12 +100,12 @@
       "icudt_no_CJK.lfu7j35m59.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "coreAssembly": {
-      "System.Private.CoreLib.ltl824i78x.wasm": "sha256-hy1dYws493nigvfon+RNG7HX9FDw0ps4oS1qmXP2+dg=",
+      "System.Private.CoreLib.jcxaorbpia.wasm": "sha256-reTd1Ba4YdTcK4+WZTrr1jed8o0IUnI/AQAq5HHU6MY=",
       "System.Runtime.InteropServices.JavaScript.mwa725m7o8.wasm": "sha256-Cjdb0G7x7YHp1aN8K34JIjyB6iQIEsmMfoZJJ71ZuOw="
     },
     "assembly": {
       "BlazorMonaco.ef1a4jimsf.wasm": "sha256-Ror3QOMwP8ju3jnvYpqX7VBSOF9xXoK9QrBwKN+EEW8=",
-      "GitTransformer.muqinc9uh0.wasm": "sha256-bo9OgTNnqzNZH2QhKCmuyUfJipUJ9NSnHSz8oylHrLM=",
+      "GitTransformer.k1n3z8810w.wasm": "sha256-mIXwybn4sZOa329kEkq+l5LmURBrNBMBBVo+jSOeo6U=",
       "Microsoft.AspNetCore.Components.Forms.v4g6f2x2ly.wasm": "sha256-0SHrDs/Le4fU8LzFdlsDvWMQWtqaKSiOhtIAuz7h2xc=",
       "Microsoft.AspNetCore.Components.56mjws2uyh.wasm": "sha256-A1l0/ufwpWrE4KsnauYDe92V2dlOTZdFHij1w954F2M=",
       "Microsoft.AspNetCore.Components.Web.rriy5wh6zh.wasm": "sha256-h8iZ9Red6Ychq/CY0JXsfmuQvhAKo4mm/ozcZXLnXrY=",
@@ -143,6 +144,7 @@
       "System.IO.Pipelines.twix2pm6u4.wasm": "sha256-A/zbBw0DrouhwRThvr8F1IcKa5ApGW5BE01HoHB7igA=",
       "System.Linq.Dynamic.Core.v56k5wbbs8.wasm": "sha256-zY4O55eQ9gC1F0jl4MFsfpX6oCP3eabUwmK1PIrgx3Q=",
       "System.Linq.Expressions.3lxuq11cpx.wasm": "sha256-eeytVMeBkfjfSB8CJQB1C6hBP7jyNU7NjMqXAbeaYco=",
+      "System.Linq.Parallel.uxtirwswaj.wasm": "sha256-EqOZ/Db+7NF0mRKPsga5PCvLayEooF2voRYizIa98SI=",
       "System.Linq.Queryable.l7ml2j7mu8.wasm": "sha256-Tz4ykfsiPVa7zJMXkFeQX7b9Yzw+Bqa7AyM10hJzlH4=",
       "System.Linq.u0ijdwagha.wasm": "sha256-AtEc/Sp47HrAXD2MAa8VhPJ5O78eaDTwPXrThN1b3X4=",
       "System.Memory.00zfd6eyoh.wasm": "sha256-EDxUNMKEEeOndsGmiUq3La1rqwIajfhplrzQ/MiASco=",
