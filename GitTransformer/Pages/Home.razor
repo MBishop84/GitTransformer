@@ -1,5 +1,5 @@
 ﻿@page "/"
-@page "/GitTransformer"
+@page "/GitTransformer/"
 @inject Services.LocalFileService FileService
 @inject Services.QuotableApiService QuotableService
 @using System.Text.Json
@@ -43,7 +43,7 @@
         {
             _quote = await QuotableService.GetRandomQuote();
             if (_quote.Author.Name == "Unknown")
-                _quote = await FileService.GetRandomQuote();
+                _quote = await FileService.GetRandomQuote() ?? new();
         }
         catch (Exception ex)
         {

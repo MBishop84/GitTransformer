@@ -66,14 +66,14 @@ namespace GitTransformer.Pages
             await base.OnInitializedAsync();
             try
             {
-                _monacoThemes = (await ApiClient.GetThemes()).Select(x => x.Value).ToList();
+                _monacoThemes = (await ApiClient.GetMonacoThemes()).Select(x => x.Value).ToList();
                 _monacoThemes.AddRange(_defaultThemes);
                 DialogService.OnClose += DialogClose;
             }
             catch (Exception ex)
             {
                 _input = ex.Message;
-                _output = ex.Message;
+                _output = ex.ToString();
             }
         }
 
@@ -100,7 +100,7 @@ namespace GitTransformer.Pages
             {
                 await ChangeTheme(theme);
             }
-            _jsTransforms = await ApiClient.GetJsTransforms;
+            _jsTransforms = await ApiClient.GetFileTransforms();
             var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
             if (!string.IsNullOrEmpty(localTransforms))
             {

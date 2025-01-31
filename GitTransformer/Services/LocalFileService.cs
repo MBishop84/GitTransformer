@@ -1,4 +1,5 @@
 ﻿using BlazorMonaco.Editor;
+using Radzen;
 using System.Net.Http.Json;
 
 namespace GitTransformer.Services;
@@ -10,11 +11,20 @@ public class LocalFileService
     private readonly Dictionary<string, string> _themes = [];
     private readonly List<JsTransform?> _jsTransforms = [];
     private readonly Task<Quote?> PopulateQuotes;
-    public Task<List<JsTransform?>> GetJsTransforms { get; }
+    private readonly Task<List<JsTransform?>> GetJsTransforms;
+    private readonly Task<Dictionary<string, string>> GetThemes;
 
     public LocalFileService([FromKeyedServices("local")] HttpClient httpClient)
     {
         _httpClient = httpClient;
+        GetThemes = Task.Run(async () =>
+        {
+            var themes = await _httpClient.GetFromJsonAsync<Dictionary<string, string>>("themes/themelist.json");
+            if(themes is not null)
+                foreach (var theme in themes)
+                    _themes.TryAdd(theme.Key, theme.Value);
+            return _themes;
+        });
         PopulateQuotes = Task.Run(async () =>
         {
             await foreach (var quote in _httpClient.GetFromJsonAsAsyncEnumerable<Quote>("data/quotes.json"))
@@ -37,14 +47,13 @@ public class LocalFileService
             return await PopulateQuotes;
     }
 
-    public async Task<Dictionary<string, string>> GetThemes()
+    public async Task<Dictionary<string, string>> GetMonacoThemes()
     {
-        if (_themes.Count > 0)
+        if (GetThemes.IsCompleted)
             return _themes;
         else
         {
-            await foreach (var theme in _httpClient.GetFromJsonAsAsyncEnumerable<KeyValuePair<string, string>>("data/themes.json"))
-                _themes.TryAdd(theme.Key, theme.Value);
+            await GetThemes;
             return _themes;
         }
     }
@@ -52,11 +61,14 @@ public class LocalFileService
     public Task<StandaloneThemeData?> GetStandaloneThemeData(string theme)
         => _httpClient.GetFromJsonAsync<StandaloneThemeData>($"themes/{theme}.json");
 
-    public async Task<IEnumerable<JsTransform?>> GetFileTransforms()
+    public async Task<List<JsTransform?>> GetFileTransforms()
     {
-        if ((_jsTransforms?.Count ?? 0) > 0)
-            return _jsTransforms!;
+        if (GetJsTransforms.IsCompleted)
+            return _jsTransforms;
         else
-            return await GetJsTransforms;
+        {
+            await GetJsTransforms;
+            return _jsTransforms;
+        }
     }
 }
