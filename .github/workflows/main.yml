@@ -17,7 +17,6 @@ jobs:
         dotnet-version: '9.0.x'
     - name: Install wasm-tools
       run: dotnet workload install wasm-tools
-    - name: Publish .NET Core Project
     - name: Build
       run: dotnet build -c release
     - name: Publish .NET Core Project
