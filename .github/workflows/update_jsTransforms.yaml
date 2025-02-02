@@ -1,0 +1,28 @@
+name: Update JsTransforms JSON
+on:
+  repository_dispatch:
+    types: [update_data]
+
+jobs:
+  update_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Update JsTransform
+        run: 
+          echo "${{ github.event.inputs.data }}" > GitTransformer/wwwroot/data/JsTransforms.json.tmp
+          mv GitTransformer/wwwroot/data/JsTransforms.json.tmp GitTransformer/wwwroot/data/JsTransforms.json
+
+      - name: Get Filtered branches
+        uses: cyberdantes/filter-branches@1.0.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_BRANCH_STARTS_WITH: updates/JsTransforms
+        
+      - name: Git Commit and Push
+        uses: github-actions-x/commit@v2.9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          push-branch: updates/JsTransforms
