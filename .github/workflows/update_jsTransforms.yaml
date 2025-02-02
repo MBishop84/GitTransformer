@@ -19,7 +19,7 @@ jobs:
         uses: cyberdantes/filter-branches@1.0.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_BRANCH_STARTS_WITH: updates/JsTransforms
+          TARGET_BRANCH_STARTS_WITH: updates/
         
       - name: Git Commit and Push
         uses: github-actions-x/commit@v2.9
