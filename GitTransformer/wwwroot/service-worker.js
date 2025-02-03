@@ -18,3 +18,13 @@ self.addEventListener("DOMContentLoaded", (event) => {
     themeLink.href = `_content/Radzen.Blazor/css/${theme}.css`;
 });
 
+Blazor.addEventListener('SetAppData', {
+    bubbles: true,
+    browserEventName: "load",
+    createEventArgs: (event) => {
+        return {
+            WindowHeight: window.innerHeight,
+            WindowWidth: window.innerWidth
+        };
+    }
+});
