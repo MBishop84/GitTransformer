@@ -30,7 +30,7 @@ namespace GitTransformer.Pages
         [Inject]
         private LocalFileService ApiClient { get; init; } = null!;
         [Inject]
-        private IConfiguration Configuration { get; init; } = null!;
+        private AppData AppData { get; init; } = null!;
 
         #endregion
 
@@ -48,19 +48,22 @@ namespace GitTransformer.Pages
         private Bounds _boundAll = new();
         private List<string> _monacoThemes = [];
         private List<JsTransform?> _jsTransforms = [];
-        private int _height = 1000, _width = 1000;
         private bool _dynamic, _sort, _dupes;
-        private string? _input, _output, _split, _join,
-            _monacoTheme, _entry;
+        private string? _input, _output, _split, _join, _entry;
 
         #endregion
 
         #region Methods
 
+        protected override void OnInitialized()
+        {
+            base.OnInitialized();
+            AppData.OnChange += StateHasChanged;
+        }
+
         /// <summary>
         /// Overrides the default behavior of OnInitializedAsync
         /// </summary>
-        /// <returns></returns>
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
@@ -80,28 +83,18 @@ namespace GitTransformer.Pages
         /// <summary>
         /// Overrides the default behavior of the OnAfterRenderAsync method.
         /// </summary>
-        /// <param name="firstRender"></param>
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!firstRender)
                 return;
 
-            _height = await JS.InvokeAsync<int>("GetHeight");
-            _width = await JS.InvokeAsync<int>("GetWidth");
-            if (_height > _width)
+            await ChangeTheme(AppData.MonacoTheme);
+            if (AppData.WindowHeight > AppData.WindowWidth)
                 Orientation = Orientation.Vertical;
 
-            var theme = await JS.InvokeAsync<string>("localStorage.getItem", "MonacoTheme");
-            if (string.IsNullOrEmpty(theme))
-            {
-                await ChangeTheme("vs-dark");
-            }
-            else
-            {
-                await ChangeTheme(theme);
-            }
             _jsTransforms = await ApiClient.GetFileTransforms();
             var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
+
             if (!string.IsNullOrEmpty(localTransforms))
             {
                 var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
@@ -200,9 +193,6 @@ namespace GitTransformer.Pages
                     break;
                 case nameof(_boundEach):
                     _boundEach = new();
-                    break;
-                case nameof(_monacoTheme):
-                    _monacoTheme = null;
                     break;
                 case nameof(_entry):
                     _entry = null;
@@ -522,15 +512,14 @@ namespace GitTransformer.Pages
         /// <param name="theme"></param>
         private async Task ChangeTheme(string theme)
         {
-            _monacoTheme = theme;
+            AppData.MonacoTheme = theme;
             try
             {
-                var myTheme = theme;
+                var myTheme = theme.Replace(" ", "");
                 if (!_defaultThemes.Contains(theme))
                 {
-                    await Global.DefineTheme(JS, "thisTheme",
+                    await Global.DefineTheme(JS, myTheme,
                         await ApiClient.GetStandaloneThemeData(theme));
-                    myTheme = "thisTheme";
                 }
 
                 await Global.SetTheme(JS, myTheme);

@@ -9,6 +9,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services
+    .AddScoped<AppData>()
     .AddSingleton<QuotableApiService>()
     .AddSingleton<LocalFileService>()
     .AddKeyedSingleton("quotable", (_, _) => new HttpClient()
