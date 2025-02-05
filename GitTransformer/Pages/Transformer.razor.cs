@@ -1,14 +1,15 @@
 ﻿using BlazorMonaco.Editor;
 using GitTransformer.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Primitives;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Radzen;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Xml;
 
 namespace GitTransformer.Pages
@@ -67,7 +68,7 @@ namespace GitTransformer.Pages
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            if(AppData.LoadingTask != null && !AppData.LoadingTask.IsCompleted)
+            if (AppData.LoadingTask != null && !AppData.LoadingTask.IsCompleted)
                 await AppData.LoadingTask;
             try
             {
@@ -282,47 +283,39 @@ namespace GitTransformer.Pages
         }
 
         /// <summary>
-        /// Converts a JSON object to a C# class.
+        /// Converts a JSON object to C# records.
         /// </summary>
         /// <remarks>Useful for making objects from api responses.</remarks>
-        /// <exception cref="ArgumentException"></exception>
-        private async Task JsonToClass()
+        private async Task JsonToRecords()
         {
             try
             {
-                if (string.IsNullOrEmpty(_input))
-                    throw new ArgumentException("Input is Empty");
+                ArgumentNullException.ThrowIfNullOrEmpty(_input);
+
                 if (!_input.StartsWith('{'))
                     _input = $"{{{_input}}}";
-                dynamic? jsonObject = System.Text.Json.JsonSerializer.Deserialize<dynamic>(_input);
-                if (jsonObject is null) return;
-                var result = new StringBuilder();
-                foreach (JsonProperty i in jsonObject.EnumerateObject())
+                var records = new List<KeyValuePair<string, string>>();
+                var jsonObject = JObject.Parse(_input.Replace(" ", ""));
+
+                ArgumentNullException.ThrowIfNullOrEmpty(jsonObject?.ToString());
+
+                var rootRecord = new StringBuilder();
+                rootRecord.Append("public record Root(\n");
+                foreach (var property in jsonObject.Properties())
                 {
-                    var name = char.ToUpper(i.Name[0]) + i.Name[1..];
-                    result.AppendFormat("///<summary>\n/// Gets/Sets the {0}.\n///</summary>\n", name);
-                    result.Append(i.Value.ValueKind switch
+                    rootRecord.Append(property.Value.Type switch
                     {
-                        JsonValueKind.Number =>
-                            $"public int {name} {{ get; set; }}\n\n",
-                        JsonValueKind.String => i.Value switch
-                        {
-                            var b when DateTime.TryParse(b.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var _) =>
-                                $"public DateTime? {name} {{ get; set; }}\n\n",
-                            _ => $"public string {name} {{ get; set; }} = string.Empty;\n\n"
-                        },
-                        JsonValueKind.True or JsonValueKind.False =>
-                            $"public bool {name} {{ get; set; }}\n\n",
-                        JsonValueKind.Array =>
-                            $"public ICollection<{name}> {name} {{ get; set; }}\n\n",
-                        JsonValueKind.Object =>
-                            $"public {name} {name} {{ get; set; }}\n\n",
-                        JsonValueKind.Undefined => string.Empty,
-                        JsonValueKind.Null => string.Empty,
-                        _ => string.Empty
+                        JTokenType.Object => $"{property.Name} {property.Name}, ",
+                        JTokenType.Array => $"IEnumerable<{GetPropertyType(property.Value)}> {property.Name}, ",
+                        _ => $"{GetPropertyType(property.Value)} {property.Name}, "
                     });
+                    records.AddRange(ProcessProperty(property));
                 }
-                _output = result.ToString();
+                rootRecord.Remove(rootRecord.Length - 2, 2);
+                rootRecord.Append(");\n");
+
+                records.Add(new("Root", rootRecord.ToString()));
+                _output = string.Join("\n", records.Select(x => x.Value).Reverse());
             }
             catch (Exception ex)
             {
@@ -340,6 +333,63 @@ namespace GitTransformer.Pages
                     });
             }
         }
+
+        private static List<KeyValuePair<string, string>> ProcessProperty(JProperty property)
+        {
+            var records = new List<KeyValuePair<string, string>>();
+            var recordName = property.Name;
+            var fields = new List<string>();
+
+            foreach (var field in property.Value.Children<JProperty>())
+            {
+                if (field.Value.Type == JTokenType.Object)
+                {
+                    fields.Add($"{field.Name} {field.Name}");
+                    records.AddRange(ProcessProperty(field));
+                }
+                else if (field.Value.Type == JTokenType.Array)
+                {
+                    var first = (field.Value as JArray)!.FirstOrDefault();
+                    if (first == null)
+                        fields.Add($"IEnumerable<{field.Name}> {field.Name}");
+                    else if (first.Type == JTokenType.Object)
+                    {
+                        fields.Add($"IEnumerable<{field.Name}> {field.Name}");
+                        records.AddRange(ProcessProperty(new JProperty(field.Name, first)));
+                    }
+                    else
+                    {
+                        fields.Add($"IEnumerable<{GetPropertyType(first)}> {field.Name}");
+                    }
+                }
+                else
+                {
+                    fields.Add($"{GetPropertyType(field.Value)} {field.Name}");
+                }
+            }
+
+            var record = fields.Count > 0
+                ? $"public record {recordName}({string.Join(", ", fields)});"
+                : $"public record {recordName}({GetPropertyType(property)} Value);";
+
+            records.Add(new(recordName, record));
+
+            return records;
+        }
+
+        private static string GetPropertyType(JToken token)
+            => token.Type switch
+            {
+                JTokenType.Integer => "int",
+                JTokenType.Float => "double",
+                JTokenType.Boolean => "bool",
+                JTokenType.Date => "DateTime",
+                JTokenType.Bytes => "byte[]",
+                JTokenType.Guid => "Guid",
+                JTokenType.TimeSpan => "TimeSpan",
+                JTokenType.Object => token.Path.Split(".")[^1],
+                _ => "string"
+            };
 
         /// <summary>
         /// Converts XML to a C# class.

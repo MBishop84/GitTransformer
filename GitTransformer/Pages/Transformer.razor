@@ -59,11 +59,11 @@
                                      Gap="1px">
                             <RadzenFormField Text="Split"
                                              Variant="Variant.Outlined"
-                                             Style="width: 100%">
+                                             class="rz-w-100">
                                 <RadzenRadioButtonList @bind-Value="@_split"
                                                        TValue="string"
                                                        Orientation="Orientation.Vertical"
-                                                       class="rz-mx-2">
+                                                       class="rx-mx-2">
                                     <Items>
                                         <RadzenRadioButtonListItem Text="at" Value=@(" at ") />
                                         <RadzenRadioButtonListItem Text="," Value=@(",") />
@@ -111,7 +111,8 @@
                                              Gap="1px">
                                     <RadzenRadioButtonList @bind-Value="@_boundEach"
                                                            TValue="Bounds"
-                                                           Orientation="Orientation.Vertical">
+                                                           Orientation="Orientation.Vertical"
+                                                           class="rz-mx-2">
                                         <Items>
                                             <RadzenRadioButtonListItem Text="@("[...]")"
                                                                        Value=@(new Bounds("[", "]")) />
@@ -223,8 +224,8 @@
                                           Style="width: 33%" />
                             <RadzenButton Variant="Variant.Outlined"
                                           Shade="Shade.Darker"
-                                          Click="@JsonToClass"
-                                          Text="Json->Class"
+                                          Click="@JsonToRecords"
+                                          Text="Json->Records"
                                           ButtonStyle="ButtonStyle.Primary"
                                           Style="width: 33%" />
                             <RadzenButton Variant="Variant.Outlined"
@@ -293,7 +294,7 @@
                                           Click="@SaveJs"
                                           Text="Save"
                                           Style="width: 30%; max-width:200px"
-                                          ButtonStyle="ButtonStyle.Secondary"/>
+                                          ButtonStyle="ButtonStyle.Secondary" />
                             <RadzenDropDown Data="@_monacoThemes"
                                             TValue="string"
                                             Value="@AppData.MonacoTheme"
