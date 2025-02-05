@@ -1,0 +1,72 @@
+﻿
+self.GetHeight = () => window.innerHeight;
+self.GetWidth = () => window.innerWidth;
+
+self.GetSetTheme = () => {
+    let theme = localStorage.getItem('RadzenTheme');
+    if (!theme) {
+        const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+        if (darkThemeMq.matches) {
+            theme = 'dark';
+        } else {
+            theme = 'default';
+        }
+        RunWorkerScript(localStorage.setItem('RadzenTheme', theme));
+    }
+    let themeLink = document.getElementById('theme');
+    themeLink.href = `_content/Radzen.Blazor/css/${theme}.css`;
+    return theme;
+}
+
+let lastScrollHeight = 0;
+self.SetScrollEvent = () => {
+    const header = document.getElementById('site_header');
+    const body = document.getElementById('site_body');
+    body.addEventListener('scroll', (event) => {
+        header.style.display = lastScrollHeight < event.target.scrollTop ? "none" : "block";
+        lastScrollHeight = event.target.scrollTop;
+    });
+}
+
+self.RunUserScript = (userCode) => {
+    const input = document.getElementById('input').value;
+    const myWorker = new Worker('js/userScriptWorker.js');
+
+    const timer = setTimeout(() => {
+        myWorker.terminate();
+        alert('Script took too long to execute. Terminated.');
+    }, 1000);
+
+    myWorker.onmessage = (e) => {
+        document.getElementById('output').value = `${e.data}`;
+        clearTimeout(timer)
+    };
+
+    myWorker.onerror = (e) => {
+        myWorker.terminate();
+        alert(e.data);
+    };
+
+    myWorker.postMessage({ code: userCode, input: input });
+};
+
+self.RunWorkerScript = (workerScript) => {
+    const myWorker = new Worker('service-worker.js');
+
+    const timer = setTimeout(() => {
+        myWorker.terminate();
+        alert('Script took too long to execute. Terminated.');
+    }, 1000);
+
+    myWorker.onmessage = (e) => {
+        clearTimeout(timer)
+        return e.data
+    };
+
+    myWorker.onerror = (e) => {
+        myWorker.terminate();
+        alert(e.data);
+    };
+
+    myWorker.postMessage({ input: workerScript });
+};
