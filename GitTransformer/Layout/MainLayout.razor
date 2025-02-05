@@ -3,6 +3,7 @@
 @inject AppData AppData
 @inject IJSRuntime JS
 
+
 <RadzenLayout>
     <RadzenHeader id="site_header">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
@@ -20,7 +21,7 @@
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Style="height: 20px">
             <RadzenLink Path="https://www.radzen.com" Text="Radzen" target="_blank">
                 <RadzenImage Style="height: 20px"
-                             Path="https://www.radzen.com/assets/radzen-logo-top-b2d6e9dcacf7d344bbab515b8748c5f4d702c6c5bfc349bd9ff9003016a3a6ee.svg" />
+                Path="https://www.radzen.com/assets/radzen-logo-top-b2d6e9dcacf7d344bbab515b8748c5f4d702c6c5bfc349bd9ff9003016a3a6ee.svg" />
             </RadzenLink>
             <RadzenLink Path="https://github.com/MBishop84/GitTransformer.git" Text="This Repo" target="_blank" Style="color: var(--rz-text-primary-color)">
                 <RadzenIcon Icon="code" IconColor="@Colors.Primary" />
@@ -29,36 +30,9 @@
         </RadzenStack>
     </RadzenFooter>
 </RadzenLayout>
-<RadzenComponents />
-<script>
-    function GetHeight(){ return window.innerHeight; }
-    function GetWidth(){ return window.innerWidth; }
 
-    function GetSetTheme() {
-    let theme = localStorage.getItem('RadzenTheme');
-    if (!theme) {
-    const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
-    if (darkThemeMq.matches) {
-    theme = 'dark';
-    } else {
-    theme = 'default';
-    }
-    localStorage.setItem('RadzenTheme', theme);
-    }
-    let themeLink = document.getElementById('theme');
-    themeLink.href = `_content/Radzen.Blazor/css/${theme}.css`;
-    return theme;
-    }
-    let lastScrollHeight = 0;
-    function SetScrollEvent(){
-    const header = document.getElementById('site_header');
-    const body = document.getElementById('site_body');
-    body.addEventListener('scroll', (event) => {
-    header.style.display = lastScrollHeight < event.target.scrollTop ? "none" : "block";
-    lastScrollHeight = event.target.scrollTop;
-    });
-    }
-</script>
+<RadzenComponents />
+
 
 @code {
     bool _sidebar1Expanded = true;
@@ -75,17 +49,16 @@
         if (!firstRender)
             return;
 
-        await SetAppDataAsync();
+        AppData.LoadingTask = SetAppDataAsync();
     }
 
     async Task SetAppDataAsync()
     {
-        await Task.WhenAll(
-            Task.Run(async () => AppData.WindowHeight = await JS.InvokeAsync<int>("GetHeight")),
-            Task.Run(async () => AppData.WindowWidth = await JS.InvokeAsync<int>("GetWidth")),
-            Task.Run(async () => AppData.SiteTheme = await JS.InvokeAsync<string>("GetSetTheme")),
-            Task.Run(async () => AppData.MonacoTheme = await JS.InvokeAsync<string>("localStorage.getItem", "MonacoTheme")),
-            Task.Run(async () => await JS.InvokeVoidAsync("SetScrollEvent")));
+        AppData.SiteTheme = await JS.InvokeAsync<string>("GetSetTheme");
+        AppData.WindowHeight = await JS.InvokeAsync<int>("GetHeight");
+        AppData.WindowWidth = await JS.InvokeAsync<int>("GetWidth");
+        AppData.MonacoTheme = await JS.InvokeAsync<string>("localStorage.getItem", "MonacoTheme");
+        await JS.InvokeVoidAsync("SetScrollEvent");
 
         radzenFooter.Visible = AppData.WindowWidth > AppData.WindowHeight;
         await InvokeAsync(StateHasChanged);

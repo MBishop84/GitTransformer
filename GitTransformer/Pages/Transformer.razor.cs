@@ -67,6 +67,8 @@ namespace GitTransformer.Pages
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            if(AppData.LoadingTask != null && !AppData.LoadingTask.IsCompleted)
+                await AppData.LoadingTask;
             try
             {
                 _monacoThemes = (await ApiClient.GetMonacoThemes()).Select(x => x.Value).ToList();
@@ -551,7 +553,7 @@ namespace GitTransformer.Pages
                 if (!userCode.Contains("input"))
                     throw new ArgumentException("You must use the input.");
 
-                await JS.InvokeVoidAsync("runUserScript", userCode);
+                await JS.InvokeVoidAsync("RunUserScript", userCode);
             }
             catch (Exception ex)
             {
