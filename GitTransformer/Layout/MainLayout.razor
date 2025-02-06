@@ -43,9 +43,8 @@
         AppData.OnChange += StateHasChanged;
     }
 
-    protected async override Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
         if (!firstRender)
             return;
 
