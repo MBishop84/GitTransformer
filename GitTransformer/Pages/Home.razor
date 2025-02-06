@@ -2,6 +2,8 @@
 @page "/GitTransformer/"
 @inject Services.LocalFileService FileService
 @inject Services.QuotableApiService QuotableService
+@inject AppData AppData
+@inject IJSRuntime JS
 @using System.Text.Json
 @rendermode InteractiveWebAssembly
 
@@ -14,7 +16,7 @@
     {
         <RadzenText TextStyle="TextStyle.Subtitle1">Seeking Wisdom...</RadzenText>
         <RadzenProgressBar ProgressBarStyle="ProgressBarStyle.Secondary" Style="width: 50%; height: 3px"
-                           Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+        Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
     }
     else
     {
@@ -28,9 +30,18 @@
     Quote _quote = new(0, "Seeking Wisdom...", new Author(0, "Unknown"));
     bool _loading = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await base.OnInitializedAsync();
+        AppData.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (!AppData.IsLoaded)
+            await AppData.LoadAsync(JS);
         await GetQuote();
     }
 

@@ -31,7 +31,7 @@ namespace GitTransformer.Pages
         [Inject]
         private LocalFileService ApiClient { get; init; } = null!;
         [Inject]
-        private AppData AppData { get; init; } = null!;
+        private AppData AppData { get; set; } = null!;
 
         #endregion
 
@@ -58,29 +58,8 @@ namespace GitTransformer.Pages
 
         protected override void OnInitialized()
         {
-            base.OnInitialized();
             AppData.OnChange += StateHasChanged;
-        }
-
-        /// <summary>
-        /// Overrides the default behavior of OnInitializedAsync
-        /// </summary>
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-            if (AppData.LoadingTask != null && !AppData.LoadingTask.IsCompleted)
-                await AppData.LoadingTask;
-            try
-            {
-                _monacoThemes = (await ApiClient.GetMonacoThemes()).Select(x => x.Value).ToList();
-                _monacoThemes.AddRange(_defaultThemes);
-                DialogService.OnClose += DialogClose;
-            }
-            catch (Exception ex)
-            {
-                _input = ex.Message;
-                _output = ex.ToString();
-            }
+            DialogService.OnClose += DialogClose;
         }
 
         /// <summary>
@@ -90,21 +69,42 @@ namespace GitTransformer.Pages
         {
             if (!firstRender)
                 return;
-
-            await ChangeTheme(AppData.MonacoTheme);
-            if (AppData.WindowHeight > AppData.WindowWidth)
-                Orientation = Orientation.Vertical;
-
-            _jsTransforms = await ApiClient.GetFileTransforms();
-            var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
-
-            if (!string.IsNullOrEmpty(localTransforms))
+            try
             {
-                var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
-                _jsTransforms.AddRange(items.Where(x => !_jsTransforms.Select(y => y?.Name).Contains(x.Name)));
-            }
+                if (!AppData.IsLoaded)
+                    await AppData.LoadAsync(JS);
 
-            await InvokeAsync(StateHasChanged);
+                if (AppData.WindowHeight > AppData.WindowWidth)
+                    Orientation = Orientation.Vertical;
+
+                _jsTransforms = await ApiClient.GetFileTransforms();
+                var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
+
+                if (!string.IsNullOrEmpty(localTransforms))
+                {
+                    var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
+                    _jsTransforms.AddRange(items.Where(x => !_jsTransforms.Select(y => y?.Name).Contains(x.Name)));
+                }
+                _monacoThemes = (await ApiClient.GetMonacoThemes()).Select(x => x.Value).ToList();
+                _monacoThemes.AddRange(_defaultThemes);
+                await ChangeTheme(AppData.MonacoTheme);
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                await DialogService.OpenAsync<CustomDialog>(
+                    "OnAfterRenderAsync Error",
+                    new Dictionary<string, object>
+                    {
+                        { "Type", Enums.DialogTypes.Error },
+                        { "Message", $"{ex}" }
+                    },
+                    new DialogOptions()
+                    {
+                        Width = "max-content",
+                        Height = "50vh"
+                    });
+            }
         }
 
         private void DialogClose(dynamic entry)

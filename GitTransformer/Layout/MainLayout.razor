@@ -1,7 +1,5 @@
 ﻿@inherits LayoutComponentBase
 @rendermode InteractiveWebAssembly
-@inject AppData AppData
-@inject IJSRuntime JS
 
 
 <RadzenLayout>
@@ -17,7 +15,7 @@
     <RadzenBody id="site_body">
         @Body
     </RadzenBody>
-    <RadzenFooter @ref="radzenFooter">
+    <RadzenFooter id="site_footer">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Style="height: 20px">
             <RadzenLink Path="https://www.radzen.com" Text="Radzen" target="_blank">
                 <RadzenImage Style="height: 20px"
@@ -36,30 +34,4 @@
 
 @code {
     bool _sidebar1Expanded = true;
-    RadzenFooter? radzenFooter;
-
-    protected override void OnInitialized()
-    {
-        AppData.OnChange += StateHasChanged;
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (!firstRender)
-            return;
-
-        AppData.LoadingTask = SetAppDataAsync();
-    }
-
-    async Task SetAppDataAsync()
-    {
-        AppData.SiteTheme = await JS.InvokeAsync<string>("GetSetTheme");
-        AppData.WindowHeight = await JS.InvokeAsync<int>("GetHeight");
-        AppData.WindowWidth = await JS.InvokeAsync<int>("GetWidth");
-        AppData.MonacoTheme = await JS.InvokeAsync<string>("localStorage.getItem", "MonacoTheme");
-        await JS.InvokeVoidAsync("SetScrollEvent");
-
-        radzenFooter.Visible = AppData.WindowWidth > AppData.WindowHeight;
-        await InvokeAsync(StateHasChanged);
-    }
 }

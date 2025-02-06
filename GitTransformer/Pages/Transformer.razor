@@ -59,11 +59,11 @@
                                      Gap="1px">
                             <RadzenFormField Text="Split"
                                              Variant="Variant.Outlined"
-                                             class="rz-w-100">
+                                             Style="width: 100%">
                                 <RadzenRadioButtonList @bind-Value="@_split"
                                                        TValue="string"
                                                        Orientation="Orientation.Vertical"
-                                                       class="rx-mx-2">
+                                                       class="rz-mx-2">
                                     <Items>
                                         <RadzenRadioButtonListItem Text="at" Value=@(" at ") />
                                         <RadzenRadioButtonListItem Text="," Value=@(",") />
@@ -268,7 +268,7 @@
                                  Gap="2px">
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Stretch"
-                                     JustifyContent="JustifyContent.End"
+                                     JustifyContent="JustifyContent.Stretch"
                                      Wrap="FlexWrap.Wrap"
                                      Style="width: 100%"
                                      Gap="5px">

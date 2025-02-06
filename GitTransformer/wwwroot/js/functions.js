@@ -1,6 +1,8 @@
 ﻿
 self.GetHeight = () => window.innerHeight;
 self.GetWidth = () => window.innerWidth;
+self.GetMonacoTheme = () => localStorage.getItem('MonacoTheme');
+self.HideFooter = () => document.getElementById('site_footer').style.display = 'none';
 
 self.GetSetTheme = () => {
     let theme = localStorage.getItem('RadzenTheme');
@@ -11,7 +13,7 @@ self.GetSetTheme = () => {
         } else {
             theme = 'default';
         }
-        RunWorkerScript(localStorage.setItem('RadzenTheme', theme));
+        localStorage.setItem('RadzenTheme', theme);
     }
     let themeLink = document.getElementById('theme');
     themeLink.href = `_content/Radzen.Blazor/css/${theme}.css`;
@@ -20,11 +22,16 @@ self.GetSetTheme = () => {
 
 let lastScrollHeight = 0;
 self.SetScrollEvent = () => {
-    const header = document.getElementById('site_header');
     const body = document.getElementById('site_body');
     body.addEventListener('scroll', (event) => {
-        header.style.display = lastScrollHeight < event.target.scrollTop ? "none" : "block";
-        lastScrollHeight = event.target.scrollTop;
+        if ((lastScrollHeight + 100) < event.target.scrollTop) {
+            document.getElementById('site_header').style.display = "none"
+            lastScrollHeight = event.target.scrollTop;
+        }
+        else if ((lastScrollHeight - 100) > event.target.scrollTop) {
+            document.getElementById('site_header').style.display = "block"
+            lastScrollHeight = event.target.scrollTop;
+        }
     });
 }
 

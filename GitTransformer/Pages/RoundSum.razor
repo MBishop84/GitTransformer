@@ -2,31 +2,40 @@
 @page "/GitTransformer/round_sum"
 @rendermode InteractiveWebAssembly
 
-<RadzenCard class="rz-mb-6">
-    <RadzenStack Orientation="Orientation.Horizontal"
-                 AlignItems="AlignItems.Center"
-                 JustifyContent="JustifyContent.Center"
-                 Wrap="FlexWrap.Wrap" Gap="4px">
-        <RadzenFormField Text="Players" Variant="Variant.Outlined">
-            <RadzenNumeric @bind-Value="@_cols"
-                           TValue="int"
-                           TextAlign="TextAlign.Center"
-                           Change="@(_ => ChangeSetup())" />
-        </RadzenFormField>
-        <RadzenFormField Text="Rounds" Variant="Variant.Outlined">
-            <RadzenNumeric @bind-Value="@_rows"
-                           TValue="int"
-                           TextAlign="TextAlign.Center"
-                           Change="@(_ => ChangeSetup())" />
-        </RadzenFormField>
-        <RadzenButton Variant="Variant.Outlined"
-                      Shade="Shade.Darker"
-                      Click="@(_ => ClearScores())"
-                      Text="Clear Scores"
-                      ButtonStyle="ButtonStyle.Primary"
-                      class="rz-mt-3" />
-    </RadzenStack>
-</RadzenCard>
+<RadzenPanel AllowCollapse="true" class="rz-my-2 rz-mx-auto" Style="width: 70%;">
+    <HeaderTemplate>
+        <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-display-flex rz-align-items-center rz-m-0">
+            <RadzenIcon Icon="settings" class="rz-me-1" /><b>Settings</b>
+        </RadzenText>
+    </HeaderTemplate>
+    <ChildContent>
+        <RadzenCard>
+            <RadzenStack Orientation="Orientation.Horizontal"
+                         AlignItems="AlignItems.Center"
+                         JustifyContent="JustifyContent.Center"
+                         Wrap="FlexWrap.Wrap" Gap="4px">
+                <RadzenFormField Text="Players" Variant="Variant.Outlined">
+                    <RadzenNumeric @bind-Value="@_cols"
+                                   TValue="int"
+                                   TextAlign="TextAlign.Center"
+                                   Change="@(_ => ChangeSetup())" />
+                </RadzenFormField>
+                <RadzenFormField Text="Rounds" Variant="Variant.Outlined">
+                    <RadzenNumeric @bind-Value="@_rows"
+                                   TValue="int"
+                                   TextAlign="TextAlign.Center"
+                                   Change="@(_ => ChangeSetup())" />
+                </RadzenFormField>
+                <RadzenButton Variant="Variant.Outlined"
+                              Shade="Shade.Darker"
+                              Click="@(_ => ClearScores())"
+                              Text="Clear Scores"
+                              ButtonStyle="ButtonStyle.Primary"
+                              class="rz-mt-3" />
+            </RadzenStack>
+        </RadzenCard>
+    </ChildContent>
+</RadzenPanel>
 <RadzenStack Orientation="Orientation.Horizontal"
              AlignItems="AlignItems.Center"
              JustifyContent="JustifyContent.Center"
