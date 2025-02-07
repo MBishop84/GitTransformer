@@ -48,15 +48,15 @@ public class LocalFileService
         }
     }
 
-    public async Task<Dictionary<string, string>> GetMonacoThemes()
+    public async Task<List<string>> GetMonacoThemes()
     {
         var thisTask = StartupTasks["GetThemes"];
         if (thisTask.IsCompleted)
-            return _themes;
+            return _themes.Select(x => x.Value).ToList();
         else
         {
             await thisTask;
-            return _themes;
+            return _themes.Select(x => x.Value).ToList();
         }
     }
 

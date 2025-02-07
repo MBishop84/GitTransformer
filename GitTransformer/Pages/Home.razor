@@ -20,7 +20,7 @@
     }
     else
     {
-        <RadzenText TextStyle="TextStyle.Subtitle1" Style="max-width: 600px">@_quote.Text</RadzenText>
+        <RadzenText TextStyle="TextStyle.Subtitle1" Style="textStyle">@_quote.Text</RadzenText>
         <RadzenText TextStyle="TextStyle.Subtitle2">@_quote.Author.Name</RadzenText>
     }
     <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" Click="@GetQuote" Text="Refresh Quote" ButtonStyle="ButtonStyle.Secondary" />
@@ -29,6 +29,7 @@
 @code {
     Quote _quote = new(0, "Seeking Wisdom...", new Author(0, "Unknown"));
     bool _loading = true;
+    string textStyle = "max-width: 600px; width: 70%;";
 
     protected override void OnInitialized()
     {
@@ -52,8 +53,10 @@
         try
         {
             _quote = await QuotableService.GetRandomQuote();
-            if (_quote.Author.Name == "Unknown")
+            if (_quote.Author.Name == "Unknown"){
+                textStyle += "color: var(--rz-danger)"; 
                 _quote = await FileService.GetRandomQuote() ?? new();
+            }
         }
         catch (Exception ex)
         {

@@ -1,7 +1,6 @@
 ﻿using BlazorMonaco.Editor;
 using GitTransformer.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Primitives;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -29,7 +28,7 @@ namespace GitTransformer.Pages
         [Inject]
         private DialogService DialogService { get; init; } = null!;
         [Inject]
-        private LocalFileService ApiClient { get; init; } = null!;
+        private LocalFileService FileClient { get; init; } = null!;
         [Inject]
         private AppData AppData { get; set; } = null!;
 
@@ -77,16 +76,18 @@ namespace GitTransformer.Pages
                 if (AppData.WindowHeight > AppData.WindowWidth)
                     Orientation = Orientation.Vertical;
 
-                _jsTransforms = await ApiClient.GetFileTransforms();
-                var localTransforms = await JS.InvokeAsync<string>("localStorage.getItem", "JsTransforms");
+                _monacoThemes = await FileClient.GetMonacoThemes();
+                _monacoThemes.AddRange(_defaultThemes);
+
+                _jsTransforms = await FileClient.GetFileTransforms();
+                var localTransforms = await JS.InvokeAsync<string?>("localStorage.getItem", "JsTransforms");
 
                 if (!string.IsNullOrEmpty(localTransforms))
                 {
                     var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
                     _jsTransforms.AddRange(items.Where(x => !_jsTransforms.Select(y => y?.Name).Contains(x.Name)));
                 }
-                _monacoThemes = (await ApiClient.GetMonacoThemes()).Select(x => x.Value).ToList();
-                _monacoThemes.AddRange(_defaultThemes);
+
                 await ChangeTheme(AppData.MonacoTheme);
                 await InvokeAsync(StateHasChanged);
             }
@@ -564,22 +565,36 @@ namespace GitTransformer.Pages
         /// <param name="theme"></param>
         private async Task ChangeTheme(string theme)
         {
-            AppData.MonacoTheme = theme;
             try
             {
                 var myTheme = theme.Replace(" ", "");
                 if (!_defaultThemes.Contains(theme))
                 {
                     await Global.DefineTheme(JS, myTheme,
-                        await ApiClient.GetStandaloneThemeData(theme));
+                        await FileClient.GetStandaloneThemeData(theme));
                 }
 
                 await Global.SetTheme(JS, myTheme);
+                if (AppData.MonacoTheme == theme)
+                    return;
+
+                AppData.MonacoTheme = theme;
                 await JS.InvokeVoidAsync("localStorage.setItem", "MonacoTheme", theme);
             }
             catch (Exception ex)
             {
-                await DialogService.Alert(ex.StackTrace, ex.Message);
+                await DialogService.OpenAsync<CustomDialog>(
+                    "MonacoTheme Error",
+                    new Dictionary<string, object>
+                    {
+                        { "Type", Enums.DialogTypes.Error },
+                        { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
+                    },
+                    new DialogOptions()
+                    {
+                        Width = "max-content",
+                        Height = "50vh"
+                    });
             }
         }
 
