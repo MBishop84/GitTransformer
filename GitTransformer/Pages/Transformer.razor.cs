@@ -9,6 +9,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace GitTransformer.Pages
@@ -20,7 +21,7 @@ namespace GitTransformer.Pages
             public string Prefix { get; set; } = Prefix ?? string.Empty;
             public string Suffix { get; set; } = Suffix ?? string.Empty;
         }
-
+       
         #region Injected Services
 
         [Inject]
@@ -295,7 +296,7 @@ namespace GitTransformer.Pages
 
                 if (!_input.StartsWith('{'))
                     _input = $"{{{_input}}}";
-                var records = new List<KeyValuePair<string, string>>();
+                var records = new List<string>();
                 var jsonObject = JObject.Parse(_input.Replace(" ", ""));
 
                 ArgumentNullException.ThrowIfNullOrEmpty(jsonObject?.ToString());
@@ -306,17 +307,16 @@ namespace GitTransformer.Pages
                 {
                     rootRecord.Append(property.Value.Type switch
                     {
-                        JTokenType.Object => $"{property.Name} {property.Name}, ",
-                        JTokenType.Array => $"IEnumerable<{GetPropertyType(property.Value)}> {property.Name}, ",
-                        _ => $"{GetPropertyType(property.Value)} {property.Name}, "
+                        JTokenType.Object => $"{PascalCase(property.Name)}? {PascalCase(property.Name)} = null, ",
+                        JTokenType.Array => $"IEnumerable<{GetPropertyType(property.Value)}>? {PascalCase(property.Name)} = null, ",
+                        _ => $"{GetPropertyType(property.Value)}? {PascalCase(property.Name)} = null, "
                     });
                     records.AddRange(ProcessProperty(property));
                 }
                 rootRecord.Remove(rootRecord.Length - 2, 2);
                 rootRecord.Append(");\n");
 
-                records.Add(new("Root", rootRecord.ToString()));
-                _output = string.Join("\n", records.Select(x => x.Value).Reverse());
+                _output = string.Join("\n", records.Prepend(rootRecord.ToString()));
             }
             catch (Exception ex)
             {
@@ -335,9 +335,9 @@ namespace GitTransformer.Pages
             }
         }
 
-        private static List<KeyValuePair<string, string>> ProcessProperty(JProperty property)
+        private static List<string> ProcessProperty(JProperty property)
         {
-            var records = new List<KeyValuePair<string, string>>();
+            var records = new List<string>();
             var recordName = property.Name;
             var fields = new List<string>();
 
@@ -345,38 +345,41 @@ namespace GitTransformer.Pages
             {
                 if (field.Value.Type == JTokenType.Object)
                 {
-                    fields.Add($"{field.Name} {field.Name}");
+                    fields.Add($"{PascalCase(field.Name)}? {PascalCase(field.Name)} = null");
                     records.AddRange(ProcessProperty(field));
                 }
                 else if (field.Value.Type == JTokenType.Array)
                 {
                     var first = (field.Value as JArray)!.FirstOrDefault();
                     if (first == null)
-                        fields.Add($"IEnumerable<{field.Name}> {field.Name}");
+                        fields.Add($"IEnumerable<{PascalCase(field.Name)}>? {PascalCase(field.Name)} = null");
                     else if (first.Type == JTokenType.Object)
                     {
-                        fields.Add($"IEnumerable<{field.Name}> {field.Name}");
+                        fields.Add($"IEnumerable<{PascalCase(field.Name)}>? {PascalCase(field.Name)} = null");
                         records.AddRange(ProcessProperty(new JProperty(field.Name, first)));
                     }
                     else
                     {
-                        fields.Add($"IEnumerable<{GetPropertyType(first)}> {field.Name}");
+                        fields.Add($"IEnumerable<{GetPropertyType(first)}>? {PascalCase(field.Name)} = null");
                     }
                 }
                 else
                 {
-                    fields.Add($"{GetPropertyType(field.Value)} {field.Name}");
+                    fields.Add($"{GetPropertyType(field.Value)}? {PascalCase(field.Name)} = null");
                 }
             }
 
-            var record = fields.Count > 0
-                ? $"public record {recordName}({string.Join(", ", fields)});"
-                : $"public record {recordName}({GetPropertyType(property)} Value);";
-
-            records.Add(new(recordName, record));
+            records.Add(fields.Count > 0
+                ? $"public record {PascalCase(recordName)}({string.Join(", ", fields)});"
+                : $"public record {PascalCase(recordName)}({GetPropertyType(property)}? {GetPropertyType(property)}Value = null);");
 
             return records;
         }
+
+        private static string PascalCase(string input)
+            => string.Join("",
+                new Regex(@"\W+").Replace(input, "_").Split("_")
+                .Select(x => x.Length > 0 ? $"{char.ToUpper(x[0])}{x[1..]}" : ""));
 
         private static string GetPropertyType(JToken token)
             => token.Type switch
@@ -388,7 +391,7 @@ namespace GitTransformer.Pages
                 JTokenType.Bytes => "byte[]",
                 JTokenType.Guid => "Guid",
                 JTokenType.TimeSpan => "TimeSpan",
-                JTokenType.Object => token.Path.Split(".")[^1],
+                JTokenType.Object => PascalCase(token.Path.Split(".")[^1]),
                 _ => "string"
             };
 
