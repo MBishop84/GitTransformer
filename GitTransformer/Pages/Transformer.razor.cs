@@ -5,6 +5,7 @@ using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Radzen;
+using Radzen.Blazor;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Security.Cryptography;
@@ -51,6 +52,7 @@ namespace GitTransformer.Pages
         private List<JsTransform?> _jsTransforms = [];
         private bool _dynamic, _sort, _dupes;
         private string? _input, _output, _split, _join, _entry;
+        private JsTransform? _selectedTransform;
 
         #endregion
 
@@ -605,8 +607,18 @@ namespace GitTransformer.Pages
         /// Executes user input transform
         /// </summary>
         /// <exception cref="ArgumentException"></exception>
-        private async Task JavaScript()
+        private async Task JavaScript(RadzenSplitButtonItem item)
         {
+            if(item?.Text == "1")
+            {
+                await SaveJs();
+                return;
+            }
+            if (item?.Text == "2")
+            {
+                await DeleteJs();
+                return;
+            }
             try
             {
                 if (string.IsNullOrEmpty(_input))

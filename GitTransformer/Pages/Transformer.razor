@@ -268,50 +268,50 @@
                                  Gap="2px">
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Stretch"
-                                     JustifyContent="JustifyContent.SpaceBetween"
+                                     JustifyContent="JustifyContent.Center"
                                      Wrap="FlexWrap.Wrap"
                                      Style="width: 100%"
                                      Gap="5px">
-                            <RadzenDropDown Data="@_jsTransforms"
-                                            Placeholder="Saved Transforms"
-                                            TValue="JsTransform"
-                                            TextProperty="Name"
-                                            ValueProperty="Code"
-                                            Change="@(async x => await UpdateUserCode($"{x}"))" />
-                            <RadzenButton Variant="Variant.Outlined"
-                                          Shade="Shade.Darker"
-                                          Click="@PreviousJs"
-                                          Text="<Prev"
-                                          ButtonStyle="ButtonStyle.Info" />
-                            <RadzenButton Variant="Variant.Outlined"
-                                          Shade="Shade.Darker"
-                                          Click="@NextJs"
-                                          Text="Next>"
-                                          ButtonStyle="ButtonStyle.Info" />
-                            <RadzenButton Variant="Variant.Outlined"
-                                          Shade="Shade.Darker"
-                                          Icon="save"
-                                          Click="@SaveJs"
-                                          Text="Save"
-                                          Style="width: 30%; max-width:200px"
-                                          ButtonStyle="ButtonStyle.Secondary" />
-                            <RadzenDropDown Data="@_monacoThemes"
-                                            TValue="string"
-                                            Value="@AppData.MonacoTheme"
-                                            Change="@(async x => await ChangeTheme($"{x}"))" />
-                            <RadzenButton Variant="Variant.Outlined"
-                                          Shade="Shade.Darker"
-                                          Icon="delete"
-                                          Click="@DeleteJs"
-                                          Style="width: 30%; max-width:200px"
-                                          Text="Delete"
-                                          ButtonStyle="ButtonStyle.Danger" />
-                            <RadzenButton Variant="Variant.Outlined"
-                                          Shade="Shade.Darker"
-                                          Click="@JavaScript"
-                                          Style="width: 30%; max-width:200px"
-                                          Text="Execute"
-                                          ButtonStyle="ButtonStyle.Success" />
+                            <RadzenStack Orientation="Orientation.Horizontal"
+                                         AlignItems="AlignItems.Stretch"
+                                         JustifyContent="JustifyContent.Stretch"
+                                         Gap="1px">
+                                <RadzenButton Variant="Variant.Outlined"
+                                              Shade="Shade.Darker"
+                                              Click="@PreviousJs"
+                                              Icon="keyboard_double_arrow_left"
+                                              ButtonStyle="ButtonStyle.Info" />
+                                <RadzenDropDown Data="@_jsTransforms"
+                                                Placeholder="Saved Transforms"
+                                                TValue="JsTransform"
+                                                TextProperty="Name"
+                                                ValueProperty="Code"
+                                                Change="@(async x => await UpdateUserCode($"{x}"))" />
+                                <RadzenButton Variant="Variant.Outlined"
+                                              Shade="Shade.Darker"
+                                              Click="@NextJs"
+                                              Icon="keyboard_double_arrow_right"
+                                              ButtonStyle="ButtonStyle.Info" />
+                            </RadzenStack>
+                            <RadzenStack Orientation="Orientation.Horizontal"
+                                         AlignItems="AlignItems.Stretch"
+                                         JustifyContent="JustifyContent.Stretch"
+                                         Gap="1px">
+                                <RadzenDropDown Data="@_monacoThemes"
+                                                TValue="string"
+                                                Value="@AppData.MonacoTheme"
+                                                Change="@(async x => await ChangeTheme($"{x}"))" />
+                                <RadzenSplitButton Variant="Variant.Outlined"
+                                                   Click="@(x => JavaScript(x))"
+                                                   Text="Execute"
+                                                   Icon="play_circle"
+                                                   ButtonStyle="ButtonStyle.Success">
+                                    <ChildContent>
+                                        <RadzenSplitButtonItem Text="Save" Value="1" Icon="save" IconColor="@Colors.Primary" />
+                                        <RadzenSplitButtonItem Text="Delete" Value="2" Icon="delete" IconColor="@Colors.Danger" />
+                                    </ChildContent>
+                                </RadzenSplitButton>
+                            </RadzenStack>
                         </RadzenStack>
                         <StandaloneCodeEditor Id="user_code"
                                               ConstructionOptions="EditorConstructionOptions"
