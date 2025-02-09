@@ -22,7 +22,7 @@ namespace GitTransformer.Pages
             public string Prefix { get; set; } = Prefix ?? string.Empty;
             public string Suffix { get; set; } = Suffix ?? string.Empty;
         }
-       
+
         #region Injected Services
 
         [Inject]
@@ -52,7 +52,6 @@ namespace GitTransformer.Pages
         private List<JsTransform?> _jsTransforms = [];
         private bool _dynamic, _sort, _dupes;
         private string? _input, _output, _split, _join, _entry;
-        private JsTransform? _selectedTransform;
 
         #endregion
 
@@ -296,8 +295,6 @@ namespace GitTransformer.Pages
             {
                 ArgumentNullException.ThrowIfNullOrEmpty(_input);
 
-                if (!_input.StartsWith('{'))
-                    _input = $"{{{_input}}}";
                 var records = new List<string>();
                 var jsonObject = JObject.Parse(_input.Replace(" ", ""));
 
@@ -347,33 +344,46 @@ namespace GitTransformer.Pages
             {
                 if (field.Value.Type == JTokenType.Object)
                 {
-                    fields.Add($"{PascalCase(field.Name)}? {PascalCase(field.Name)} = null");
+                    fields.Add($"""
+                        [property: JsonPropertyName("{field.Name}")] {PascalCase(field.Name)}? {PascalCase(field.Name)} = null
+                        """);
                     records.AddRange(ProcessProperty(field));
                 }
                 else if (field.Value.Type == JTokenType.Array)
                 {
                     var first = (field.Value as JArray)!.FirstOrDefault();
                     if (first == null)
-                        fields.Add($"IEnumerable<{PascalCase(field.Name)}>? {PascalCase(field.Name)} = null");
+                        fields.Add($"""
+                            [property: JsonPropertyName("{field.Name}")] IEnumerable<{PascalCase(field.Name)}>? {PascalCase(field.Name)} = null
+                            """);
                     else if (first.Type == JTokenType.Object)
                     {
-                        fields.Add($"IEnumerable<{PascalCase(field.Name)}>? {PascalCase(field.Name)} = null");
+                        fields.Add($"""
+                            [property: JsonPropertyName("{field.Name}")] IEnumerable<{PascalCase(field.Name)}>? {PascalCase(field.Name)} = null
+                            """);
                         records.AddRange(ProcessProperty(new JProperty(field.Name, first)));
                     }
                     else
                     {
-                        fields.Add($"IEnumerable<{GetPropertyType(first)}>? {PascalCase(field.Name)} = null");
+                        fields.Add($"""
+                            [property: JsonPropertyName("{field.Name}")] IEnumerable<{GetPropertyType(first)}>? {PascalCase(field.Name)} = null
+                            """);
                     }
                 }
                 else
                 {
-                    fields.Add($"{GetPropertyType(field.Value)}? {PascalCase(field.Name)} = null");
+                    fields.Add($"""
+                        [property: JsonPropertyName("{field.Name}")] {GetPropertyType(field.Value)}? {PascalCase(field.Name)} = null
+                        """);
                 }
             }
 
-            records.Add(fields.Count > 0
-                ? $"public record {PascalCase(recordName)}({string.Join(", ", fields)});"
-                : $"public record {PascalCase(recordName)}({GetPropertyType(property)}? {GetPropertyType(property)}Value = null);");
+            if (fields.Count == 0)
+                fields.Add($"""
+                    [property: JsonPropertyName("{recordName}")] {GetPropertyType(property)}? {recordName} = null
+                    """);
+
+            records.Add($"public record {PascalCase(recordName)}({string.Join(",\n\t", fields)});");
 
             return records;
         }
@@ -609,7 +619,7 @@ namespace GitTransformer.Pages
         /// <exception cref="ArgumentException"></exception>
         private async Task JavaScript(RadzenSplitButtonItem item)
         {
-            if(item?.Text == "1")
+            if (item?.Text == "1")
             {
                 await SaveJs();
                 return;
