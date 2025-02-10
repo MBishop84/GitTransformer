@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @rendermode InteractiveWebAssembly
-
+@inject AppData AppData
+@inject IJSRuntime JS
 
 <RadzenLayout>
     <RadzenHeader id="site_header">
@@ -34,4 +35,18 @@
 
 @code {
     bool _sidebar1Expanded = true;
+
+    protected override void OnInitialized()
+    {
+        AppData.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (!AppData.IsLoaded)
+            await AppData.LoadAsync(JS);
+    }
 }

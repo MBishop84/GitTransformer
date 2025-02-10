@@ -1,11 +1,10 @@
 ﻿@page "/"
 @page "/GitTransformer/"
-@inject Services.LocalFileService FileService
-@inject Services.QuotableApiService QuotableService
-@inject AppData AppData
-@inject IJSRuntime JS
+
 @using System.Text.Json
 @rendermode InteractiveWebAssembly
+@inject Services.LocalFileService FileService
+@inject Services.QuotableApiService QuotableService
 
 <PageTitle>Home</PageTitle>
 
@@ -31,18 +30,11 @@
     bool _loading = true;
     string textStyle = "max-width: 600px; width: 70%;";
 
-    protected override void OnInitialized()
-    {
-        AppData.OnChange += StateHasChanged;
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
             return;
 
-        if (!AppData.IsLoaded)
-            await AppData.LoadAsync(JS);
         await GetQuote();
     }
 

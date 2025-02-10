@@ -263,18 +263,18 @@
                 <RadzenAccordionItem Text="JavaScript" Icon="code" Style="width: 100%">
                     <RadzenStack Orientation="Orientation.Vertical"
                                  AlignItems="AlignItems.Stretch"
-                                 JustifyContent="JustifyContent.Stretch"
-                                 Style="width: 100%"
+                                 JustifyContent="JustifyContent.Start"
+                                 Style="max-width: 100%"
                                  Gap="2px">
                         <RadzenStack Orientation="Orientation.Horizontal"
                                      AlignItems="AlignItems.Stretch"
-                                     JustifyContent="JustifyContent.Center"
+                                     JustifyContent="JustifyContent.SpaceBetween"
                                      Wrap="FlexWrap.Wrap"
-                                     Style="width: 100%"
+                                     Style="max-width: 100%"
                                      Gap="5px">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Stretch"
-                                         JustifyContent="JustifyContent.Stretch"
+                                         JustifyContent="JustifyContent.Start"
                                          Gap="1px">
                                 <RadzenButton Variant="Variant.Outlined"
                                               Shade="Shade.Darker"
@@ -295,7 +295,9 @@
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Stretch"
-                                         JustifyContent="JustifyContent.Stretch"
+                                         JustifyContent="JustifyContent.End"
+                                         Wrap="FlexWrap.Wrap"
+                                         Style="max-width: 100%"
                                          Gap="1px">
                                 <RadzenDropDown Data="@_monacoThemes"
                                                 TValue="string"

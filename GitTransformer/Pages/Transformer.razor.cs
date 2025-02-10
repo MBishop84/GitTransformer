@@ -71,9 +71,6 @@ namespace GitTransformer.Pages
                 return;
             try
             {
-                if (!AppData.IsLoaded)
-                    await AppData.LoadAsync(JS);
-
                 if (AppData.WindowHeight > AppData.WindowWidth)
                     Orientation = Orientation.Vertical;
 
