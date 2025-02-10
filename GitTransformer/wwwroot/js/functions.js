@@ -28,7 +28,7 @@ self.SetScrollEvent = () => {
             document.getElementById('site_header').style.display = "none"
             lastScrollHeight = event.target.scrollTop;
         }
-        else if ((lastScrollHeight - 100) > event.target.scrollTop) {
+        else if ((lastScrollHeight - 100) > event.target.scrollTop || event.target.scrollTop === 0) {
             document.getElementById('site_header').style.display = "block"
             lastScrollHeight = event.target.scrollTop;
         }

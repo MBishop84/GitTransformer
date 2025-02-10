@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PluralizeService.Core;
 using Radzen;
 using Radzen.Blazor;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace GitTransformer.Pages
@@ -297,7 +295,10 @@ namespace GitTransformer.Pages
                 ArgumentNullException.ThrowIfNullOrEmpty(_input);
 
                 List<string> records = [];
-                var jsonObject = JObject.Parse(_input.Replace(" ", ""));
+
+                var jsonObject = _input.StartsWith('[')
+                    ? JArray.Parse(_input)[0] as JObject
+                    : JObject.Parse(_input.Replace(" ", ""));
 
                 ArgumentNullException.ThrowIfNullOrEmpty(jsonObject?.ToString());
 
@@ -319,11 +320,14 @@ namespace GitTransformer.Pages
                                 {GetPropertyType(property)}? {property.Name.PascalCase()} = null
                             """
                     });
-                    records.AddRange(ProcessProperty(property));
+                    if(property.Value.Type == JTokenType.Object)
+                        records.AddRange(ProcessProperty(property));
+                    else if(property.Value.Type == JTokenType.Array)
+                        records.AddRange(ProcessProperty(new JProperty(property.Name.PascalCase().Singular(), (property.Value as JArray)![0])));
                 }
 
                 _output = string.Join("\n", records.Prepend($"""
-                    public record Root(\n{string.Join(",\n", rootFields)});
+                    public record Root({Environment.NewLine}{string.Join(",\n", rootFields)});
                     """));
             }
             catch (Exception ex)
@@ -351,37 +355,43 @@ namespace GitTransformer.Pages
 
             if (property.Value.Type == JTokenType.Object)
             {
-                fields.Add($"""
-                        [property: JsonPropertyName("{property.Name}")]
-                        {property.Name.PascalCase()}? {property.Name.PascalCase()} = null
-                    """);
                 foreach (var child in property.Value.Children<JProperty>())
-                    records.AddRange(ProcessProperty(child));
+                {
+                    fields.Add($"""
+                            [property: JsonPropertyName("{child.Name}")]
+                            {GetPropertyType(child)}? {child.Name.PascalCase()} = null
+                        """);
+                    if (child.Value.Type == JTokenType.Object)
+                        records.AddRange(ProcessProperty(child));
+                    else if (child.Value.Type == JTokenType.Array)
+                        records.AddRange(ProcessProperty(new JProperty(child.Name.PascalCase().Singular(), (child.Value as JArray)![0])));
+                }
             }
             else if (property.Value.Type == JTokenType.Array)
             {
                 recordName = recordName.Singular();
                 var first = new JProperty(property.Name.PascalCase().Singular(), (property.Value as JArray)![0]);
+                records.AddRange(ProcessProperty(new JProperty(recordName, first.Value)));
 
-                if (first == null)
-                    fields.Add($"""
-                            [property: JsonPropertyName("{property.Name}")]
-                            IEnumerable<{property.Name.PascalCase().Singular()}>? {property.Name.PascalCase().Plural()} = null
-                        """);
-                else if (first.Type == JTokenType.Object)
+                if (first.Value.Type == JTokenType.Object)
                 {
-                    fields.Add($"""
-                            [property: JsonPropertyName("{property.Name}")]
-                            IEnumerable<{property.Name.PascalCase().Singular()}>? {property.Name.PascalCase().Plural()} = null
-                        """);
-                    foreach (var child in  first.Value.Children<JProperty>())
-                        records.AddRange(ProcessProperty(child));
+                    foreach (var child in first.Value.Children<JProperty>())
+                    {
+                        fields.Add($"""
+                                [property: JsonPropertyName("{child.Name}")]
+                                {GetPropertyType(child)}? {child.Name.PascalCase()} = null
+                            """);
+                        if (child.Value.Type == JTokenType.Object)
+                            records.AddRange(ProcessProperty(child));
+                        else if (child.Value.Type == JTokenType.Array)
+                            records.AddRange(ProcessProperty(new JProperty(child.Name.PascalCase().Singular(), (child.Value as JArray)![0])));
+                    }
                 }
                 else
                 {
                     fields.Add($"""
                             [property: JsonPropertyName("{property.Name}")]
-                            {GetPropertyType(first)}? {property.Name.PascalCase().Plural()} = null
+                            IEnumerable<{GetPropertyType(new JProperty(recordName, first.Value))}>? {property.Name.PascalCase().Plural()} = null
                         """);
                 }
             }
