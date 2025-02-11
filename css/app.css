@@ -78,7 +78,7 @@ code {
 
 .monaco-editor-container {
     width: 100%;
-    height: 30vh;
+    height: 100%;
 }
 
 .rz-textarea {
