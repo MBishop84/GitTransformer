@@ -1,0 +1,59 @@
+﻿
+<RadzenStack Orientation="Orientation.Vertical"
+             AlignItems="AlignItems.Stretch"
+             JustifyContent="JustifyContent.Start"
+             Style="max-width: 100%; height: 100%"
+             Gap="2px">
+    <RadzenStack Orientation="Orientation.Horizontal"
+                 AlignItems="AlignItems.Stretch"
+                 JustifyContent="JustifyContent.SpaceBetween"
+                 Wrap="FlexWrap.Wrap"
+                 Style="max-width: 100%"
+                 Gap="5px">
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     AlignItems="AlignItems.Stretch"
+                     JustifyContent="JustifyContent.Start"
+                     Gap="1px">
+            <RadzenButton Variant="Variant.Outlined"
+                          Shade="Shade.Darker"
+                          Click="@PreviousJs"
+                          Icon="keyboard_double_arrow_left"
+                          ButtonStyle="ButtonStyle.Info" />
+            <RadzenDropDown Data="@_jsTransforms"
+                            Placeholder="Saved Transforms"
+                            TValue="JsTransform"
+                            TextProperty="Name"
+                            ValueProperty="Code"
+                            Change="@(async x => await UpdateUserCode($"{x}"))" />
+            <RadzenButton Variant="Variant.Outlined"
+                          Shade="Shade.Darker"
+                          Click="@NextJs"
+                          Icon="keyboard_double_arrow_right"
+                          ButtonStyle="ButtonStyle.Info" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     AlignItems="AlignItems.Stretch"
+                     JustifyContent="JustifyContent.End"
+                     Wrap="FlexWrap.Wrap"
+                     Style="max-width: 100%"
+                     Gap="1px">
+            <RadzenDropDown Data="@_monacoThemes"
+                            TValue="string"
+                            Value="@AppData.MonacoTheme"
+                            Change="@(async x => await ChangeTheme($"{x}"))" />
+            <RadzenSplitButton Variant="Variant.Outlined"
+                               Click="@(x => JavaScript(x))"
+                               Text="Execute"
+                               Icon="play_circle"
+                               ButtonStyle="ButtonStyle.Success">
+                <ChildContent>
+                    <RadzenSplitButtonItem Text="Save" Value="1" Icon="save" IconColor="@Colors.Primary" />
+                    <RadzenSplitButtonItem Text="Delete" Value="2" Icon="delete" IconColor="@Colors.Danger" />
+                </ChildContent>
+            </RadzenSplitButton>
+        </RadzenStack>
+    </RadzenStack>
+    <StandaloneCodeEditor Id="user_code"
+                          ConstructionOptions="EditorConstructionOptions"
+                          @ref="Editor" />
+</RadzenStack>
