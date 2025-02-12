@@ -266,9 +266,27 @@
                 <RadzenAccordionItem Text="JavaScript"
                                      Icon="code"
                                      @bind-Selected="_selected[2]">
-                    <div style="width: 100%; height: 35vh">
-                        <VSCodeJS />
-                    </div>
+                    <RadzenStack Orientation="Orientation.Vertical"
+                                 AlignItems="AlignItems.Center"
+                                 JustifyContent="JustifyContent.Center"
+                                 Gap="5px">
+                        @if (!_openInModal)
+                        {
+                            <div style="width: 100%; height: 35vh">
+                                <VSCodeJS @bind-UserCode="UserCode" />
+                            </div>
+                        }
+                        <RadzenButton Variant="Variant.Outlined"
+                                      Shade="Shade.Darker"
+                                      Text="Open In Modal"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Click="@(async _ => {
+                                            _openInModal = true;
+                                            await Task.Delay(500);
+                                            await OpenInModalAsync<VSCodeJS>(
+                                                "Custom JavaScript", new(){{"InModal", true},{"UserCode", UserCode}});
+                                        })" />
+                    </RadzenStack>
                 </RadzenAccordionItem>
             </Items>
         </RadzenAccordion>
@@ -297,7 +315,7 @@
         <HeaderTemplate>
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
-                          Click="@OutputModalView"
+                          Click="@(async _ => await OpenInModalAsync<CustomDialog>("Output", new(){{ "Message", _output ?? "" }}))"
                           Text="View Output in Modal"
                           ButtonStyle="ButtonStyle.Secondary" />
         </HeaderTemplate>
