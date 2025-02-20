@@ -84,3 +84,7 @@ code {
 .rz-textarea {
     resize: none;
 }
+
+.rz-dialog-content{
+    height: 100%
+}

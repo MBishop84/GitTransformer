@@ -1,14 +1,14 @@
 ﻿
 <RadzenStack Orientation="Orientation.Vertical"
              AlignItems="AlignItems.Stretch"
-             JustifyContent="JustifyContent.Start"
-             Style="max-width: 100%; height: 100%"
+             JustifyContent="JustifyContent.Stretch"
+             Style="width: 100%; height: 100%"
              Gap="2px">
     <RadzenStack Orientation="Orientation.Horizontal"
                  AlignItems="AlignItems.Stretch"
                  JustifyContent="JustifyContent.SpaceBetween"
                  Wrap="FlexWrap.Wrap"
-                 Style="max-width: 100%"
+                 Style="width: 100%"
                  Gap="5px">
         <RadzenStack Orientation="Orientation.Horizontal"
                      AlignItems="AlignItems.Stretch"
@@ -37,10 +37,6 @@
                      Wrap="FlexWrap.Wrap"
                      Style="max-width: 100%"
                      Gap="1px">
-            <RadzenDropDown Data="@_monacoThemes"
-                            TValue="string"
-                            Value="@AppData.MonacoTheme"
-                            Change="@(async x => await ChangeTheme($"{x}"))" />
             <RadzenSplitButton Variant="Variant.Outlined"
                                Click="@(x => JavaScript(x))"
                                Text="Execute"
@@ -51,6 +47,19 @@
                     <RadzenSplitButtonItem Text="Delete" Value="2" Icon="delete" IconColor="@Colors.Danger" />
                 </ChildContent>
             </RadzenSplitButton>
+            <RadzenDropDown Data="@_monacoThemes"
+                            TValue="string"
+                            Value="@AppData.MonacoTheme"
+                            Change="@(async x => await ChangeTheme($"{x}"))" />
+            @if (InModal)
+            {
+                <RadzenButton Variant="Variant.Outlined"
+                              Shade="Shade.Darker"
+                              Click="@(async _ => DialogService.Close(await Editor.GetValue()))"
+                              Icon="close"
+                              Text="Close Modal"
+                              ButtonStyle="ButtonStyle.Danger" />
+            }
         </RadzenStack>
     </RadzenStack>
     <StandaloneCodeEditor Id="user_code"

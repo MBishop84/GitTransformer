@@ -33,6 +33,7 @@ namespace GitTransformer.Pages
 
         #region Properties
 
+        private string UserCode { get; set; } = string.Empty;
         private Orientation Orientation { get; set; } = Orientation.Horizontal;
 
         #endregion
@@ -41,7 +42,7 @@ namespace GitTransformer.Pages
 
         private Bounds _boundEach = new();
         private Bounds _boundAll = new();
-        private bool _dynamic, _sort, _dupes;
+        private bool _dynamic, _sort, _dupes, _openInModal;
         private string? _input, _output, _split, _join;
         private bool[] _selected = [true, false, false];
 
@@ -52,6 +53,7 @@ namespace GitTransformer.Pages
         protected override void OnInitialized()
         {
             AppData.OnChange += StateHasChanged;
+            DialogService.OnClose += DialogClose;
         }
 
         /// <summary>
@@ -605,15 +607,16 @@ namespace GitTransformer.Pages
             }
         }
 
-        private Task<dynamic> OutputModalView() =>
-            DialogService.OpenAsync<CustomDialog>(
-                "Output",
-                new Dictionary<string, object>
-                {
-                    { "Message", _output ?? "" }
-                },
+        Task<dynamic> OpenInModalAsync<T>(
+            string? title = "Dialog",
+            Dictionary<string, object>? parameters = null)
+            where T : ComponentBase =>
+            DialogService.OpenAsync<T>(
+                title,
+                parameters,
                 new DialogOptions()
                 {
+                    ShowClose = false,
                     Resizable = true,
                     Draggable = true,
                     CloseDialogOnOverlayClick = true,
@@ -621,6 +624,14 @@ namespace GitTransformer.Pages
                     Height = "80vh"
                 });
 
+        private void DialogClose(dynamic editorValue)
+        {
+            if (editorValue is string value)
+                UserCode = value;
+
+            _openInModal = false;
+            StateHasChanged();
+        }
         #endregion
     }
 }

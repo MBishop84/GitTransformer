@@ -10,7 +10,7 @@ using System.Text;
 
 namespace GitTransformer.Pages.Components;
 
-public partial class VSCodeJS
+public partial class VSCodeJS : IAsyncDisposable
 {
     [Inject]
     private AppData AppData { get; set; } = null!;
@@ -20,11 +20,20 @@ public partial class VSCodeJS
     private DialogService DialogService { get; init; } = null!;
     [Inject]
     private LocalFileService FileClient { get; init; } = null!;
+    [Parameter]
+    public string UserCode { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> UserCodeChanged { get; set; }
+    [Parameter]
+    public bool InModal { get; set; } = false;
     private StandaloneCodeEditor Editor { get; set; } = null!;
+
     private List<string> _monacoThemes = [];
     private List<JsTransform?> _jsTransforms = [];
     private readonly string[] _defaultThemes = ["vs-dark", "vs-light"];
     private string? _entry;
+    private bool _isDisposed;
+
 
     protected override void OnInitialized()
     {
@@ -43,10 +52,8 @@ public partial class VSCodeJS
     {
         if (!firstRender)
             return;
-
         try
         {
-
             var localTransforms = await JS.InvokeAsync<string?>("localStorage.getItem", "JsTransforms");
 
             if (!string.IsNullOrEmpty(localTransforms))
@@ -56,6 +63,10 @@ public partial class VSCodeJS
             }
 
             await ChangeTheme(AppData.MonacoTheme);
+
+            if(!string.IsNullOrEmpty(UserCode))
+                await Editor.SetValue(UserCode);
+
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
@@ -324,7 +335,7 @@ public partial class VSCodeJS
     {
         var fullString = _jsTransforms.Where(x => x?.Code == jsTransform)
             .Select(y => $"{y?.Name}\n{y?.Code}").FirstOrDefault();
-        return Editor.SetValue(fullString);
+        return Editor?.SetValue(fullString) ?? Task.CompletedTask;
     }
 
     private async Task ChangeTheme(string theme)
@@ -364,10 +375,31 @@ public partial class VSCodeJS
 
     private void DialogClose(dynamic entry)
     {
-        if (entry == null)
-            return;
+        if (entry != null)
+            _entry = $"{entry}";
 
-        _entry = $"{entry}";
         StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        UserCode = await Editor.GetValue();
+        await UserCodeChanged.InvokeAsync(UserCode);
+        await DisposeAsync(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual async ValueTask DisposeAsync(bool disposing)
+    {
+        await Task.Yield();
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                AppData.OnChange -= StateHasChanged;
+                DialogService.OnClose -= DialogClose;
+            }
+            _isDisposed = true;
+        }
     }
 }
