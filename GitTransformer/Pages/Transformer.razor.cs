@@ -1,11 +1,9 @@
-﻿using BlazorMonaco.Editor;
-using GitTransformer.Services;
+﻿using GitTransformer.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Radzen;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
 using System.Xml;
@@ -286,9 +284,9 @@ namespace GitTransformer.Pages
                                 {GetPropertyType(property)}? {property.Name.PascalCase()} = null
                             """
                     });
-                    if(property.Value.Type == JTokenType.Object)
+                    if (property.Value.Type == JTokenType.Object)
                         records.AddRange(ProcessProperty(property));
-                    else if(property.Value.Type == JTokenType.Array)
+                    else if (property.Value.Type == JTokenType.Array)
                         records.AddRange(ProcessProperty(new JProperty(property.Name.PascalCase().Singular(), (property.Value as JArray)![0])));
                 }
 
@@ -507,6 +505,73 @@ namespace GitTransformer.Pages
                         Style = "max-width: 90vw;"
                     });
             }
+        }
+
+        private async Task SQLJsonToSnippet()
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNullOrEmpty(_input);
+
+                var formattedJson = ReformatJsonForSnippet(JObject.Parse(_input));
+                var doc = JsonConvert.DeserializeXmlNode(formattedJson);
+                using var sw = new StringWriter();
+                await sw.WriteLineAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                var writer = new XmlTextWriter(sw)
+                {
+                    Formatting = System.Xml.Formatting.Indented
+                };
+                doc?.WriteContentTo(writer);
+                _output = sw.ToString();
+            }
+            catch (Exception ex)
+            {
+                await DialogService.OpenAsync<CustomDialog>(
+                    "SQLJsonToSnippet",
+                    new Dictionary<string, object>
+                    {
+                        { "Type", Enums.DialogTypes.Error },
+                        { "Message", $"{ex.Message}\n{ex.StackTrace}" }
+                    },
+                    new DialogOptions()
+                    {
+                        Width = "max-content",
+                        Height = "50vh",
+                        Style = "max-width: 90vw;"
+                    });
+            }
+        }
+
+        private static string ReformatJsonForSnippet(JObject input)
+        {
+            var template = JObject.Parse(Constants.JsonTemplate);
+            var title = input["prefix"]?.ToString() ?? "Title";
+            var description = input["description"]?.ToString() ?? "Description";
+            var codeArray = (input["body"] as JArray)
+                ?.Select(x => $"{x}".Replace("{", "").Replace("}", "$"));
+            ArgumentNullException.ThrowIfNull(codeArray);
+            var codeString = $"\n{string.Join("\n", codeArray)}\n";
+
+            template["CodeSnippets"]!["CodeSnippet"]!["Header"]!["Title"] = title.PascalCase();
+            template["CodeSnippets"]!["CodeSnippet"]!["Header"]!["Description"] = description;
+            if (codeArray.Any(x => x.Contains('$')))
+            {
+                var stringParts = codeString.Split('$');
+                stringParts[1] = stringParts[1].Split(':')[1];
+                codeString = string.Join("$", stringParts);
+                template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Declarations"]!["Literal"] =
+                    JArray.Parse(JsonConvert.SerializeObject(
+                        codeArray.Where(x => x.Contains('$'))
+                        .Select(a => new
+                        {
+                            ID = a.Split('$')[1].Split(':')[1],
+                            ToolTip = "",
+                            Default = a.Split('$')[1].Split(':')[1],
+                        })));
+            }
+            template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Code"]!["#cdata-section"] = codeString;
+
+            return template.ToString();
         }
 
         /// <summary>
