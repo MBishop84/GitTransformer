@@ -480,6 +480,7 @@ namespace GitTransformer.Pages
             {
                 var doc = JsonConvert.DeserializeXmlNode(input);
                 using var sw = new StringWriter();
+                await sw.WriteLineAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 var writer = new XmlTextWriter(sw)
                 {
                     Formatting = System.Xml.Formatting.Indented
