@@ -40,6 +40,12 @@ namespace GitTransformer.Pages
 
         #region Fields
 
+        private readonly DialogOptions _dialogOptions = new()
+        {
+            Width = "max-content",
+            Height = "max-content",
+            Style = "max-width: 90vw; max-height: 90vh"
+        };
         private Bounds _boundEach = new();
         private Bounds _boundAll = new();
         private bool _dynamic, _sort, _dupes, _openInModal;
@@ -78,12 +84,7 @@ namespace GitTransformer.Pages
                     {
                         { "Type", Enums.DialogTypes.Error },
                         { "Message", $"{ex}" }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh"
-                    });
+                    }, _dialogOptions);
             }
         }
 
@@ -124,12 +125,7 @@ namespace GitTransformer.Pages
                     {
                         { "Type", Enums.DialogTypes.Error },
                         { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh"
-                    });
+                    }, _dialogOptions);
             }
         }
 
@@ -241,12 +237,7 @@ namespace GitTransformer.Pages
                     {
                         { "Type", Enums.DialogTypes.ClassFromQuery },
                         { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh"
-                    });
+                    }, _dialogOptions);
             }
         }
 
@@ -304,12 +295,7 @@ namespace GitTransformer.Pages
                     {
                         { "Type", Enums.DialogTypes.Error },
                         { "Message", $"{ex.Message}\n{ex.StackTrace}" }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh"
-                    });
+                    }, _dialogOptions);
             }
         }
 
@@ -461,12 +447,7 @@ namespace GitTransformer.Pages
                     {
                         { "Type", Enums.DialogTypes.XmlToClass },
                         { "Message", message }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh"
-                    });
+                    }, _dialogOptions);
             }
         }
 
@@ -495,14 +476,8 @@ namespace GitTransformer.Pages
                     new Dictionary<string, object>
                     {
                         { "Type", Enums.DialogTypes.Error },
-                        { "Message", $"{ex.Message}\n{ex.StackTrace}" }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh",
-                        Style = "max-width: 90vw;"
-                    });
+                        { "Message", $"{ex}" }
+                    }, _dialogOptions);
             }
         }
 
@@ -523,13 +498,7 @@ namespace GitTransformer.Pages
                     {
                         { "Type", Enums.DialogTypes.Error },
                         { "Message", $"{ex.Message}\n\nExample Input Format:\n{Constants.SqlJsonFormat}" }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh",
-                        Style = "max-width: 90vw;"
-                    });
+                    }, _dialogOptions);
             }
         }
 
@@ -597,14 +566,8 @@ namespace GitTransformer.Pages
                    new Dictionary<string, object>
                    {
                         { "Type", Enums.DialogTypes.Error },
-                        { "Message", $"{ex.Message}\n{ex.StackTrace}" }
-                   },
-                   new DialogOptions()
-                   {
-                       Width = "max-content",
-                       Height = "50vh",
-                       Style = "max-width: 90vw;"
-                   });
+                        { "Message", $"{ex}" }
+                   }, _dialogOptions);
             }
         }
 
@@ -630,20 +593,13 @@ namespace GitTransformer.Pages
                     {
                         { "Type", Enums.DialogTypes.Error },
                         { "Message", $"{ex.Message}\n{ex.StackTrace}" }
-                    },
-                    new DialogOptions()
-                    {
-                        Width = "max-content",
-                        Height = "50vh"
-                    });
+                    }, _dialogOptions);
             }
         }
 
         Task<dynamic> OpenInModalAsync<T>(
-            string? title = "Dialog",
-            Dictionary<string, object>? parameters = null)
-            where T : ComponentBase =>
-            DialogService.OpenAsync<T>(
+            string? title = "Dialog", Dictionary<string, object>? parameters = null) where T : ComponentBase
+            => DialogService.OpenAsync<T>(
                 title,
                 parameters,
                 new DialogOptions()
