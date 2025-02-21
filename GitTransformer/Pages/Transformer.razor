@@ -248,6 +248,11 @@
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
+                                      Click="@DotSnippet"
+                                      Text=".snippet"
+                                      ButtonStyle="ButtonStyle.Primary" />
+                        <RadzenButton Variant="Variant.Outlined"
+                                      Shade="Shade.Darker"
                                       Text="Clear"
                                       ButtonStyle="ButtonStyle.Warning"
                                       Click="@(_ => { ClearField("_input"); ClearField("_output"); })" />

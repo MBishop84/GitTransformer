@@ -559,7 +559,9 @@ namespace GitTransformer.Pages
             if (codeArray.Any(x => x.Contains('$')))
             {
                 var stringParts = codeString.Split('$');
-                stringParts[1] = stringParts[1].Split(':')[1];
+                stringParts[1] = stringParts[1].Contains(':')
+                    ? stringParts[1].Split(':')[1]
+                    : stringParts[1];
                 codeString = string.Join("$", stringParts);
                 template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Declarations"]!["Literal"] =
                     JArray.Parse(JsonConvert.SerializeObject(
@@ -574,6 +576,45 @@ namespace GitTransformer.Pages
             template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Code"]!["#cdata-section"] = codeString;
 
             return template.ToString();
+        }
+
+        private async Task DotSnippet()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_input))
+                {
+                    _output = Constants.JsonTemplate;
+                    return;
+                }
+                var template = JObject.Parse(Constants.JsonTemplate);
+                template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Code"]!["#cdata-section"] = $"\n{_input}\n";
+                var doc = JsonConvert.DeserializeXmlNode(template.ToString());
+                using var sw = new StringWriter();
+                await sw.WriteLineAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                var writer = new XmlTextWriter(sw)
+                {
+                    Formatting = System.Xml.Formatting.Indented
+                };
+                doc?.WriteContentTo(writer);
+                _output = sw.ToString();
+            }
+            catch (Exception ex)
+            {
+                await DialogService.OpenAsync<CustomDialog>(
+                   "SQLJsonToSnippet",
+                   new Dictionary<string, object>
+                   {
+                        { "Type", Enums.DialogTypes.Error },
+                        { "Message", $"{ex.Message}\n{ex.StackTrace}" }
+                   },
+                   new DialogOptions()
+                   {
+                       Width = "max-content",
+                       Height = "50vh",
+                       Style = "max-width: 90vw;"
+                   });
+            }
         }
 
         /// <summary>
