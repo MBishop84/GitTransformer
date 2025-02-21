@@ -474,15 +474,11 @@ namespace GitTransformer.Pages
         /// Converts a JSON object to XML.
         /// </summary>
         /// <returns></returns>
-        private async Task JsonToXML()
+        private async Task JsonToXML(string input)
         {
             try
             {
-                if (string.IsNullOrEmpty(_input))
-                    throw new ArgumentException("Input is Empty");
-                if (!_input.StartsWith('{'))
-                    _input = $"{{{_input}}}";
-                var doc = JsonConvert.DeserializeXmlNode("{\"DefaultRoot\":" + $"{_input}}}");
+                var doc = JsonConvert.DeserializeXmlNode(input);
                 using var sw = new StringWriter();
                 var writer = new XmlTextWriter(sw)
                 {
@@ -516,15 +512,7 @@ namespace GitTransformer.Pages
                 ArgumentNullException.ThrowIfNullOrEmpty(_input);
 
                 var formattedJson = ReformatJsonForSnippet(JObject.Parse(_input));
-                var doc = JsonConvert.DeserializeXmlNode(formattedJson);
-                using var sw = new StringWriter();
-                await sw.WriteLineAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                var writer = new XmlTextWriter(sw)
-                {
-                    Formatting = System.Xml.Formatting.Indented
-                };
-                doc?.WriteContentTo(writer);
-                _output = sw.ToString();
+                await JsonToXML(formattedJson);
             }
             catch (Exception ex)
             {
@@ -533,7 +521,7 @@ namespace GitTransformer.Pages
                     new Dictionary<string, object>
                     {
                         { "Type", Enums.DialogTypes.Error },
-                        { "Message", $"{ex.Message}\n{ex.StackTrace}" }
+                        { "Message", $"{ex.Message}\n\nExample Input Format:\n{Constants.SqlJsonFormat}" }
                     },
                     new DialogOptions()
                     {
@@ -546,34 +534,45 @@ namespace GitTransformer.Pages
 
         private static string ReformatJsonForSnippet(JObject input)
         {
-            var template = JObject.Parse(Constants.JsonTemplate);
+            var template = JObject.Parse(Constants.SnippetTemplate);
             var title = input["prefix"]?.ToString() ?? "Title";
             var description = input["description"]?.ToString() ?? "Description";
             var codeArray = (input["body"] as JArray)
                 ?.Select(x => $"{x}".Replace("{", "").Replace("}", "$"));
             ArgumentNullException.ThrowIfNull(codeArray);
-            var codeString = $"\n{string.Join("\n", codeArray)}\n";
 
             template["CodeSnippets"]!["CodeSnippet"]!["Header"]!["Title"] = title.PascalCase();
             template["CodeSnippets"]!["CodeSnippet"]!["Header"]!["Description"] = description;
             if (codeArray.Any(x => x.Contains('$')))
             {
-                var stringParts = codeString.Split('$');
-                stringParts[1] = stringParts[1].Contains(':')
-                    ? stringParts[1].Split(':')[1]
-                    : stringParts[1];
-                codeString = string.Join("$", stringParts);
+                codeArray = codeArray
+                    !.Select(p =>
+                    {
+                        if (!p.Contains(':'))
+                            return p;
+
+                        var parts = p.Split('$') ?? [];
+                        foreach (var part in parts.Select((v, i) => new { v, i }))
+                        {
+                            parts[part.i] = part.v.Contains(':')
+                                ? part.v.Split(':')[1]
+                                : part.v;
+                        }
+
+                        return string.Join('$', parts);
+                    });
+
                 template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Declarations"]!["Literal"] =
                     JArray.Parse(JsonConvert.SerializeObject(
                         codeArray.Where(x => x.Contains('$'))
-                        .Select(a => new
-                        {
-                            ID = a.Split('$')[1].Split(':')[1],
-                            ToolTip = "",
-                            Default = a.Split('$')[1].Split(':')[1],
-                        })));
+                        .Select(a => a.Split('$').Select((v,i) => new {v,i}).Where(z => z.i % 2 != 0).Select(p => new
+                            {
+                                ID = p.v,
+                                ToolTip = " ",
+                                Default = p.v,
+                            }).Distinct())));
             }
-            template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Code"]!["#cdata-section"] = codeString;
+            template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Code"]!["#cdata-section"] = $"\n{string.Join("\n", codeArray)}\n";
 
             return template.ToString();
         }
@@ -582,22 +581,13 @@ namespace GitTransformer.Pages
         {
             try
             {
-                if (string.IsNullOrEmpty(_input))
-                {
-                    _output = Constants.JsonTemplate;
-                    return;
-                }
-                var template = JObject.Parse(Constants.JsonTemplate);
-                template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Code"]!["#cdata-section"] = $"\n{_input}\n";
-                var doc = JsonConvert.DeserializeXmlNode(template.ToString());
-                using var sw = new StringWriter();
-                await sw.WriteLineAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                var writer = new XmlTextWriter(sw)
-                {
-                    Formatting = System.Xml.Formatting.Indented
-                };
-                doc?.WriteContentTo(writer);
-                _output = sw.ToString();
+                var template = JObject.Parse(Constants.SnippetTemplate);
+                var code = string.IsNullOrEmpty(_input)
+                    ? "<!-- Code Goes Here -->"
+                    : _input;
+                template["CodeSnippets"]!["CodeSnippet"]!["Snippet"]!["Code"]!["#cdata-section"] = $"\n{code}\n";
+
+                await JsonToXML(template.ToString());
             }
             catch (Exception ex)
             {

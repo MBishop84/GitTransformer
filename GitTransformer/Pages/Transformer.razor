@@ -233,7 +233,7 @@
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
-                                      Click="@JsonToXML"
+                                      Click="@(async () => await JsonToXML("{\"DefaultRoot\":" + $"{_input}}}"))"
                                       Text="Json->XML"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"

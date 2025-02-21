@@ -2,7 +2,7 @@
 
 public static class Constants
 {
-    public const string JsonTemplate = """
+    public const string SnippetTemplate = """
         {
           "CodeSnippets": {
             "@xmlns": "http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet",
@@ -34,7 +34,7 @@ public static class Constants
               "@Format": "1.0.0",
               "Header": {
                 "Title": "",
-                "Shortcut": "",
+                "Shortcut": " ",
                 "Description": "",
                 "Author": "https://mbishop84.github.io/GitTransformer/transformer",
                 "SnippetTypes": {
@@ -46,7 +46,7 @@ public static class Constants
                     "Literal": [
                         {
                           "ID": "",
-                          "ToolTip": "",
+                          "ToolTip": " ",
                           "Default": ""
                         }
                     ]
@@ -58,6 +58,18 @@ public static class Constants
               }
             }
           }
+        }
+        """,
+        SqlJsonFormat = """
+        {
+          "prefix": "TableAndDetails",
+          "description": "Query Table and TableDetails",
+          "body": [
+        	"DECLARE @Id INT = ${1:Id}",
+        	"SELECT * FROM ${2:Database}.${3:dbo}.[${4:Table}] WHERE [Id] = @Id",
+        	"SELECT * FROM ${2:Database}.${3:dbo}.[${5:TableDetails}] WHERE [Id] = @Id",
+        	"ORDER BY [${6:DateAdded}] DESC"
+          ]
         }
         """;
 }
