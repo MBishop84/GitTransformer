@@ -34,7 +34,7 @@ public static class Constants
               "@Format": "1.0.0",
               "Header": {
                 "Title": "",
-                "Shortcut": " ",
+                "Shortcut": null,
                 "Description": "",
                 "Author": "https://mbishop84.github.io/GitTransformer/transformer",
                 "SnippetTypes": {
@@ -45,9 +45,9 @@ public static class Constants
                 "Declarations": {
                     "Literal": [
                         {
-                          "ID": "",
-                          "ToolTip": " ",
-                          "Default": ""
+                          "ID": null,
+                          "ToolTip": null,
+                          "Default": null
                         }
                     ]
                 },
