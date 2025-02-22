@@ -208,57 +208,66 @@
                         </RadzenStack>
                     </RadzenStack>
                 </RadzenAccordionItem>
-                <RadzenAccordionItem Text="Defined"
+                <RadzenAccordionItem Text="Pre-Programmed"
                                      Icon="keyboard_double_arrow_right"
                                      @bind-Selected="_selected[1]">
                     <RadzenStack Orientation="Orientation.Horizontal"
                                  AlignItems="AlignItems.Stretch"
                                  JustifyContent="JustifyContent.Stretch"
                                  Wrap="FlexWrap.Wrap"
-                                 Gap="10px">
+                                 Style="width:100%"
+                                 Gap="5px">
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@ClassFromQuery"
                                       Text="C# Class"
+                                      Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@JsonToRecords"
                                       Text="Json->Records"
+                                      Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@XmlToClass"
                                       Text="XML->Class"
+                                      Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@(async () => await JsonToXML("{\"DefaultRoot\":" + $"{_input}}}"))"
                                       Text="Json->XML"
+                                      Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@XmlToJson"
                                       Text="XML->Json"
+                                      Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@SQLJsonToSnippet"
                                       Text="sql.json->.snippet"
+                                      Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@DotSnippet"
                                       Text=".snippet"
+                                      Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Text="Clear"
                                       ButtonStyle="ButtonStyle.Warning"
+                                      Style="flex-grow:1"
                                       Click="@(_ => { ClearField("_input"); ClearField("_output"); })" />
                     </RadzenStack>
                 </RadzenAccordionItem>
-                <RadzenAccordionItem Text="JavaScript"
+                <RadzenAccordionItem Text="User-JavaScript"
                                      Icon="code"
                                      @bind-Selected="_selected[2]">
                     <RadzenStack Orientation="Orientation.Vertical"
