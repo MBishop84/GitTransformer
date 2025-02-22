@@ -88,3 +88,8 @@ code {
 .rz-dialog-content{
     height: 100%
 }
+
+.rz-button{
+    width: auto;
+    flex-grow: 1;
+}
