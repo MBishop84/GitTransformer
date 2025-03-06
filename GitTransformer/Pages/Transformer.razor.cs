@@ -1,5 +1,4 @@
-﻿using GitTransformer.Services;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,14 +19,9 @@ public partial class Transformer
 
     #region Injected Services
 
-    [Inject]
-    private IJSRuntime JS { get; init; } = null!;
-    [Inject]
-    private DialogService DialogService { get; init; } = null!;
-    [Inject]
-    private LocalFileService FileClient { get; init; } = null!;
-    [Inject]
-    private AppData AppData { get; set; } = null!;
+    [Inject] private IJSRuntime JS { get; init; } = null!;
+    [Inject] private DialogService DialogService { get; init; } = null!;
+    [Inject] private AppData AppData { get; set; } = null!;
 
     #endregion
 
@@ -264,22 +258,26 @@ public partial class Transformer
 
             ArgumentNullException.ThrowIfNullOrEmpty(jsonObject?.ToString());
 
+            await DialogService.OpenAsync<CustomDialog>("Serializer",
+                new Dictionary<string, object>
+                {
+                    { "Type", Enums.DialogTypes.RecordsCheck },
+                    { "Message", "Choose a serializer" }
+                }, _dialogOptions);
+
             List<string> rootFields = [];
             foreach (var property in jsonObject.Properties())
             {
                 rootFields.Add(property.Value.Type switch
                 {
                     JTokenType.Object => $"""
-                            [property: JsonPropertyName("{property.Name}")]
-                            {property.Name.PascalCase()}? {property.Name.PascalCase()} = null
+                            {GetDecorator(property.Name)}{property.Name.PascalCase()}? {property.Name.PascalCase()} = null
                         """,
                     JTokenType.Array => $"""
-                            [property: JsonPropertyName("{property.Name}")]
-                            {GetPropertyType(property)}? {property.Name.PascalCase().Plural()} = null
+                            {GetDecorator(property.Name)}{GetPropertyType(property)}? {property.Name.PascalCase().Plural()} = null
                         """,
                     _ => $"""
-                            [property: JsonPropertyName("{property.Name}")]
-                            {GetPropertyType(property)}? {property.Name.PascalCase()} = null
+                            {GetDecorator(property.Name)}{GetPropertyType(property)}? {property.Name.PascalCase()} = null
                         """
                 });
                 if (property.Value.Type == JTokenType.Object)
@@ -304,7 +302,9 @@ public partial class Transformer
         }
     }
 
-    private static List<string> ProcessProperty(JProperty property)
+    private string GetDecorator(string name) => string.IsNullOrEmpty(UserCode) ? "" : $"{string.Format(UserCode, name)} ";
+
+    private List<string> ProcessProperty(JProperty property)
     {
         List<string> records = [];
         var recordName = property.Name;
@@ -315,8 +315,7 @@ public partial class Transformer
             foreach (var child in property.Value.Children<JProperty>())
             {
                 fields.Add($"""
-                        [property: JsonPropertyName("{child.Name}")]
-                        {GetPropertyType(child)}? {child.Name.PascalCase()} = null
+                        {GetDecorator(property.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
                     """);
                 if (child.Value.Type == JTokenType.Object)
                     records.AddRange(ProcessProperty(child));
@@ -335,8 +334,7 @@ public partial class Transformer
                 foreach (var child in first.Value.Children<JProperty>())
                 {
                     fields.Add($"""
-                            [property: JsonPropertyName("{child.Name}")]
-                            {GetPropertyType(child)}? {child.Name.PascalCase()} = null
+                            {GetDecorator(property.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
                         """);
                     if (child.Value.Type == JTokenType.Object)
                         records.AddRange(ProcessProperty(child));
@@ -347,16 +345,14 @@ public partial class Transformer
             else
             {
                 fields.Add($"""
-                        [property: JsonPropertyName("{property.Name}")]
-                        IEnumerable<{GetPropertyType(new JProperty(recordName, first.Value))}>? {property.Name.PascalCase().Plural()} = null
+                        {GetDecorator(property.Name)}IEnumerable<{GetPropertyType(new JProperty(recordName, first.Value))}>? {property.Name.PascalCase().Plural()} = null
                     """);
             }
         }
         else
         {
             fields.Add($"""
-                    [property: JsonPropertyName("{property.Name}")]
-                    {GetPropertyType(property)}? {property.Name.PascalCase()} = null
+                    {GetDecorator(property.Name)}{GetPropertyType(property)}? {property.Name.PascalCase()} = null
                 """);
         }
 
@@ -621,5 +617,6 @@ public partial class Transformer
         _openInModal = false;
         StateHasChanged();
     }
+
     #endregion
 }

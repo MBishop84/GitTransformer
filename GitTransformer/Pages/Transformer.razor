@@ -220,7 +220,7 @@
                         <RadzenButton Variant="Variant.Outlined"
                                       Shade="Shade.Darker"
                                       Click="@ClassFromQuery"
-                                      Text="C# Class"
+                                      Text="Table -> C# Class"
                                       Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
                         <RadzenButton Variant="Variant.Outlined"
@@ -259,12 +259,6 @@
                                       Text=".snippet"
                                       Style="flex-grow:1"
                                       ButtonStyle="ButtonStyle.Primary" />
-                        <RadzenButton Variant="Variant.Outlined"
-                                      Shade="Shade.Darker"
-                                      Text="Clear"
-                                      ButtonStyle="ButtonStyle.Warning"
-                                      Style="flex-grow:1"
-                                      Click="@(_ => { ClearField("_input"); ClearField("_output"); })" />
                     </RadzenStack>
                 </RadzenAccordionItem>
                 <RadzenAccordionItem Text="User-JavaScript"
@@ -300,6 +294,12 @@
                      JustifyContent="JustifyContent.Stretch"
                      Style="width: 100%"
                      Gap="3px">
+            <RadzenButton Variant="Variant.Outlined"
+                          Shade="Shade.Darker"
+                          Text="Clear Input And Output"
+                          ButtonStyle="ButtonStyle.Warning"
+                          Style="flex-grow:1"
+                          Click="@(_ => { ClearField("_input"); ClearField("_output"); })" />
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
                           Click="@(() => Orientation = Orientation == Orientation.Horizontal

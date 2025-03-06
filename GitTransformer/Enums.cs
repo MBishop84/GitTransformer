@@ -8,7 +8,8 @@
             ClassFromQuery,
             XmlToClass,
             Password,
-            Text
+            Text,
+            RecordsCheck,
         }
     }
 }
