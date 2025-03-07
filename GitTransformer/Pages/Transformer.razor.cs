@@ -321,34 +321,12 @@ public partial class Transformer
                 if (child.Value.Type == JTokenType.Object)
                     records.AddRange(ProcessProperty(child));
                 else if (child.Value.Type == JTokenType.Array)
-                    records.AddRange(ProcessProperty(new JProperty(child.Name.PascalCase().Singular(), (child.Value as JArray)![0])));
+                    records.AddRange(ProcessArray(child));
             }
         }
         else if (property.Value.Type == JTokenType.Array)
         {
-            recordName = recordName.Singular();
-            var first = new JProperty(property.Name.PascalCase().Singular(), (property.Value as JArray)![0]);
-            records.AddRange(ProcessProperty(new JProperty(recordName, first.Value)));
-
-            if (first.Value.Type == JTokenType.Object)
-            {
-                foreach (var child in first.Value.Children<JProperty>())
-                {
-                    fields.Add($"""
-                            {GetDecorator(child.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
-                        """);
-                    if (child.Value.Type == JTokenType.Object)
-                        records.AddRange(ProcessProperty(child));
-                    else if (child.Value.Type == JTokenType.Array)
-                        records.AddRange(ProcessProperty(new JProperty(child.Name.PascalCase().Singular(), (child.Value as JArray)![0])));
-                }
-            }
-            else
-            {
-                fields.Add($"""
-                        {GetDecorator(property.Name)}IEnumerable<{GetPropertyType(new JProperty(recordName, first.Value))}>? {property.Name.PascalCase().Plural()} = null
-                    """);
-            }
+            records.AddRange(ProcessArray(property));
         }
         else
         {
@@ -361,6 +339,39 @@ public partial class Transformer
 
         return records;
     }
+
+    private List<string> ProcessArray(JProperty property)
+    {
+        List<string> records = [];
+        var recordName = property.Name.Singular();
+        List<string> fields = [];
+        var first = new JProperty(property.Name.PascalCase().Singular(), (property.Value as JArray)![0]);
+        if (first.Value.Type == JTokenType.Object)
+        {
+            foreach (var child in first.Value.Children<JProperty>())
+            {
+                fields.Add($"""
+                    {GetDecorator(child.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
+                """);
+                if (child.Value.Type == JTokenType.Object)
+                    records.AddRange(ProcessProperty(child));
+                else if (child.Value.Type == JTokenType.Array)
+                    records.AddRange(ProcessArray(child));
+            }
+        }
+        else if (first.Value.Type == JTokenType.Array)
+        {
+            records.AddRange(ProcessArray(first));
+        }
+        else
+        {
+            fields.Add($"""
+                {GetDecorator(property.Name)}IEnumerable<{GetPropertyType(new JProperty(recordName, first.Value))}>? {property.Name.PascalCase().Plural()} = null
+            """);
+        }
+        return records;
+    }
+
 
     private static string GetPropertyType(JProperty token)
         => token.Value.Type switch
