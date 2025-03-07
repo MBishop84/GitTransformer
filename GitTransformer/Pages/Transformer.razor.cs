@@ -289,6 +289,7 @@ public partial class Transformer
             _output = string.Join("\n", records.Prepend($"""
                 public record Root({Environment.NewLine}{string.Join(",\n", rootFields)});
                 """));
+            UserCode = string.Empty;
         }
         catch (Exception ex)
         {
@@ -315,7 +316,7 @@ public partial class Transformer
             foreach (var child in property.Value.Children<JProperty>())
             {
                 fields.Add($"""
-                        {GetDecorator(property.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
+                        {GetDecorator(child.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
                     """);
                 if (child.Value.Type == JTokenType.Object)
                     records.AddRange(ProcessProperty(child));
@@ -334,7 +335,7 @@ public partial class Transformer
                 foreach (var child in first.Value.Children<JProperty>())
                 {
                     fields.Add($"""
-                            {GetDecorator(property.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
+                            {GetDecorator(child.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
                         """);
                     if (child.Value.Type == JTokenType.Object)
                         records.AddRange(ProcessProperty(child));
