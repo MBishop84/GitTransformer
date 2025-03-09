@@ -283,7 +283,7 @@ public partial class Transformer
                 if (property.Value.Type == JTokenType.Object)
                     records.AddRange(ProcessProperty(property));
                 else if (property.Value.Type == JTokenType.Array)
-                    records.AddRange(ProcessProperty(new JProperty(property.Name.PascalCase().Singular(), (property.Value as JArray)![0])));
+                    records.AddRange(ProcessArray(property));
             }
 
             _output = string.Join("\n", records.Prepend($"""
@@ -345,10 +345,14 @@ public partial class Transformer
         List<string> records = [];
         var recordName = property.Name.Singular();
         List<string> fields = [];
-        var first = new JProperty(property.Name.PascalCase().Singular(), (property.Value as JArray)![0]);
-        if (first.Value.Type == JTokenType.Object)
+        var first = JArray.Parse(property.Value.ToString()).First;
+
+        if(first == null)
+            return records;
+
+        if (first.Type == JTokenType.Object)
         {
-            foreach (var child in first.Value.Children<JProperty>())
+            foreach (var child in first.Children<JProperty>())
             {
                 fields.Add($"""
                     {GetDecorator(child.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
@@ -359,14 +363,14 @@ public partial class Transformer
                     records.AddRange(ProcessArray(child));
             }
         }
-        else if (first.Value.Type == JTokenType.Array)
+        else if (first.Type == JTokenType.Array)
         {
-            records.AddRange(ProcessArray(first));
+            records.AddRange(ProcessArray(new JProperty(recordName, first)));
         }
         else
         {
             fields.Add($"""
-                {GetDecorator(property.Name)}IEnumerable<{GetPropertyType(new JProperty(recordName, first.Value))}>? {property.Name.PascalCase().Plural()} = null
+                {GetDecorator(property.Name)}IEnumerable<{GetPropertyType(new JProperty(recordName, first))}>? {property.Name.PascalCase().Plural()} = null
             """);
         }
         return records;
