@@ -61,9 +61,6 @@ public partial class Transformer
         DialogService.OnClose += DialogClose;
     }
 
-    /// <summary>
-    /// Overrides the default behavior of the OnAfterRenderAsync method.
-    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
@@ -87,11 +84,6 @@ public partial class Transformer
         }
     }
 
-    /// <summary>
-    /// Transforms the input string to the desired output based on variables.
-    /// </summary>
-    /// <returns>Sets the output</returns>
-    /// <exception cref="ArgumentException"></exception>
     private async Task Transform()
     {
         try
@@ -137,10 +129,6 @@ public partial class Transformer
             false => $"{_boundEach.Prefix}{input}{_boundEach.Suffix}",
         };
 
-    /// <summary>
-    /// Clears the selected public field.
-    /// </summary>
-    /// <param name="field"></param>
     private void ClearField(string field)
     {
         switch (field)
@@ -169,13 +157,6 @@ public partial class Transformer
         StateHasChanged();
     }
 
-
-    /// <summary>
-    /// Converts the results of a SQL query to a C# class.
-    /// </summary>
-    /// <exception cref="ArgumentException">
-    /// Shows the query to run to get the appropriate results for the input on error.
-    /// </exception>
     private async Task ClassFromQuery()
     {
         try
@@ -240,10 +221,6 @@ public partial class Transformer
         }
     }
 
-    /// <summary>
-    /// Converts a JSON object to C# records.
-    /// </summary>
-    /// <remarks>Useful for making objects from api responses.</remarks>
     private async Task JsonToRecords()
     {
         try
@@ -376,7 +353,6 @@ public partial class Transformer
         return records;
     }
 
-
     private static string GetPropertyType(JProperty token)
         => token.Value.Type switch
         {
@@ -396,12 +372,6 @@ public partial class Transformer
             _ => "string"
         };
 
-    /// <summary>
-    /// Converts XML to a C# class.
-    /// </summary>
-    /// <exception cref="ArgumentException">
-    /// Error dialog displays the error with an example of what this function works best with.
-    /// </exception>
     private async Task XmlToClass()
     {
         try
@@ -468,10 +438,6 @@ public partial class Transformer
         }
     }
 
-    /// <summary>
-    /// Converts a JSON object to XML.
-    /// </summary>
-    /// <returns></returns>
     private async Task JsonToXML(string input)
     {
         try
@@ -584,10 +550,6 @@ public partial class Transformer
         }
     }
 
-    /// <summary>
-    /// Converts XML to a C# class.
-    /// </summary>
-    /// <remarks>Not yet Implemented</remarks>
     private async Task XmlToJson()
     {
         try
