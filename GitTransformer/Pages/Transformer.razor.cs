@@ -260,7 +260,7 @@ public partial class Transformer
                 else if (property.Value.Type == JTokenType.Array)
                     records.AddRange(property.ProcessJArray());
             }
-
+            records = [.. records.Distinct()];
             _output = string.Join("\n", records.Prepend($"""
                 public record Root({Environment.NewLine}{string.Join(",\n", rootFields)});
                 """));
