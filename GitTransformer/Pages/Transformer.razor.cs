@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Radzen;
@@ -19,7 +18,6 @@ public partial class Transformer
 
     #region Injected Services
 
-    [Inject] private IJSRuntime JS { get; init; } = null!;
     [Inject] private DialogService DialogService { get; init; } = null!;
     [Inject] private AppData AppData { get; set; } = null!;
 
@@ -248,25 +246,24 @@ public partial class Transformer
                 rootFields.Add(property.Value.Type switch
                 {
                     JTokenType.Object => $"""
-                            {GetDecorator(property.Name)}{property.Name.PascalCase()}? {property.Name.PascalCase()} = null
+                            {property.Name.GetDecorator()}{property.Name.PascalCase()}? {property.Name.PascalCase()} = null
                         """,
                     JTokenType.Array => $"""
-                            {GetDecorator(property.Name)}{GetPropertyType(property)}? {property.Name.PascalCase().Plural()} = null
+                            {property.Name.GetDecorator()}{property.GetJPropertyType()}? {property.Name.PascalCase().Plural()} = null
                         """,
                     _ => $"""
-                            {GetDecorator(property.Name)}{GetPropertyType(property)}? {property.Name.PascalCase()} = null
+                            {property.Name.GetDecorator()}{property.GetJPropertyType()}? {property.Name.PascalCase()} = null
                         """
                 });
                 if (property.Value.Type == JTokenType.Object)
-                    records.AddRange(ProcessProperty(property));
+                    records.AddRange(property.ProcessJProperty());
                 else if (property.Value.Type == JTokenType.Array)
-                    records.AddRange(ProcessArray(property));
+                    records.AddRange(property.ProcessJArray());
             }
 
             _output = string.Join("\n", records.Prepend($"""
                 public record Root({Environment.NewLine}{string.Join(",\n", rootFields)});
                 """));
-            UserCode = string.Empty;
         }
         catch (Exception ex)
         {
@@ -279,98 +276,6 @@ public partial class Transformer
                 }, _dialogOptions);
         }
     }
-
-    private string GetDecorator(string name) => string.IsNullOrEmpty(UserCode) ? "" : $"{string.Format(UserCode, name)} ";
-
-    private List<string> ProcessProperty(JProperty property)
-    {
-        List<string> records = [];
-        var recordName = property.Name;
-        List<string> fields = [];
-
-        if (property.Value.Type == JTokenType.Object)
-        {
-            foreach (var child in property.Value.Children<JProperty>())
-            {
-                fields.Add($"""
-                        {GetDecorator(child.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
-                    """);
-                if (child.Value.Type == JTokenType.Object)
-                    records.AddRange(ProcessProperty(child));
-                else if (child.Value.Type == JTokenType.Array)
-                    records.AddRange(ProcessArray(child));
-            }
-        }
-        else if (property.Value.Type == JTokenType.Array)
-        {
-            records.AddRange(ProcessArray(property));
-        }
-        else
-        {
-            fields.Add($"""
-                    {GetDecorator(property.Name)}{GetPropertyType(property)}? {property.Name.PascalCase()} = null
-                """);
-        }
-
-        records.Add($"public record {recordName.PascalCase()}(\n{string.Join(",\n", fields)});");
-
-        return records;
-    }
-
-    private List<string> ProcessArray(JProperty property)
-    {
-        List<string> records = [];
-        var recordName = property.Name.Singular();
-        List<string> fields = [];
-        var first = JArray.Parse(property.Value.ToString()).First;
-
-        if(first == null)
-            return records;
-
-        if (first.Type == JTokenType.Object)
-        {
-            foreach (var child in first.Children<JProperty>())
-            {
-                fields.Add($"""
-                    {GetDecorator(child.Name)}{GetPropertyType(child)}? {child.Name.PascalCase()} = null
-                """);
-                if (child.Value.Type == JTokenType.Object)
-                    records.AddRange(ProcessProperty(child));
-                else if (child.Value.Type == JTokenType.Array)
-                    records.AddRange(ProcessArray(child));
-            }
-        }
-        else if (first.Type == JTokenType.Array)
-        {
-            records.AddRange(ProcessArray(new JProperty(recordName, first)));
-        }
-        else
-        {
-            fields.Add($"""
-                {GetDecorator(property.Name)}IEnumerable<{GetPropertyType(new JProperty(recordName, first))}>? {property.Name.PascalCase().Plural()} = null
-            """);
-        }
-        return records;
-    }
-
-    private static string GetPropertyType(JProperty token)
-        => token.Value.Type switch
-        {
-            JTokenType.Integer => "int",
-            JTokenType.Float => "double",
-            JTokenType.Boolean => "bool",
-            JTokenType.Date => "DateTime",
-            JTokenType.Bytes => "byte[]",
-            JTokenType.Guid => "Guid",
-            JTokenType.TimeSpan => "TimeSpan",
-            JTokenType.Array => (token.Value as JArray)![0].Type switch
-            {
-                JTokenType.Object => $"IEnumerable<{token.Path.Split(".")[^1].PascalCase().Singular()}>",
-                _ => $"IEnumerable<{GetPropertyType(new JProperty(token.Name.PascalCase().Singular(), (token.Value as JArray)![0]))}>",
-            },
-            JTokenType.Object => token.Name.PascalCase(),
-            _ => "string"
-        };
 
     private async Task XmlToClass()
     {

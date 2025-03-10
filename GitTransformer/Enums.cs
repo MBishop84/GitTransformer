@@ -1,15 +1,14 @@
-﻿namespace GitTransformer
+﻿namespace GitTransformer;
+
+public class Enums
 {
-    public class Enums
+    public enum DialogTypes
     {
-        public enum DialogTypes
-        {
-            Error,
-            ClassFromQuery,
-            XmlToClass,
-            Password,
-            Text,
-            RecordsCheck,
-        }
+        Error,
+        ClassFromQuery,
+        XmlToClass,
+        Password,
+        Text,
+        RecordsCheck,
     }
 }

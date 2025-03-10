@@ -58,7 +58,7 @@
         <RadzenText TextStyle="TextStyle.Body1" TagName="TagName.Pre">@Message</RadzenText>
         <br />
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
-            <RadzenRadioButtonList @bind-Value="@entry"
+            <RadzenRadioButtonList @bind-Value="@format"
                                    TValue="string"
                                    Orientation="Orientation.Vertical"
                                    class="rz-mx-2">
@@ -68,7 +68,11 @@
                     <RadzenRadioButtonListItem Text="No Decorator" Value=@("") />
                 </Items>
             </RadzenRadioButtonList>
-            <RadzenButton Click=@(args => DialogService.Close(entry)) Text="Enter" ButtonStyle="ButtonStyle.Primary" />
+            <RadzenButton Click=@(args => {
+                  Extensions.DecoratorFormat = format;
+                  DialogService.Close();
+                  })
+                          Text="Enter" ButtonStyle="ButtonStyle.Primary" />
         </RadzenStack>
         break;
     case null:
@@ -88,6 +92,7 @@
 }
 @code
 {
+    string? format;
     string? entry;
     [Parameter] public Enums.DialogTypes? Type { get; set; }
     [Parameter] public string? Message { get; set; }
