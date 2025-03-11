@@ -37,12 +37,21 @@ self.SetScrollEvent = () => {
 
 self.RunUserScript = (userCode) => {
     const input = document.getElementById('input').value;
+    if (!input) {
+        alert('Please provide input');
+        return;
+    }
     const myWorker = new Worker('js/userScriptWorker.js');
+
+    if (!myWorker) {
+        alert('Web Worker not found.');
+        return;
+    }
 
     const timer = setTimeout(() => {
         myWorker.terminate();
         alert('Script took too long to execute. Terminated.');
-    }, 1000);
+    }, 1500);
 
     myWorker.onmessage = (e) => {
         document.getElementById('output').value = `${e.data}`;
