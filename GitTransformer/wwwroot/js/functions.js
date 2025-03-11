@@ -51,7 +51,7 @@ self.RunUserScript = (userCode) => {
     const timer = setTimeout(() => {
         myWorker.terminate();
         alert('Script took too long to execute. Terminated.');
-    }, 1000);
+    }, 1500);
 
     myWorker.onmessage = (e) => {
         document.getElementById('output').value = `${e.data}`;

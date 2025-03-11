@@ -132,8 +132,8 @@ public partial class VSCodeJS : IAsyncDisposable
                 "JavaScript Error",
                 new Dictionary<string, object>
                 {
-                { "Type", Enums.DialogTypes.Error },
-                { "Message", $"{ex.Message}\n{ex.StackTrace}" }
+                    { "Type", Enums.DialogTypes.Error },
+                    { "Message", $"{ex}" }
                 },
                 new DialogOptions()
                 {
