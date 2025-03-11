@@ -78,7 +78,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
         }
     }
 
@@ -114,7 +114,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
         }
     }
 
@@ -215,7 +215,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.ClassFromQuery },
                     { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
         }
     }
 
@@ -238,7 +238,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.RecordsCheck },
                     { "Message", "Choose a serializer" }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
 
             List<string> rootFields = [];
             foreach (var property in jsonObject.Properties())
@@ -273,7 +273,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n{ex.StackTrace}" }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
         }
     }
 
@@ -339,7 +339,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.XmlToClass },
                     { "Message", message }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
         }
     }
 
@@ -365,7 +365,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
         }
     }
 
@@ -386,7 +386,7 @@ public partial class Transformer
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n\nExample Input Format:\n{Constants.SqlJsonFormat}" }
-                }, _dialogOptions);
+                }, Constants.DialogOptions);
         }
     }
 
@@ -451,7 +451,7 @@ public partial class Transformer
                {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
-               }, _dialogOptions);
+               }, Constants.DialogOptions);
         }
     }
 
@@ -472,8 +472,8 @@ public partial class Transformer
                 new Dictionary<string, object>
                 {
                     { "Type", Enums.DialogTypes.Error },
-                    { "Message", $"{ex.Message}\n{ex.StackTrace}" }
-                }, _dialogOptions);
+                    { "Message", $"{ex}" }
+                }, Constants.DialogOptions);
         }
     }
 

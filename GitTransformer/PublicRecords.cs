@@ -1,4 +1,5 @@
-﻿namespace GitTransformer;
+﻿
+namespace GitTransformer;
 
 public record SingleQuotableResponse(string Quote, string Author);
 public record Author(int? Id = 0, string? Name = "Unknown");

@@ -16,7 +16,7 @@ public class QuotableApiService(
         }
         catch(Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            Console.WriteLine(ex);
             return new Quote();
         }
     }

@@ -19,7 +19,7 @@ public class LocalFileService
             ["GetThemes"] = Task.Run(async () =>
             {
                 var themes = await _httpClient.GetFromJsonAsync<Dictionary<string, string>>("themes/themelist.json");
-                if(themes is not null)
+                if (themes is not null)
                     foreach (var theme in themes.AsParallel())
                         _themes.TryAdd(theme.Key, theme.Value);
             }),
@@ -41,23 +41,19 @@ public class LocalFileService
         var thisTask = StartupTasks["PopulateQuotes"];
         if (thisTask.IsCompleted)
             return _quotes![new Random().Next(_quotes.Count)]!;
-        else
-        {
-            await thisTask;
-            return _quotes![new Random().Next(_quotes.Count)]!;
-        }
+
+        await thisTask;
+        return _quotes![new Random().Next(_quotes.Count)]!;
     }
 
     public async Task<List<string>> GetMonacoThemes()
     {
         var thisTask = StartupTasks["GetThemes"];
         if (thisTask.IsCompleted)
-            return _themes.Select(x => x.Value).ToList();
-        else
-        {
-            await thisTask;
-            return _themes.Select(x => x.Value).ToList();
-        }
+            return [.. _themes.Select(x => x.Value)];
+
+        await thisTask;
+        return [.. _themes.Select(x => x.Value)];
     }
 
     public Task<StandaloneThemeData?> GetStandaloneThemeData(string theme)
@@ -69,10 +65,8 @@ public class LocalFileService
 
         if (thisTask.IsCompleted)
             return _jsTransforms;
-        else
-        {
-            await thisTask;
-            return _jsTransforms;
-        }
+
+        await thisTask;
+        return _jsTransforms;
     }
 }

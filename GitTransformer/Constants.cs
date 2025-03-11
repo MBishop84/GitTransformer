@@ -1,7 +1,16 @@
-﻿namespace GitTransformer;
+﻿using Radzen;
+
+namespace GitTransformer;
 
 public static class Constants
 {
+    public static DialogOptions DialogOptions => new()
+    {
+        Width = "max-content",
+        Height = "max-content",
+        Style = "max-width: 90vw; max-height: 90vh"
+    };
+
     public const string SnippetTemplate = """
         {
           "CodeSnippets": {
