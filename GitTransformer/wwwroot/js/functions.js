@@ -37,7 +37,16 @@ self.SetScrollEvent = () => {
 
 self.RunUserScript = (userCode) => {
     const input = document.getElementById('input').value;
+    if (!input) {
+        alert('Please provide input');
+        return;
+    }
     const myWorker = new Worker('js/userScriptWorker.js');
+
+    if (!myWorker) {
+        alert('Web Worker not found.');
+        return;
+    }
 
     const timer = setTimeout(() => {
         myWorker.terminate();
