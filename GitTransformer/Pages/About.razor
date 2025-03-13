@@ -1,10 +1,10 @@
 ﻿@page "/about"
+@page "/GitTransformer/about"
 <RadzenStack Orientation="Orientation.Horizontal"
              JustifyContent="JustifyContent.Center"
              AlignItems="AlignItems.Center"
              Style="height: 90-vh"
              class="rz-w-100">
-
     <RadzenCard class="rz-w-lg-50 rz-w-sm-100">
         <RadzenStack Orientation="Orientation.Horizontal"
                      AlignItems="AlignItems.Center"
@@ -16,7 +16,7 @@
                          AlternateText="Mitch Bishop" />
             <RadzenText TextStyle="TextStyle.H2" class="rz-display-flex rz-mt-2 rz-my-0">Mitch Bishop</RadzenText>
         </RadzenStack>
-        <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+        <hr />
         <RadzenStack Orientation="Orientation.Horizontal"
                      AlignItems="AlignItems.Start"
                      JustifyContent="JustifyContent.SpaceBetween"
@@ -40,8 +40,8 @@
                 </RadzenText>
             </RadzenStack>
         </RadzenStack>
-        <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto">
+        <hr />
+        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="true">
             <HeaderTemplate>
                 <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
                     <RadzenIcon Icon="terminal" class="rz-me-1" /><b>Skills</b>
@@ -50,67 +50,186 @@
             <ChildContent>
                 <RadzenAccordion>
                     <Items>
-                        <RadzenAccordionItem Text="UX/UI"
+                        <RadzenAccordionItem Text="Programming Languages"
+                                             CollapseTitle="Ordered by proficiency."
+                                             ExpandTitle="Ordered by proficiency."
+                                             Icon="code">
+                            <RadzenStack Orientation="Orientation.Horizontal"
+                                         AlignItems="AlignItems.Start"
+                                         JustifyContent="JustifyContent.Start"
+                                         class="rz-w-100"
+                                         Gap="10px"
+                                         Wrap="FlexWrap.Wrap">
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/dotnet/csharp/"
+                                            Text="C#" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://www.typescriptlang.org/"
+                                            Text="TypeScript" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
+                                            Text="JavaScript" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/dotnet/visual-basic/language-reference/"
+                                            Text="VB.NET" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://developer.mozilla.org/en-US/docs/Web/HTML"
+                                            Text="HTML" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://developer.mozilla.org/en-US/docs/Web/CSS"
+                                            Text="CSS" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/sql/t-sql/language-reference?view=sql-server-ver16"
+                                            Text="T-SQL" target="_blank" class="big" />
+                            </RadzenStack>
+                        </RadzenAccordionItem>
+                        <RadzenAccordionItem Text="UX/UI Frameworks"
                                              CollapseTitle="Ordered by proficiency."
                                              ExpandTitle="Ordered by proficiency."
                                              Icon="tv_signin">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Center"
-                                         JustifyContent="JustifyContent.SpaceBetween"
+                                         JustifyContent="JustifyContent.Start"
                                          class="rz-w-100"
                                          Gap="10px"
                                          Wrap="FlexWrap.Wrap">
-                                <RadzenLink Icon="frame_source" Path="https://angular.dev/"
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://angular.dev/"
                                             Text="Angular" target="_blank" class="big" />
-                                <RadzenLink Icon="frame_source" Path="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor"
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor"
                                             Text="Blazor" target="_blank" class="big" />
-                                <RadzenLink Icon="frame_source" Path="https://learn.microsoft.com/en-us/dotnet/desktop/winforms/overview/?view=netdesktop-9.0"
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/dotnet/desktop/winforms/overview/?view=netdesktop-9.0"
                                             Text="WinForms" target="_blank" class="big" />
-                                <RadzenLink Icon="frame_source" Path="https://learn.microsoft.com/en-us/aspnet/web-forms/"
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/aspnet/web-forms/"
                                             Text="WebForms" target="_blank" class="big" />
-                                <RadzenLink Icon="translate" Path="https://learn.microsoft.com/en-us/dotnet/csharp/"
-                                            Text="C#" target="_blank" class="big" />
-                                <RadzenLink Icon="translate" Path="https://www.typescriptlang.org/"
-                                            Text="TypeScript" target="_blank" class="big" />
-                                <RadzenLink Icon="translate" Path="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-                                            Text="JavaScript" target="_blank" class="big" />
-                                <RadzenLink Icon="translate" Path="https://developer.mozilla.org/en-US/docs/Web/HTML"
-                                            Text="HTML" target="_blank" class="big" />
-                                <RadzenLink Icon="translate" Path="https://developer.mozilla.org/en-US/docs/Web/CSS"
-                                            Text="CSS" target="_blank" class="big" />
-                                <RadzenLink Icon="translate" Path="https://learn.microsoft.com/en-us/dotnet/visual-basic/language-reference/"
-                                            Text="VB.NET" target="_blank" class="big" />
                             </RadzenStack>
                         </RadzenAccordionItem>
-                        <RadzenAccordionItem Text="Server"
+                        <RadzenAccordionItem Text="Server Architectures"
                                              CollapseTitle="Ordered by proficiency."
                                              ExpandTitle="Ordered by proficiency."
                                              Icon="dns">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Start"
-                                         JustifyContent="JustifyContent.SpaceBetween"
+                                         JustifyContent="JustifyContent.Start"
                                          class="rz-w-100"
                                          Gap="10px"
                                          Wrap="FlexWrap.Wrap">
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-8.0"
+                                            Text="ASP.NET REST API" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/ef/"
+                                            Text="Entity Framework Core" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://www.learndapper.com/"
+                                            Text="Dapper" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://expressjs.com/"
+                                            Text="Express.js" target="_blank" class="big" />
                             </RadzenStack>
                         </RadzenAccordionItem>
-                        <RadzenAccordionItem Text="Database"
+                        <RadzenAccordionItem Text="Databases"
                                              CollapseTitle="Ordered by proficiency."
                                              ExpandTitle="Ordered by proficiency."
                                              Icon="database">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Start"
-                                         JustifyContent="JustifyContent.SpaceBetween"
+                                         JustifyContent="JustifyContent.Start"
                                          class="rz-w-100"
                                          Gap="10px"
                                          Wrap="FlexWrap.Wrap">
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://learn.microsoft.com/en-us/sql/sql-server/?view=sql-server-ver16"
+                                            Text="SQL Server" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html"
+                                            Text="Elasticsearch" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://www.postgresql.org/docs/"
+                                            Text="PostgreSQL" target="_blank" class="big" />
+                                <RadzenLink Icon="keyboard_double_arrow_right"
+                                            Path="https://www.sqlite.org/docs.html"
+                                            Text="SQLite" target="_blank" class="big" />
                             </RadzenStack>
                         </RadzenAccordionItem>
                     </Items>
                 </RadzenAccordion>
             </ChildContent>
             <SummaryTemplate>
-
+                <b>Full-Stack(19 skills in 4 categories)</b>
+            </SummaryTemplate>
+        </RadzenPanel>
+        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="true">
+            <HeaderTemplate>
+                <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
+                    <RadzenIcon Icon="school" class="rz-me-1" /><b>Education</b>
+                </RadzenText>
+            </HeaderTemplate>
+            <ChildContent>
+                <RadzenCardGroup Responsive="true" class="rz-w-100">
+                    <RadzenCard>
+                        <RadzenStack Orientation="Orientation.Horizontal"
+                                     JustifyContent="JustifyContent.Start" Gap="1rem" class="rz-p-4">
+                            <RadzenImage Path="images/gbsc.png"
+                                         Style="width: 50px; height: 50px; border-radius: 50%"
+                                         AlternateText="GBSC" />
+                            <RadzenText TextStyle="TextStyle.H6">God's Bible College</RadzenText>
+                        </RadzenStack>
+                        <hr />
+                        <RadzenStack Orientation="Orientation.Vertical"
+                                     AlignItems="AlignItems.Start">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Years Attended</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>2002-2006</b></RadzenText>
+                        </RadzenStack>
+                        <RadzenStack Orientation="Orientation.Vertical"
+                                     AlignItems="AlignItems.Start">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Degree</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>B.A. - Intercultural Studies</b></RadzenText>
+                        </RadzenStack>
+                    </RadzenCard>
+                    <RadzenCard>
+                        <RadzenStack Orientation="Orientation.Horizontal"
+                                     JustifyContent="JustifyContent.Start" Gap="1rem" class="rz-p-4">
+                            <RadzenImage Path="images/apsu.png"
+                                         Style="width: 50px; height: 50px; border-radius: 50%"
+                                         AlternateText="APSU" />
+                            <RadzenText TextStyle="TextStyle.H6">Austin Peay State University</RadzenText>
+                        </RadzenStack>
+                        <hr />
+                        <RadzenStack Orientation="Orientation.Vertical"
+                                     AlignItems="AlignItems.Start">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Years Attended</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>2019-2021</b></RadzenText>
+                        </RadzenStack>
+                        <RadzenStack Orientation="Orientation.Vertical"
+                                     AlignItems="AlignItems.Start">
+                            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Degree</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1"><b>B.S. - Computer Information Systems</b></RadzenText>
+                        </RadzenStack>
+                    </RadzenCard>
+                    <RadzenCard>
+                        <RadzenText TextStyle="TextStyle.H6">Continuing Education</RadzenText>
+                        <hr />
+                        <RadzenStack Orientation="Orientation.Horizontal"
+                                     JustifyContent="JustifyContent.Start"
+                                     Gap="1rem" class="rz-p-4">
+                            <RadzenImage Path="images/chegg.jpg"
+                                         Style="width: 50px; height: 50px; border-radius: 50%"
+                                         AlternateText="Chegg" />
+                            <RadzenStack Orientation="Orientation.Vertical"
+                                         AlignItems="AlignItems.Start">
+                                <RadzenText TextStyle="TextStyle.H6">Chegg Skills</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1">Back-End Web Development Certificate</RadzenText>
+                            </RadzenStack>
+                        </RadzenStack>
+                    </RadzenCard>
+                </RadzenCardGroup>
+            </ChildContent>
+            <SummaryTemplate>
+                <b>2 Bachelor Degrees</b>
             </SummaryTemplate>
         </RadzenPanel>
     </RadzenCard>

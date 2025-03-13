@@ -7,10 +7,22 @@
     <RadzenPanelMenuItem Text="Game Calculator" Path="@($"{NavigationManager.BaseUri}round_sum")" Icon="functions"></RadzenPanelMenuItem>
 </RadzenPanelMenu>
 <hr />
-<RadzenStack AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Center">
-    <RadzenLabel Component="ThemeSelect" Text="Change Theme" />
-    <RadzenDropDown TValue="string" Value="@_theme" Data="@_themes"
-                    Change="@(async args => await ChangeTheme($"{args}"))" Name="ThemeSelect" />
+<RadzenStack Orientation="Orientation.Vertical"
+             AlignItems="AlignItems.Center"
+             JustifyContent="JustifyContent.SpaceBetween"
+             Style="height: 70vh">
+    <div>
+        <RadzenLabel Component="ThemeSelect" Text="Change Theme" />
+        <RadzenDropDown TValue="string" Value="@_theme" Data="@_themes"
+                        Change="@(async args => await ChangeTheme($"{args}"))" Name="ThemeSelect" />
+    </div>
+    <RadzenButton Variant="Variant.Outlined"
+                  Shade="Shade.Darker"
+                  Icon="person"
+                  Click="@(_ => NavigationManager.NavigateTo($"{NavigationManager.BaseUri}about"))"
+                  Text="About"
+                  ButtonStyle="ButtonStyle.Info"
+                  Style="width: 100%"/>
 </RadzenStack>
 
 @code {
