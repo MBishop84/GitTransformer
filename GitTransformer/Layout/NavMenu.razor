@@ -5,6 +5,7 @@
     <RadzenPanelMenuItem Text="Home" Path="@($"{NavigationManager.BaseUri}")" Icon="psychology"></RadzenPanelMenuItem>
     <RadzenPanelMenuItem Text="Transformer" Path="@($"{NavigationManager.BaseUri}transformer")" Icon="function"></RadzenPanelMenuItem>
     <RadzenPanelMenuItem Text="Game Calculator" Path="@($"{NavigationManager.BaseUri}round_sum")" Icon="functions"></RadzenPanelMenuItem>
+    @* <RadzenPanelMenuItem Text="About" Path="@($"{NavigationManager.BaseUri}about")" Icon="person"></RadzenPanelMenuItem> *@
 </RadzenPanelMenu>
 <hr />
 <RadzenStack Orientation="Orientation.Vertical"
@@ -16,13 +17,7 @@
         <RadzenDropDown TValue="string" Value="@_theme" Data="@_themes"
                         Change="@(async args => await ChangeTheme($"{args}"))" Name="ThemeSelect" />
     </div>
-    <RadzenButton Variant="Variant.Outlined"
-                  Shade="Shade.Darker"
-                  Icon="person"
-                  Click="@(_ => NavigationManager.NavigateTo($"{NavigationManager.BaseUri}about"))"
-                  Text="About"
-                  ButtonStyle="ButtonStyle.Info"
-                  Style="width: 100%"/>
+    
 </RadzenStack>
 
 @code {
