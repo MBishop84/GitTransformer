@@ -1,5 +1,6 @@
 ﻿@page "/about"
 @page "/GitTransformer/about"
+
 <RadzenStack Orientation="Orientation.Horizontal"
              JustifyContent="JustifyContent.Center"
              AlignItems="AlignItems.Center"
@@ -41,11 +42,18 @@
             </RadzenStack>
         </RadzenStack>
         <hr />
-        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="true">
+        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="!_isExpanded[0]">
             <HeaderTemplate>
                 <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
                     <RadzenIcon Icon="terminal" class="rz-me-1" /><b>Skills</b>
                 </RadzenText>
+                <RadzenButton Click=@(_ => {
+                              _isExpanded = _isExpanded.Select(x => !x).ToList();
+                              _icon = _isExpanded[0] ? "stat_2" : "stat_minus_2";})
+                              MouseEnter="@(args => ShowTooltip(args, new()))"
+                              Icon="@_icon"
+                              Size="ButtonSize.Small"
+                              ButtonStyle="ButtonStyle.Primary" />
             </HeaderTemplate>
             <ChildContent>
                 <RadzenAccordion Multiple=true>
@@ -53,7 +61,8 @@
                         <RadzenAccordionItem Text="Programming Languages"
                                              CollapseTitle="Ordered by proficiency."
                                              ExpandTitle="Ordered by proficiency."
-                                             Icon="code">
+                                             Icon="code"
+                                             @bind-Selected="@_isExpanded[1]">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Start"
                                          JustifyContent="JustifyContent.Start"
@@ -86,7 +95,8 @@
                         <RadzenAccordionItem Text="UX/UI Frameworks"
                                              CollapseTitle="Ordered by proficiency."
                                              ExpandTitle="Ordered by proficiency."
-                                             Icon="tv_signin">
+                                             Icon="tv_signin"
+                                             @bind-Selected="@_isExpanded[2]">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Center"
                                          JustifyContent="JustifyContent.Start"
@@ -110,7 +120,8 @@
                         <RadzenAccordionItem Text="Server Architectures"
                                              CollapseTitle="Ordered by proficiency."
                                              ExpandTitle="Ordered by proficiency."
-                                             Icon="dns">
+                                             Icon="dns"
+                                             @bind-Selected="@_isExpanded[3]">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Start"
                                          JustifyContent="JustifyContent.Start"
@@ -134,7 +145,8 @@
                         <RadzenAccordionItem Text="Databases"
                                              CollapseTitle="Ordered by proficiency."
                                              ExpandTitle="Ordered by proficiency."
-                                             Icon="database">
+                                             Icon="database"
+                                             @bind-Selected="@_isExpanded[4]">
                             <RadzenStack Orientation="Orientation.Horizontal"
                                          AlignItems="AlignItems.Start"
                                          JustifyContent="JustifyContent.Start"
@@ -162,7 +174,7 @@
                 <b>Full-Stack(19 skills in 4 categories)</b>
             </SummaryTemplate>
         </RadzenPanel>
-        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="true">
+        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="!_isExpanded[5]">
             <HeaderTemplate>
                 <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
                     <RadzenIcon Icon="school" class="rz-me-1" /><b>Education</b>
@@ -222,7 +234,7 @@
                             <RadzenStack Orientation="Orientation.Vertical"
                                          AlignItems="AlignItems.Start">
                                 <RadzenText TextStyle="TextStyle.H6">Chegg Skills</RadzenText>
-                                <RadzenText TextStyle="TextStyle.Body1">Back-End Web Development Certificate</RadzenText>
+                                <RadzenText TextStyle="TextStyle.Body1">Back-End Web Development Certificate(2024)</RadzenText>
                             </RadzenStack>
                         </RadzenStack>
                     </RadzenCard>
@@ -232,44 +244,71 @@
                 <b>2 Bachelor Degrees</b>
             </SummaryTemplate>
         </RadzenPanel>
-        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="true">
+        <RadzenPanel AllowCollapse="true" class="rz-w-100 rz-mx-auto" Collapsed="!_isExpanded[6]">
             <HeaderTemplate>
                 <RadzenText TextStyle="TextStyle.H6" class="rz-display-flex rz-align-items-center rz-m-0">
                     <RadzenIcon Icon="engineering" class="rz-me-1" /><b>Work History</b>
                 </RadzenText>
             </HeaderTemplate>
             <ChildContent>
-                <RadzenTimeline>
+                <RadzenTimeline LinePosition="LinePosition.Alternate">
                     <Items>
                         <RadzenTimelineItem PointSize="PointSize.Large"
                                             PointStyle="PointStyle.Success"
                                             PointVariant="Variant.Text"
-                                            PointShadow="2" Text="">
+                                            PointShadow="0" Text="">
                             <PointContent>
-                                <RadzenIcon Icon="group_work" />
+                                <RadzenImage Path="images/NGIC.png" Style="height: 50px;" AlternateText="community" />
                             </PointContent>
-                        </RadzenTimelineItem>
-                        <RadzenTimelineItem PointSize="PointSize.Large"
-                                            PointStyle="PointStyle.Success"
-                                            PointVariant="Variant.Text"
-                                            PointShadow="2" Text="">
-                            <PointContent>
-                                <RadzenIcon Icon="group_work" />
-                            </PointContent>
+                            <LabelContent>
+                                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">2022 - Present</RadzenText>
+                            </LabelContent>
+                            <ChildContent>
+                                <RadzenCard>
+                                    <RadzenText TextStyle="TextStyle.Body1"><b>Software Engineer</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1">National General Insurance</RadzenText>
+                                </RadzenCard>
+                            </ChildContent>
                         </RadzenTimelineItem>
                         <RadzenTimelineItem PointSize="PointSize.Large"
                                             PointStyle="PointStyle.Success"
                                             PointVariant="Variant.Text"
                                             PointShadow="0" Text="">
                             <PointContent>
-                                <RadzenIcon Icon="group_work" />
+                                <RadzenImage Path="images/3m.png" Style="width: 50px;" AlternateText="community" />
                             </PointContent>
+                            <LabelContent>
+                                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">2016 - 2022</RadzenText>
+                            </LabelContent>
+                            <ChildContent>
+                                <RadzenCard>
+                                    <RadzenText TextStyle="TextStyle.Body1"><b>Manufacturing Associate</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1">3M</RadzenText>
+                                </RadzenCard>
+                            </ChildContent>
+                        </RadzenTimelineItem>
+                        <RadzenTimelineItem PointSize="PointSize.Large"
+                                            PointStyle="PointStyle.Success"
+                                            PointVariant="Variant.Text"
+                                            PointShadow="0" Text="">
+                            <PointContent>
+                                <RadzenImage Path="images/donaldson.png" Style="width: 50px;" AlternateText="community" />
+                            </PointContent>
+                            <LabelContent>
+                                <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">2013 - 2016</RadzenText>
+                            </LabelContent>
+                            <ChildContent>
+                                <RadzenCard>
+                                    <RadzenText TextStyle="TextStyle.Body1"><b>Manufacturing Supervisor</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1">Donaldson</RadzenText>
+                                </RadzenCard>
+                            </ChildContent>
                         </RadzenTimelineItem>
                     </Items>
                 </RadzenTimeline>
             </ChildContent>
             <SummaryTemplate>
-                <b>2 Bachelor Degrees</b>
+                <b>Software Engineer (2022 - Present)</b>
             </SummaryTemplate>
         </RadzenPanel>
 
