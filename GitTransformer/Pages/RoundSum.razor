@@ -57,7 +57,7 @@
                     </RadzenFormField>
                     @foreach (var r in Enumerable.Range(0, _rows))
                     {
-                        <RadzenFormField Text="@($"Round {r + 1}")" Variant="Variant.Outlined">
+                        <RadzenFormField Text="@($"{r + 1}")" Variant="Variant.Outlined">
                             <RadzenNumeric @bind-Value="@scores[c][r]"
                                            TextAlign="TextAlign.Center"
                                            TValue="int"
