@@ -40,5 +40,11 @@
     "AddedBy": "Mitch",
     "Name": "//JSONProperties",
     "Code": "for (let j in JSON.parse(input))\n  output += `[${j}], `"
+  },
+  {
+    "Id": 7,
+    "AddedBy": "Mitch",
+    "Name": "//HashGuid",
+    "Code": "String.prototype.hashCode = function() {\nvar hash = 0, i, chr, hashString = '';\n\tif (this.length === 0) return hash;\n\tfor (i = 0; i < this.length; i++) {\n\t\tchr = this.charCodeAt(i);\n\t\thash = (((hash << 5) - hash) + chr) * 16 | 0;\n\t\thashString += (Math.abs(hash |= 0)).toString(16);\n\t}\n\treturn hashString\n\t.substring(hashString.length >= 32 ? (hashString.length - 32) : 0)\n\t.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/,\"$1-$2-$3-$4-$5\");\n}\noutput = input.hashCode();"
   }
 ]
