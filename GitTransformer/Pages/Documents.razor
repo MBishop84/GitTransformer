@@ -1,0 +1,58 @@
+﻿@page "/documents"
+@page "/GitTransformer/documents"
+@rendermode InteractiveWebAssembly
+@inject IJSRuntime JS
+@inject DialogService DialogService
+
+<RadzenUpload Multiple="false"
+              @ref="_upload"
+              ChooseText="Open File"
+              Change=@OnChange
+              InputAttributes="@(new Dictionary<string,object>{ { "aria-label", "select file" }})" />
+<iframe id="iframe" style="height: 95%; width: 100%;" />
+
+@code {
+    readonly Dictionary<string, string> _mimeTypes = new()
+    {
+        { ".pdf", "application/pdf" },
+        { ".doc", "application/msword" },
+        { ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+        { ".ppt", "application/vnd.ms-powerpoint" },
+        { ".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
+        { ".xls", "application/vnd.ms-excel" },
+        { ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+        { ".txt", "text/plain" },
+        { ".csv", "text/csv" },
+        { ".jpg", "image/jpeg" },
+        { ".jpeg", "image/jpeg" },
+        { ".png", "image/png" },
+        { ".gif", "image/gif" },
+        { ".bmp", "image/bmp" },
+        { ".svg", "image/svg+xml" }
+    };
+    RadzenUpload _upload = null!;
+
+    async Task OnChange(UploadChangeEventArgs args)
+    {
+        var file = args.Files.FirstOrDefault();
+        if (file == null)
+            return;
+        try
+        {
+            var contentType = _mimeTypes.GetValueOrDefault(Path.GetExtension(file.Name).ToLower(), "application/octet-stream");
+            var strRef = new DotNetStreamReference(file.OpenReadStream(file.Size));
+            await JS.InvokeVoidAsync("setSource", "iframe", strRef, contentType, file.Name);
+            await _upload.ClearFiles();
+        }
+        catch (Exception ex)
+        {
+            await DialogService.OpenAsync<CustomDialog>(
+                "Upload Error",
+                new Dictionary<string, object>
+                {
+                        { "Type", Enums.DialogTypes.Error },
+                        { "Message", $"{ex.Message}\n{ex.StackTrace}" }
+                }, Constants.DialogOptions);
+        }
+    }
+}

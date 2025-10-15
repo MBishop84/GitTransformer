@@ -3,35 +3,42 @@
 @inject AppData AppData
 @inject IJSRuntime JS
 
-<RadzenLayout>
-    <RadzenHeader id="site_header">
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
-            <RadzenLabel Text="Transformer" />
-        </RadzenStack>
-    </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@_sidebar1Expanded">
-        <NavMenu @rendermode="InteractiveWebAssembly" />
-    </RadzenSidebar>
-    <RadzenBody id="site_body">
-        @Body
-    </RadzenBody>
-    <RadzenFooter id="site_footer">
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Style="height: 20px">
-            <RadzenLink Path="https://www.radzen.com" Text="Radzen" target="_blank">
-                <RadzenGravatar Email="info@radzen.com" />
-            </RadzenLink>
-            <RadzenLink Path="https://github.com/MBishop84/GitTransformer.git" Text="This Repo" target="_blank" Style="color: var(--rz-text-primary-color)">
-                <RadzenIcon Icon="code" IconColor="@Colors.Primary" />
-                <RadzenText TextStyle="TextStyle.Overline">Visit Repository</RadzenText>
-            </RadzenLink>
-        </RadzenStack>
-    </RadzenFooter>
-</RadzenLayout>
+<ErrorBoundary>
+    <ChildContent>
+        <RadzenLayout>
+            <RadzenHeader id="site_header">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+                    <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
+                    <RadzenLabel Text="Transformer" />
+                </RadzenStack>
+            </RadzenHeader>
+            <RadzenSidebar @bind-Expanded="@_sidebar1Expanded">
+                <NavMenu @rendermode="InteractiveWebAssembly" />
+            </RadzenSidebar>
+            <RadzenBody id="site_body">
+                @Body
+            </RadzenBody>
+            <RadzenFooter id="site_footer">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Style="height: 20px">
+                    <RadzenLink Path="https://www.radzen.com" Text="Radzen" target="_blank">
+                        <RadzenGravatar Email="info@radzen.com" />
+                    </RadzenLink>
+                    <RadzenLink Path="https://github.com/MBishop84/GitTransformer.git" Text="This Repo" target="_blank" Style="color: var(--rz-text-primary-color)">
+                        <RadzenIcon Icon="code" IconColor="@Colors.Primary" />
+                        <RadzenText TextStyle="TextStyle.Overline">Visit Repository</RadzenText>
+                    </RadzenLink>
+                </RadzenStack>
+            </RadzenFooter>
+        </RadzenLayout>
 
-<RadzenComponents />
+        <RadzenComponents />
 
-
+    </ChildContent>
+    <ErrorContent>
+        <h1>@context.Message</h1>
+        @context.ToString()
+    </ErrorContent>
+</ErrorBoundary>
 @code {
     bool _sidebar1Expanded = true;
 
