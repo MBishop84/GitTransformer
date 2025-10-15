@@ -1,10 +1,10 @@
 ﻿
-self.GetHeight = () => window.innerHeight;
-self.GetWidth = () => window.innerWidth;
-self.GetMonacoTheme = () => localStorage.getItem('MonacoTheme');
-self.HideFooter = () => document.getElementById('site_footer').style.display = 'none';
+globalThis.GetHeight = () => window.innerHeight;
+globalThis.GetWidth = () => window.innerWidth;
+globalThis.GetMonacoTheme = () => localStorage.getItem('MonacoTheme');
+globalThis.HideFooter = () => document.getElementById('site_footer').style.display = 'none';
 
-self.GetSetTheme = () => {
+globalThis.GetSetTheme = () => {
     let theme = localStorage.getItem('RadzenTheme');
     if (!theme) {
         const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -21,7 +21,7 @@ self.GetSetTheme = () => {
 }
 
 let lastScrollHeight = 0;
-self.SetScrollEvent = () => {
+globalThis.SetScrollEvent = () => {
     const body = document.getElementById('site_body');
     body.addEventListener('scroll', (event) => {
         if ((lastScrollHeight + 100) < event.target.scrollTop) {
@@ -35,7 +35,7 @@ self.SetScrollEvent = () => {
     });
 }
 
-self.RunUserScript = (userCode) => {
+globalThis.RunUserScript = (userCode) => {
     const input = document.getElementById('input').value;
     if (!input) {
         alert('Please provide input');
@@ -66,7 +66,7 @@ self.RunUserScript = (userCode) => {
     myWorker.postMessage({ code: userCode, input: input });
 };
 
-self.RunWorkerScript = (workerScript) => {
+globalThis.RunWorkerScript = (workerScript) => {
     const myWorker = new Worker('service-worker.js');
 
     const timer = setTimeout(() => {
@@ -86,3 +86,19 @@ self.RunWorkerScript = (workerScript) => {
 
     myWorker.postMessage({ input: workerScript });
 };
+
+globalThis.setSource = async (elementId, stream, contentType, title) => {
+    const arrayBuffer = await stream.arrayBuffer();
+    let blobOptions = {};
+    if (contentType) {
+        blobOptions['type'] = contentType;
+    }
+    const blob = new Blob([arrayBuffer], blobOptions);
+    const url = URL.createObjectURL(blob);
+    const element = document.getElementById(elementId);
+    element.title = title;
+    element.onload = () => {
+        URL.revokeObjectURL(url);
+    }
+    element.src = url;
+}
