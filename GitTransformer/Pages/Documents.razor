@@ -34,7 +34,7 @@
 
     async Task OnChange(UploadChangeEventArgs args)
     {
-        var file = args.Files.FirstOrDefault();
+        var file = args.Files?.FirstOrDefault();
         if (file == null)
             return;
         try
@@ -48,7 +48,7 @@
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "Upload Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                         { "Type", Enums.DialogTypes.Error },
                         { "Message", $"{ex.Message}\n{ex.StackTrace}" }

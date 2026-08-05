@@ -14,6 +14,7 @@
 ## Key Decisions Log
 - **Initialization**: Upgrade to .NET 10 LTS rather than .NET 11 Preview, and include the latest stable compatible Radzen component packages.
 - **Planning**: Use the All-at-Once strategy for the single-project modern .NET solution.
+- **Execution**: Continue remediating all Radzen nullability warnings after the diagnostic build was interrupted.
 
 ## Upgrade Options
 **Source**: .github/upgrades/scenarios/dotnet-version-upgrade/upgrade-options.md
@@ -30,3 +31,6 @@
 - Keep framework package versions aligned with .NET 10.
 - Update Radzen to the latest stable .NET 10-compatible release.
 - Validate the full solution build and tests after all changes.
+
+## Build Tool Decisions
+- **GitTransformer.csproj**: `dotnet build` (SDK-style Blazor WebAssembly project targeting modern .NET)
