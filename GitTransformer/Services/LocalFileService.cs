@@ -6,67 +6,50 @@ namespace GitTransformer.Services;
 public class LocalFileService
 {
     private readonly HttpClient _httpClient;
-    private readonly List<Quote?> _quotes = [];
-    private readonly Dictionary<string, string> _themes = [];
-    private readonly List<JsTransform?> _jsTransforms = [];
-    private readonly Dictionary<string, Task> StartupTasks;
+    private readonly Lazy<Task<List<Quote?>>> _quotes;
+    private readonly Lazy<Task<List<string>>> _themes;
+    private readonly Lazy<Task<List<JsTransform?>>> _jsTransforms;
 
     public LocalFileService([FromKeyedServices("local")] HttpClient httpClient)
     {
         _httpClient = httpClient;
-        StartupTasks = new Dictionary<string, Task>
-        {
-            ["GetThemes"] = Task.Run(async () =>
-            {
-                var themes = await _httpClient.GetFromJsonAsync<Dictionary<string, string>>("themes/themelist.json");
-                if (themes is not null)
-                    foreach (var theme in themes.AsParallel())
-                        _themes.TryAdd(theme.Key, theme.Value);
-            }),
-            ["PopulateQuotes"] = Task.Run(async () =>
-            {
-                await foreach (var quote in _httpClient.GetFromJsonAsAsyncEnumerable<Quote>("data/quotes.json"))
-                    _quotes.Add(quote);
-            }),
-            ["GetJsTransforms"] = Task.Run(async () =>
-            {
-                await foreach (var transform in _httpClient.GetFromJsonAsAsyncEnumerable<JsTransform>("data/JsTransforms.json"))
-                    _jsTransforms.Add(transform);
-            })
-        };
+        _quotes = new(LoadQuotes);
+        _themes = new(LoadThemes);
+        _jsTransforms = new(LoadJsTransforms);
     }
 
     public async Task<Quote?> GetRandomQuote()
     {
-        var thisTask = StartupTasks["PopulateQuotes"];
-        if (thisTask.IsCompleted)
-            return _quotes![new Random().Next(_quotes.Count)]!;
-
-        await thisTask;
-        return _quotes![new Random().Next(_quotes.Count)]!;
+        var quotes = await _quotes.Value;
+        return quotes.Count == 0 ? null : quotes[Random.Shared.Next(quotes.Count)];
     }
 
-    public async Task<List<string>> GetMonacoThemes()
-    {
-        var thisTask = StartupTasks["GetThemes"];
-        if (thisTask.IsCompleted)
-            return [.. _themes.Select(x => x.Value)];
-
-        await thisTask;
-        return [.. _themes.Select(x => x.Value)];
-    }
+    public Task<List<string>> GetMonacoThemes() => _themes.Value;
 
     public Task<StandaloneThemeData?> GetStandaloneThemeData(string theme)
         => _httpClient.GetFromJsonAsync<StandaloneThemeData>($"themes/{theme}.json");
 
-    public async Task<List<JsTransform?>> GetFileTransforms()
+    public Task<List<JsTransform?>> GetFileTransforms() => _jsTransforms.Value;
+
+    private async Task<List<Quote?>> LoadQuotes()
     {
-        var thisTask = StartupTasks["GetJsTransforms"];
+        List<Quote?> quotes = [];
+        await foreach (var quote in _httpClient.GetFromJsonAsAsyncEnumerable<Quote>("data/quotes.json"))
+            quotes.Add(quote);
+        return quotes;
+    }
 
-        if (thisTask.IsCompleted)
-            return _jsTransforms;
+    private async Task<List<string>> LoadThemes()
+    {
+        var themes = await _httpClient.GetFromJsonAsync<Dictionary<string, string>>("themes/themelist.json");
+        return themes is null ? [] : [.. themes.Values];
+    }
 
-        await thisTask;
-        return _jsTransforms;
+    private async Task<List<JsTransform?>> LoadJsTransforms()
+    {
+        List<JsTransform?> transforms = [];
+        await foreach (var transform in _httpClient.GetFromJsonAsAsyncEnumerable<JsTransform>("data/JsTransforms.json"))
+            transforms.Add(transform);
+        return transforms;
     }
 }

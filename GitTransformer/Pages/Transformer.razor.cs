@@ -37,12 +37,6 @@ public partial class Transformer
 
     #region Fields
 
-    private readonly DialogOptions _dialogOptions = new()
-    {
-        Width = "max-content",
-        Height = "max-content",
-        Style = "max-width: 90vw; max-height: 90vh"
-    };
     private Bounds _boundEach = new();
     private Bounds _boundAll = new();
     private bool _dynamic, _sort, _dupes, _openInModal;
@@ -170,13 +164,18 @@ public partial class Transformer
             {
                 throw new ArgumentException("Input is Empty");
             }
+            var comments = await DialogService.Confirm(
+                "Include Comments?",
+                "Comments",
+                new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" }) ?? false;
+
             var lines = _input.Split("\n");
             var result = new StringBuilder();
 
             foreach (var line in lines)
             {
                 var properties = line.Split("\t");
-                _ = result.Append($"///<summary>\n/// Gets/Sets the {properties[0]}.\n///</summary>\n");
+                if(comments) result.Append($"///<summary>\n/// Gets/Sets the {properties[0]}.\n///</summary>\n");
                 switch (properties.Length)
                 {
                     case 1:
@@ -230,7 +229,7 @@ public partial class Transformer
     {
         try
         {
-            ArgumentNullException.ThrowIfNullOrEmpty(_input);
+            ArgumentException.ThrowIfNullOrEmpty(_input);
 
             List<string> records = [];
 
@@ -238,7 +237,7 @@ public partial class Transformer
                 ? JArray.Parse(_input)[0] as JObject
                 : JObject.Parse(_input.Replace(" ", ""));
 
-            ArgumentNullException.ThrowIfNullOrEmpty(jsonObject?.ToString());
+            ArgumentException.ThrowIfNullOrEmpty(jsonObject?.ToString());
 
             await DialogService.OpenAsync<CustomDialog>("Serializer",
                 new Dictionary<string, object>
