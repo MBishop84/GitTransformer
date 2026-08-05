@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 env:
   NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PUBLISH_DIR: GitTransformer/bin/Release/net9.0/publish/wwwroot
+  PUBLISH_DIR: GitTransformer/bin/Release/net10.0/publish/wwwroot
 on:
   push:
     branches: [ master ]
@@ -10,17 +10,17 @@ jobs:
   deploy-to-github-pages:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core SDK
+    - uses: actions/checkout@v4.2.2
+    - name: Setup .NET 10 SDK
       uses: actions/setup-dotnet@v4.3.0
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: '10.0.x'
     - name: Install wasm-tools
       run: dotnet workload install wasm-tools
     - name: Build
-      run: dotnet build -c release
-    - name: Publish .NET Core Project
-      run: dotnet publish
+      run: dotnet build GitTransformer.sln --configuration Release
+    - name: Publish Blazor WebAssembly project
+      run: dotnet publish GitTransformer/GitTransformer.csproj --configuration Release --no-build
     - name: Change base-tag in index.html from / to GitTransformer
       run: sed -i 's/<base href="\/" \/>/<base href="\/GitTransformer\/" \/>/g' ${{ env.PUBLISH_DIR }}/index.html
     - name: Add .nojekyll file
