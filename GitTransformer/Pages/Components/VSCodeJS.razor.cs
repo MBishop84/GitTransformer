@@ -43,8 +43,11 @@ public partial class VSCodeJS : IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        _monacoThemes = await FileClient.GetMonacoThemes();
-        _monacoThemes.AddRange(_defaultThemes);
+        var themes = await FileClient.GetMonacoThemes();
+        _monacoThemes = themes
+            .Concat(_defaultThemes)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
         _jsTransforms = await FileClient.GetFileTransforms();
     }
 
