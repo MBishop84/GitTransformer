@@ -43,8 +43,11 @@ public partial class VSCodeJS : IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        _monacoThemes = await FileClient.GetMonacoThemes();
-        _monacoThemes.AddRange(_defaultThemes);
+        var themes = await FileClient.GetMonacoThemes();
+        _monacoThemes = themes
+            .Concat(_defaultThemes)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
         _jsTransforms = await FileClient.GetFileTransforms();
     }
 
@@ -73,7 +76,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "OnAfterRenderAsync Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
@@ -130,7 +133,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "JavaScript Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
@@ -158,7 +161,7 @@ public partial class VSCodeJS : IAsyncDisposable
             {
                 await DialogService.OpenAsync<CustomDialog>(
                     "Enter Transform Name",
-                    new Dictionary<string, object>
+                    new Dictionary<string, object?>
                     {
                         { "Type", Enums.DialogTypes.Text },
                         { "Message", "Please name your transform." }
@@ -173,7 +176,7 @@ public partial class VSCodeJS : IAsyncDisposable
 
             await DialogService.OpenAsync<CustomDialog>(
                 "Enter Name",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Text },
                     { "Message", "Please enter your name to take ownership of this transform." }
@@ -198,7 +201,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             await DialogService.OpenAsync<CustomDialog>(
             "SaveJs Error",
-            new Dictionary<string, object>
+            new Dictionary<string, object?>
             {
                 { "Type", Enums.DialogTypes.Error },
                 { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
@@ -227,7 +230,7 @@ public partial class VSCodeJS : IAsyncDisposable
                 "Final Confirmation",
                 new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" }) ?? false)
             {
-                await DialogService.OpenAsync<CustomDialog>("Password", new Dictionary<string, object>
+                await DialogService.OpenAsync<CustomDialog>("Password", new Dictionary<string, object?>
             {
                 { "Type", Enums.DialogTypes.Password },
                 { "Message", "Please enter your key to permanently delete this code." }
@@ -251,7 +254,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "DeleteJs Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                 { "Type", Enums.DialogTypes.Error },
                 { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
@@ -285,7 +288,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "PreviousJs Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
@@ -318,7 +321,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "NextJs Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n{ex.StackTrace}" }
@@ -360,7 +363,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "MonacoTheme Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                 { "Type", Enums.DialogTypes.Error },
                 { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }

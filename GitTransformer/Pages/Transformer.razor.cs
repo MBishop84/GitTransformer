@@ -73,7 +73,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "OnAfterRenderAsync Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
@@ -109,7 +109,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "Transform Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
@@ -217,7 +217,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "ClassFromQuery Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.ClassFromQuery },
                     { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
@@ -240,7 +240,7 @@ public partial class Transformer
             ArgumentException.ThrowIfNullOrEmpty(jsonObject?.ToString());
 
             await DialogService.OpenAsync<CustomDialog>("Serializer",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.RecordsCheck },
                     { "Message", "Choose a serializer" }
@@ -279,7 +279,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "JsonToClass Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n{ex.StackTrace}" }
@@ -356,7 +356,7 @@ public partial class Transformer
 
             await DialogService.OpenAsync<CustomDialog>(
                 "XmlToClass Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.XmlToClass },
                     { "Message", message }
@@ -382,7 +382,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "JsonToXML Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
@@ -403,7 +403,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "SQLJsonToSnippet",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex.Message}\n\nExample Input Format:\n{Constants.SqlJsonFormat}" }
@@ -470,7 +470,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                "SQLJsonToSnippet",
-               new Dictionary<string, object>
+               new Dictionary<string, object?>
                {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
@@ -495,7 +495,7 @@ public partial class Transformer
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "XmlToJson Error",
-                new Dictionary<string, object>
+                new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
                     { "Message", $"{ex}" }
@@ -503,8 +503,8 @@ public partial class Transformer
         }
     }
 
-    private Task<dynamic> OpenInModalAsync<T>(
-        string? title = "Dialog", Dictionary<string, object>? parameters = null) where T : ComponentBase
+    private Task<dynamic?> OpenInModalAsync<T>(
+        string title = "Dialog", Dictionary<string, object?>? parameters = null) where T : ComponentBase
     {
         return DialogService.OpenAsync<T>(
                 title,
