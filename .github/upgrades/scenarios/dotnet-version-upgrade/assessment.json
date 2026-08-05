@@ -1,0 +1,469 @@
+{
+  "settings": {
+    "components": {
+      "code": true,
+      "binaries": false
+    },
+    "targetId": "net10.0",
+    "targetDisplayName": ".NETCoreApp,Version=v10.0"
+  },
+  "analysisStartTime": "2026-08-05T20:01:45.2363309Z",
+  "analysisEndTime": "2026-08-05T20:03:53.7932579Z",
+  "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2270980",
+  "stats": {
+    "summary": {
+      "projects": 1,
+      "issues": 3,
+      "incidents": 14,
+      "effort": 14
+    },
+    "charts": {
+      "severity": {
+        "Mandatory": 1,
+        "Optional": 0,
+        "Potential": 13,
+        "Information": 0
+      },
+      "category": {
+        "NuGet": 3,
+        "Project": 1,
+        "Api": 10
+      }
+    }
+  },
+  "projects": [
+    {
+      "path": "GitTransformer\\GitTransformer.csproj",
+      "startingProject": true,
+      "issues": 3,
+      "storyPoints": 14,
+      "properties": {
+        "appName": "GitTransformer",
+        "projectKind": "AspNetCore",
+        "frameworks": [
+          "net9.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 101,
+        "numberOfCodeFiles": 11,
+        "linesTotal": 68214,
+        "linesOfCode": 1304,
+        "totalApiScanned": 10518,
+        "minLinesOfCodeToChange": 10,
+        "maxLinesOfCodeToChange": 10
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "c21bd49e-f647-4059-a423-d64d4a756fc1",
+          "ruleId": "NuGet.0002",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Components.WebAssembly, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly, and replace with new package Microsoft.AspNetCore.Components.WebAssembly 10.0.10",
+              "protected": "Microsoft.AspNetCore.Components.WebAssembly, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly, and replace with new package Microsoft.AspNetCore.Components.WebAssembly 10.0.10"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\GitTransformer.csproj",
+            "snippet": "Microsoft.AspNetCore.Components.WebAssembly, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly, and replace with new package Microsoft.AspNetCore.Components.WebAssembly 10.0.10",
+            "protectedSnippet": "Microsoft.AspNetCore.Components.WebAssembly, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly, and replace with new package Microsoft.AspNetCore.Components.WebAssembly 10.0.10",
+            "label": "Microsoft.AspNetCore.Components.WebAssembly 9.0.1",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Components.WebAssembly",
+              "PackageVersion": "9.0.1",
+              "PackageNewVersion": "10.0.10",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "a1f9f8e8-56ad-4de3-bd4e-32330f3f9dca",
+          "ruleId": "NuGet.0002",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Components.WebAssembly.DevServer, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly.DevServer, and replace with new package Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.0.10",
+              "protected": "Microsoft.AspNetCore.Components.WebAssembly.DevServer, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly.DevServer, and replace with new package Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.0.10"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\GitTransformer.csproj",
+            "snippet": "Microsoft.AspNetCore.Components.WebAssembly.DevServer, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly.DevServer, and replace with new package Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.0.10",
+            "protectedSnippet": "Microsoft.AspNetCore.Components.WebAssembly.DevServer, 9.0.1\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Components.WebAssembly.DevServer, and replace with new package Microsoft.AspNetCore.Components.WebAssembly.DevServer 10.0.10",
+            "label": "Microsoft.AspNetCore.Components.WebAssembly.DevServer 9.0.1",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Components.WebAssembly.DevServer",
+              "PackageVersion": "9.0.1",
+              "PackageNewVersion": "10.0.10",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "3ff554e7-c481-48a4-b0ef-a76cc43320dd",
+          "ruleId": "NuGet.0002",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4",
+              "protected": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\GitTransformer.csproj",
+            "snippet": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4",
+            "protectedSnippet": "Newtonsoft.Json, 13.0.3\n\nRecommendation:\n\nRemove Newtonsoft.Json, and replace with new package Newtonsoft.Json 13.0.4",
+            "label": "Newtonsoft.Json 13.0.3",
+            "properties": {
+              "PackageId": "Newtonsoft.Json",
+              "PackageVersion": "13.0.3",
+              "PackageNewVersion": "13.0.4",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "cb18bb29-6398-4026-91f2-75e1872dc73e",
+          "ruleId": "Project.0002",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net9.0\nRecommended target framework: net10.0",
+              "protected": "Current target framework: net9.0\nRecommended target framework: net10.0"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\GitTransformer.csproj",
+            "snippet": "Current target framework: net9.0\nRecommended target framework: net10.0",
+            "protectedSnippet": "Current target framework: net9.0\nRecommended target framework: net10.0",
+            "properties": {
+              "CurrentTargetFramework": "net9.0",
+              "RecommendedTargetFramework": "net10.0"
+            }
+          }
+        },
+        {
+          "incidentId": "1046089a-8b93-40a2-8f0a-76a860ff31d4",
+          "ruleId": "Api.0003",
+          "description": "FromKeyedServicesAttribute no longer injects non-keyed parameter ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "FromKeyedServices(\u0022local\u0022)",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Services\\LocalFileService.cs",
+            "snippet": "FromKeyedServices(\u0022local\u0022)",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/non-keyed-params.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 29
+          }
+        },
+        {
+          "incidentId": "2d0b95f4-37a0-4587-a026-443718ba4476",
+          "ruleId": "Api.0003",
+          "description": "FromKeyedServicesAttribute no longer injects non-keyed parameter ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "FromKeyedServices(\u0022local\u0022)",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Services\\LocalFileService.cs",
+            "snippet": "FromKeyedServices(\u0022local\u0022)",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/non-keyed-params.md",
+                "isCustom": false
+              }
+            ],
+            "line": 12,
+            "column": 29
+          }
+        },
+        {
+          "incidentId": "1a17f442-288d-4259-8085-f6b6a68aa7d0",
+          "ruleId": "Api.0003",
+          "description": "FromKeyedServicesAttribute no longer injects non-keyed parameter ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "FromKeyedServices(\u0022quotable\u0022)",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Services\\QuotableApiService.cs",
+            "snippet": "FromKeyedServices(\u0022quotable\u0022)",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/non-keyed-params.md",
+                "isCustom": false
+              }
+            ],
+            "line": 5,
+            "column": 5
+          }
+        },
+        {
+          "incidentId": "825577ed-25c5-4840-ac55-645940973e4d",
+          "ruleId": "Api.0003",
+          "description": "FromKeyedServicesAttribute no longer injects non-keyed parameter ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "FromKeyedServices(\u0022quotable\u0022)",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Services\\QuotableApiService.cs",
+            "snippet": "FromKeyedServices(\u0022quotable\u0022)",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute.#ctor(System.Object)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/core-libraries/9.0/non-keyed-params.md",
+                "isCustom": false
+              }
+            ],
+            "line": 5,
+            "column": 5
+          }
+        },
+        {
+          "incidentId": "e4af395f-00d5-4765-bfc5-019d6e4c9982",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Program.cs",
+            "snippet": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 10,
+            "column": 0
+          }
+        },
+        {
+          "incidentId": "907f38f3-aac4-43e9-9d7c-8fa24c40e568",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+              "protected": "M:System.Uri.#ctor(System.String)"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Program.cs",
+            "snippet": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+            "protectedSnippet": "M:System.Uri.#ctor(System.String)",
+            "label": "M:System.Uri.#ctor(System.String)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 10,
+            "column": 0
+          }
+        },
+        {
+          "incidentId": "3ce6f60b-da6d-40f5-b8ba-edfa835a0cf7",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Program.cs",
+            "snippet": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 10,
+            "column": 0
+          }
+        },
+        {
+          "incidentId": "66e2ca40-7c9b-4d82-aa9d-ca607c9125d4",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Program.cs",
+            "snippet": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 10,
+            "column": 0
+          }
+        },
+        {
+          "incidentId": "b2beeac5-a52b-43fb-a057-0930854c2068",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+              "protected": "M:System.Uri.#ctor(System.String)"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Program.cs",
+            "snippet": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+            "protectedSnippet": "M:System.Uri.#ctor(System.String)",
+            "label": "M:System.Uri.#ctor(System.String)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 10,
+            "column": 0
+          }
+        },
+        {
+          "incidentId": "1b76fca4-ff35-4553-bf6e-f4d167173614",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "GitTransformer\\GitTransformer.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "GitTransformer\\Program.cs",
+            "snippet": "builder.Services\r\n    .AddScoped\u003CAppData\u003E()\r\n    .AddSingleton\u003CQuotableApiService\u003E()\r\n    .AddSingleton\u003CLocalFileService\u003E()\r\n    .AddKeyedSingleton(\u0022quotable\u0022, (_, _) =\u003E new HttpClient()\r\n        { BaseAddress = new Uri(\u0022https://qapi.vercel.app/api/\u0022) })\r\n    .AddKeyedSingleton(\u0022local\u0022, (_, _) =\u003E new HttpClient\r\n        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })\r\n    .AddRadzenComponents();",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 10,
+            "column": 0
+          }
+        }
+      ],
+      "features": []
+    }
+  ],
+  "rules": {
+    "NuGet.0002": {
+      "id": "NuGet.0002",
+      "isFeature": false,
+      "description": "NuGet package upgrade is recommended for selected target framework.\n\nStandard .NET packages are recommended to have versions matching version of .NET that project targets.\n\nSome other packages also are known to work better for selected target frameworks.",
+      "label": "NuGet package upgrade is recommended",
+      "severity": "Potential",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262530",
+          "isCustom": false
+        }
+      ]
+    },
+    "Project.0002": {
+      "id": "Project.0002",
+      "isFeature": false,
+      "description": "Project\u0027s target framework(s) needs to be changed to the new target framework that you selected for this upgrade.\n\nDuring upgrade target framework will be adjusted to corresponding platform when applicable. In some cases project would result in multiple target frameworks after the upgrade if it was using features that now have their own platforms in modern .NET frameworks (windows, iOS, Android etc).",
+      "label": "Project\u0027s target framework(s) needs to be changed",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Overview of porting from .NET Framework to .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265227",
+          "isCustom": false
+        },
+        {
+          "title": ".NET project SDKs",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265226",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0003": {
+      "id": "Api.0003",
+      "isFeature": false,
+      "description": "API has a behavioral change in selected .NET version: code and binaries may behave differently at runtime without needing recompilation, but the new behavior might be undesirable and require updates.",
+      "label": "Behavioral change in selected .NET version",
+      "severity": "Potential",
+      "effort": 1
+    }
+  }
+}
