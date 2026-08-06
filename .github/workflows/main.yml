@@ -1,11 +1,16 @@
 name: Deploy to GitHub Pages
+
 env:
-  NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   PUBLISH_DIR: GitTransformer/bin/Release/net10.0/publish/wwwroot
+
 on:
+  workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: 
+      - master
+
 jobs:
   deploy-to-github-pages:
     runs-on: ubuntu-latest
