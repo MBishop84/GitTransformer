@@ -1,0 +1,172 @@
+﻿@page "/list_diff"
+@page "/GitTransformer/list_diff"
+@inject AppData AppData
+@using GitTransformer.Pages.Components
+@inject DialogService DialogService
+
+<RadzenStack Orientation="Orientation.Vertical"
+             AlignItems="AlignItems.Center"
+             JustifyContent="JustifyContent.Center"
+             Gap="5px"
+             Style="width: 100%">
+    <RadzenStack Orientation="@Orientation"
+                 AlignItems="AlignItems.Center"
+                 JustifyContent="JustifyContent.Center"
+                 Gap="5px"
+                 Style="width: 100%">
+        <RadzenFieldset Text="List A" Style="width: 100%">
+            <RadzenTextArea @bind-Value="@stringA"
+                            Rows="@(AppData.WindowHeight / 75)"
+                            Style="width: 100%"
+                            Change="RenderList" />
+        </RadzenFieldset>
+        <RadzenFieldset Text="List B" Style="width: 100%">
+            <RadzenTextArea @bind-Value="@stringB"
+                            Rows="@(AppData.WindowHeight / 75)"
+                            Style="width: 100%"
+                            Change="RenderList" />
+        </RadzenFieldset>
+    </RadzenStack>
+    <RadzenFieldset Text="Settings" Style="width: 100%" AllowCollapse="true">
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     AlignItems="AlignItems.Center"
+                     JustifyContent="JustifyContent.Center"
+                     Gap="5px"
+                     Style="width: 100%"
+                     Wrap="FlexWrap.Wrap">
+            <RadzenCheckBoxList @bind-Value=@options
+                                TValue="int"
+                                Orientation="Orientation.Horizontal"
+                                AlignItems="AlignItems.Center"
+                                JustifyContent="JustifyContent.Center"
+                                Wrap="FlexWrap.Wrap"
+                                Change="RenderList">
+                <Items>
+                    <RadzenCheckBoxListItem Text="Case Sensitive" Value="1" />
+                    <RadzenCheckBoxListItem Text="Ignore Leading/Trailing Space" Value="2" />
+                    <RadzenCheckBoxListItem Text="Sort" Value="3" />
+                </Items>
+            </RadzenCheckBoxList>
+            <RadzenTextBox @bind-Value=@splitString
+                           Style="width: 100%; max-width: 400px;"
+                           Placeholder="Split chars..."
+                           Change="RenderList" />
+        </RadzenStack>
+    </RadzenFieldset>
+    <RadzenStack Orientation="Orientation.Horizontal"
+                 AlignItems="AlignItems.Center"
+                 JustifyContent="JustifyContent.Center"
+                 Gap="5px"
+                 Style="width: 100%"
+                 Wrap="@Wrap">
+        <RadzenFieldset Text="A Only" Style="width: 100%">
+            <RadzenTextArea @bind-Value="@aOnly"
+                            Rows="@(AppData.WindowHeight / 75)"
+                            Style="width: 100%" />
+        </RadzenFieldset>
+        <RadzenFieldset Text="B Only" Style="width: 100%">
+            <RadzenTextArea @bind-Value="@bOnly"
+                            Rows="@(AppData.WindowHeight / 75)"
+                            Style="width: 100%" />
+        </RadzenFieldset>
+        <RadzenFieldset Text="A & B (Both)" Style="width: 100%">
+            <RadzenTextArea @bind-Value="@aAndB"
+                            Rows="@(AppData.WindowHeight / 75)"
+                            Style="width: 100%" />
+        </RadzenFieldset>
+        <RadzenFieldset Text="A Or B (All)" Style="width: 100%">
+            <RadzenTextArea @bind-Value="@aOrB"
+                            Rows="@(AppData.WindowHeight / 75)"
+                            Style="width: 100%" />
+        </RadzenFieldset>
+    </RadzenStack>
+</RadzenStack>
+
+@code {
+    string? stringA,
+        stringB,
+        splitString,
+        joinString,
+        aOnly,
+        bOnly,
+        aAndB,
+        aOrB;
+    Orientation Orientation { get; set; } = Orientation.Horizontal;
+    FlexWrap Wrap { get; set; } = FlexWrap.NoWrap;
+    IEnumerable<int> options = [2, 3];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            if (AppData.WindowHeight > AppData.WindowWidth)
+            {
+                Orientation = Orientation.Vertical;
+                Wrap = FlexWrap.Wrap;
+            }
+
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            await DialogService.OpenAsync<CustomDialog>(
+                "OnAfterRenderAsync Error",
+                new Dictionary<string, object?>
+                {
+                    { "Type", Enums.DialogTypes.Error },
+                    { "Message", $"{ex}" }
+                }, Constants.DialogOptions);
+        }
+    }
+
+    async Task RenderList()
+    {
+        try
+        {
+            var caseOption = options.Any(x => x == 1)
+                ? StringComparer.Ordinal
+                : StringComparer.OrdinalIgnoreCase;
+            var splitOptions = options.Any(x => x == 2)
+                ? StringSplitOptions.TrimEntries
+                : StringSplitOptions.None;
+            var sort = options.Any(x => x == 3);
+            var ignoreList = splitString?.ToCharArray().Append('\n').ToArray() ?? ['\n'];
+            var listA = stringA?.Split(ignoreList, splitOptions | StringSplitOptions.RemoveEmptyEntries) ?? [];
+            var listB = stringB?.Split(ignoreList, splitOptions | StringSplitOptions.RemoveEmptyEntries) ?? [];
+            var setA = new HashSet<string>(listA, caseOption);
+            var setB = new HashSet<string>(listB, caseOption);
+            var both = listA.Union(listB, caseOption);
+
+            List<string> aOnlyList = [.. setA.Except(setB, caseOption)];
+            List<string> bOnlyList = [.. setB.Except(setA, caseOption)];
+            List<string> aAndBList = [.. setA.Intersect(setB, caseOption)];
+
+            if (sort)
+            {
+                aOnlyList.Sort(caseOption);
+                bOnlyList.Sort(caseOption);
+                aAndBList.Sort(caseOption);
+                both = both.Order(caseOption);
+            }
+            aOnly = string.Join(System.Environment.NewLine, aOnlyList);
+            bOnly = string.Join(System.Environment.NewLine, bOnlyList);
+            aAndB = string.Join(System.Environment.NewLine, aAndBList);
+            aOrB = string.Join(System.Environment.NewLine, both);
+        }
+        catch (Exception ex)
+        {
+            await DialogService.OpenAsync<CustomDialog>(
+                "Rendering Error",
+                new Dictionary<string, object?>
+                {
+                    { "Type", Enums.DialogTypes.Error },
+                    { "Message", $"{ex}" }
+                }, Constants.DialogOptions);
+        }
+    }
+}

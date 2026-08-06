@@ -1,6 +1,5 @@
 ﻿@page "/transformer"
 @page "/GitTransformer/transformer"
-@using System.Collections.Immutable
 @using GitTransformer.Pages.Components
 @rendermode InteractiveWebAssembly
 
@@ -320,7 +319,7 @@
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
                           Click="@(async _ => await OpenInModalAsync<CustomDialog>("Output", new(){{ "Message", _output ?? "" }}))"
-                          Text="View Output in Modal"
+                          Text="View in Modal"
                           ButtonStyle="ButtonStyle.Secondary" />
         </HeaderTemplate>
         <ChildContent>
