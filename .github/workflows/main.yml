@@ -68,9 +68,17 @@ jobs:
           mkdir -p "${{ env.PUBLISH_DIR }}"
           touch "${{ env.PUBLISH_DIR }}/.nojekyll"
 
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.7.2
-        with:
-          folder: ${{ env.PUBLISH_DIR }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare site folder 
+        run: | 
+          rm -rf ./site mkdir -p ./site cp -a "${{ env.PUBLISH_DIR }}/." ./site
+
+      - name: Show prepared site (debug) 
+        run: ls -la ./site || true
+
+      - name: Deploy to GitHub Pages 
+        uses: JamesIves/github-pages-deploy-action@v4.7.2 
+        with: 
+          folder: ./site 
+          token: ${{ secrets.GITHUB_TOKEN }} 
           clean: true
+          
