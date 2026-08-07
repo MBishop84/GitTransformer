@@ -68,9 +68,18 @@ jobs:
           mkdir -p "${{ env.PUBLISH_DIR }}"
           touch "${{ env.PUBLISH_DIR }}/.nojekyll"
 
-      - name: Prepare site folder 
-        run: | 
-          rm -rf ./site mkdir -p ./site cp -a "${{ env.PUBLISH_DIR }}/." ./site
+      - name: Prepare site folder
+        run: |
+          set -e
+          PUBLISH_DIR="${{ env.PUBLISH_DIR }}"
+          if [ ! -d "$PUBLISH_DIR" ]; then
+            echo "Publish dir not found: $PUBLISH_DIR" >&2
+            exit 1
+          fi
+          rm -rf ./site
+          mkdir -p ./site
+          cp -a "$PUBLISH_DIR/." ./site
+        shell: bash
 
       - name: Show prepared site (debug) 
         run: ls -la ./site || true
