@@ -8,30 +8,69 @@ env:
 on:
   workflow_dispatch:
   push:
-    branches: 
+    branches:
       - master
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy-pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy-to-github-pages:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4.2.2
-    - name: Setup .NET 10 SDK
-      uses: actions/setup-dotnet@v4.3.0
-      with:
-        dotnet-version: '10.0.x'
-    - name: Install wasm-tools
-      run: dotnet workload install wasm-tools
-    - name: Build
-      run: dotnet build GitTransformer.sln --configuration Release
-    - name: Publish Blazor WebAssembly project
-      run: dotnet publish GitTransformer/GitTransformer.csproj --configuration Release --no-build
-    - name: Change base-tag in index.html from / to GitTransformer
-      run: sed -i 's/<base href="\/" \/>/<base href="\/GitTransformer\/" \/>/g' ${{ env.PUBLISH_DIR }}/index.html
-    - name: Add .nojekyll file
-      run: touch ${{ env.PUBLISH_DIR }}/.nojekyll
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@v4.7.2
-      with:
-        folder: ${{ env.PUBLISH_DIR }}
-    
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4.3.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore GitTransformer.sln
+
+      - name: Build
+        run: dotnet build GitTransformer.sln --configuration Release --no-restore
+
+      - name: Publish Blazor WebAssembly project
+        run: dotnet publish GitTransformer/GitTransformer.csproj --configuration Release --no-build -o ${{ env.PUBLISH_DIR }}
+
+      - name: Show published files (debug)
+        run: ls -la ${{ env.PUBLISH_DIR }} || true
+
+      - name: Change base-tag in index.html from / to /GitTransformer/
+        run: |
+          if [ -f "${{ env.PUBLISH_DIR }}/index.html" ]; then
+            sed -i 's#<base href="/" />#<base href="/GitTransformer/" />#g' "${{ env.PUBLISH_DIR }}/index.html"
+          else
+            echo "index.html not found; skipping base href change"
+          fi
+
+      - name: Add .nojekyll file
+        run: |
+          mkdir -p "${{ env.PUBLISH_DIR }}"
+          touch "${{ env.PUBLISH_DIR }}/.nojekyll"
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        with:
+          folder: ${{ env.PUBLISH_DIR }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          clean: true
