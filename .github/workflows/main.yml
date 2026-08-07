@@ -1,13 +1,9 @@
 name: Deploy to GitHub Pages
 
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
 env:
   NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PUBLISH_ROOT: GitTransformer/bin/Release/net10.0/publish
   PUBLISH_DIR: GitTransformer/bin/Release/net10.0/publish/wwwroot
 
 on:
@@ -15,6 +11,11 @@ on:
   push:
     branches:
       - master
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: deploy-pages-${{ github.ref }}
@@ -46,29 +47,21 @@ jobs:
       - name: Restore
         run: dotnet restore GitTransformer.sln
 
-      - name: Build
-        run: dotnet build GitTransformer.sln --configuration Release --no-restore
-
       - name: Publish Blazor WebAssembly project
-        run: dotnet publish GitTransformer/GitTransformer.csproj --configuration Release --no-build -o ${{ env.PUBLISH_DIR }}
+        run: dotnet publish GitTransformer/GitTransformer.csproj --configuration Release --no-restore -o ${{ env.PUBLISH_ROOT }}
 
-      - name: Show published files (debug)
-        run: ls -la ${{ env.PUBLISH_DIR }} || true
-
-      - name: Change base-tag in index.html from / to /GitTransformer/
+      - name: Update base href (if needed)
+        shell: bash
         run: |
           if [ -f "${{ env.PUBLISH_DIR }}/index.html" ]; then
-            sed -i 's#<base href="/" />#<base href="/GitTransformer/" />#g' "${{ env.PUBLISH_DIR }}/index.html"
+            sed -i 's#<base href="/" />#<base href="/GitTransformer/" />#g' "${{ env.PUBLISH_DIR }}/index.html" || true
           else
-            echo "index.html not found; skipping base href change"
+            echo "index.html not found in ${{ env.PUBLISH_DIR }}" >&2
+            exit 1
           fi
 
-      - name: Add .nojekyll file
-        run: |
-          mkdir -p "${{ env.PUBLISH_DIR }}"
-          touch "${{ env.PUBLISH_DIR }}/.nojekyll"
-
       - name: Prepare site folder
+        shell: bash
         run: |
           set -e
           PUBLISH_DIR="${{ env.PUBLISH_DIR }}"
@@ -79,15 +72,20 @@ jobs:
           rm -rf ./site
           mkdir -p ./site
           cp -a "$PUBLISH_DIR/." ./site
-        shell: bash
+          touch ./site/.nojekyll
+          cp ./site/index.html ./site/404.html
 
-      - name: Show prepared site (debug) 
-        run: ls -la ./site || true
+      - name: Show prepared site (debug)
+        run: |
+          echo "== ./site =="
+          ls -la ./site || true
+          echo "== ./site/_framework =="
+          ls -la ./site/_framework || true
 
-      - name: Deploy to GitHub Pages 
-        uses: JamesIves/github-pages-deploy-action@v4.7.2 
-        with: 
-          folder: ./site 
-          token: ${{ secrets.GITHUB_TOKEN }} 
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        with:
+          folder: ./site
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
           clean: true
-          
