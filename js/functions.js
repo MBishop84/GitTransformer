@@ -1,5 +1,4 @@
-﻿
-globalThis.GetHeight = () => window.innerHeight;
+﻿globalThis.GetHeight = () => window.innerHeight;
 globalThis.GetWidth = () => window.innerWidth;
 globalThis.GetMonacoTheme = () => localStorage.getItem('MonacoTheme');
 globalThis.HideFooter = () => document.getElementById('site_footer').style.display = 'none';
@@ -33,6 +32,18 @@ globalThis.SetScrollEvent = () => {
             lastScrollHeight = event.target.scrollTop;
         }
     });
+}
+
+globalThis.copyToClipboard = async (text) => {
+    if (!navigator.clipboard?.writeText) {
+        return false;
+    }
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    } catch (err) {
+        return false;
+    }
 }
 
 globalThis.RunUserScript = (userCode) => {
