@@ -1,5 +1,6 @@
 ﻿using GitTransformer.Pages.Components;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Radzen;
@@ -19,6 +20,7 @@ public partial class Transformer
 
     #region Injected Services
 
+    [Inject] private IJSRuntime JS { get; init; } = null!;
     [Inject] private DialogService DialogService { get; init; } = null!;
     [Inject] private AppData AppData { get; set; } = null!;
 
@@ -33,6 +35,8 @@ public partial class Transformer
     }
     private string UserCode { get; set; } = string.Empty;
     private Orientation Orientation { get; set; } = Orientation.Horizontal;
+    private string copyIcon = "content_copy";
+    private ButtonStyle copyStyle = ButtonStyle.Secondary;
 
     #endregion
 
@@ -176,7 +180,7 @@ public partial class Transformer
             foreach (var line in lines)
             {
                 var properties = line.Split("\t");
-                if(comments) result.Append($"///<summary>\n/// Gets/Sets the {properties[0]}.\n///</summary>\n");
+                if (comments) result.Append($"///<summary>\n/// Gets/Sets the {properties[0]}.\n///</summary>\n");
                 switch (properties.Length)
                 {
                     case 1:
@@ -530,6 +534,31 @@ public partial class Transformer
 
         _openInModal = false;
         StateHasChanged();
+    }
+
+    async Task CopyToClipboard(string text)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("copyToClipboard", text);
+            copyIcon = "download_done";
+            copyStyle = ButtonStyle.Success;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(500);
+            copyIcon = "content_copy";
+            copyStyle = ButtonStyle.Secondary;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            await DialogService.OpenAsync<CustomDialog>(
+                 "Copying Error",
+                 new Dictionary<string, object?>
+                 {
+                    { "Type", Enums.DialogTypes.Error },
+                    { "Message", $"{ex}" }
+                 }, Constants.DialogOptions);
+        }
     }
 
     #endregion

@@ -278,11 +278,11 @@
                                       Text="Open In Modal"
                                       ButtonStyle="ButtonStyle.Primary"
                                       Click="@(async _ => {
-                                            _openInModal = true;
-                                            await Task.Delay(500);
-                                            await OpenInModalAsync<VSCodeJS>(
-                                                "Custom JavaScript", new(){{"InModal", true},{"UserCode", UserCode}});
-                                        })" />
+                                          _openInModal = true;
+                                          await Task.Delay(500);
+                                          await OpenInModalAsync<VSCodeJS>(
+                                              "Custom JavaScript", new() { { "InModal", true }, { "UserCode", UserCode } });
+                                      })" />
                     </RadzenStack>
                 </RadzenAccordionItem>
             </Items>
@@ -302,7 +302,7 @@
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
                           Click="@(() => Orientation = Orientation == Orientation.Horizontal
-                                            ? Orientation.Vertical : Orientation.Horizontal)"
+                                                        ? Orientation.Vertical : Orientation.Horizontal)"
                           Text="Change Orientation"
                           ButtonStyle="ButtonStyle.Secondary" />
             @if (Orientation == Orientation.Horizontal)
@@ -319,8 +319,15 @@
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
                           Click="@(async _ => await OpenInModalAsync<CustomDialog>("Output", new(){{ "Message", _output ?? "" }}))"
-                          Text="View in Modal"
-                          ButtonStyle="ButtonStyle.Secondary" />
+                          Icon="open_in_new"
+                          ButtonStyle="ButtonStyle.Secondary"
+                          Size="ButtonSize.Small" />
+            <RadzenButton Variant="Variant.Outlined"
+                          Shade="Shade.Darker"
+                          Click="@(async _ => await CopyToClipboard(_output ?? string.Empty))"
+                          Icon="@copyIcon"
+                          ButtonStyle="@copyStyle"
+                          Size="ButtonSize.Small" />
         </HeaderTemplate>
         <ChildContent>
             <RadzenTextArea @bind-Value="@_output"
