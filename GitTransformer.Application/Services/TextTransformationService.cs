@@ -9,9 +9,9 @@ namespace GitTransformer.Application.Services;
 
 public sealed class TextTransformationService : ITextTransformationService
 {
-    public string Transform(string input, TextTransformOptions options)
+    public string Transform(string? input, TextTransformOptions options)
     {
-        ArgumentException.ThrowIfNullOrEmpty(input);
+        ArgumentException.ThrowIfNullOrWhiteSpace(input, nameof(input));
 
         var split = DecodeSeparator(options.Split);
         var join = DecodeSeparator(options.Join);
@@ -32,9 +32,10 @@ public sealed class TextTransformationService : ITextTransformationService
         return $"{options.BoundAll.Prefix}{string.Join(join, output)}{options.BoundAll.Suffix}";
     }
 
-    public string ClassFromQuery(string input, bool includeComments)
+    public string ClassFromQuery(string? input, bool includeComments)
     {
-        ArgumentException.ThrowIfNullOrEmpty(input);
+        ArgumentException.ThrowIfNullOrWhiteSpace(input, nameof(input));
+
         var result = new StringBuilder();
 
         foreach (var line in input.Split('\n'))
@@ -59,9 +60,10 @@ public sealed class TextTransformationService : ITextTransformationService
         return result.ToString();
     }
 
-    public string XmlToClass(string input)
+    public string XmlToClass(string? input)
     {
-        ArgumentException.ThrowIfNullOrEmpty(input);
+        ArgumentException.ThrowIfNullOrWhiteSpace(input, nameof(input));
+
         input = input.Replace("&lt;", "<").Replace("&gt;", ">");
 
         var xml = new XmlDocument();
@@ -96,9 +98,10 @@ public sealed class TextTransformationService : ITextTransformationService
         return result.Append('}').ToString();
     }
 
-    public string JsonToXml(string input)
+    public string JsonToXml(string? input)
     {
-        ArgumentException.ThrowIfNullOrEmpty(input);
+        ArgumentException.ThrowIfNullOrWhiteSpace(input, nameof(input));
+
         var document = JsonConvert.DeserializeXmlNode(input);
         using var stringWriter = new StringWriter();
         stringWriter.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -108,9 +111,10 @@ public sealed class TextTransformationService : ITextTransformationService
         return stringWriter.ToString();
     }
 
-    public string XmlToJson(string input)
+    public string XmlToJson(string? input)
     {
-        ArgumentException.ThrowIfNullOrEmpty(input);
+        ArgumentException.ThrowIfNullOrWhiteSpace(input, nameof(input));
+
         var document = new XmlDocument();
         document.LoadXml(input);
         return JsonConvert.SerializeObject(document, Newtonsoft.Json.Formatting.Indented);

@@ -1,5 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using GitTransformer.Pages.Components;
+using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json.Linq;
 using PluralizeService.Core;
+using Radzen;
 using System.Text.RegularExpressions;
 
 namespace GitTransformer;
@@ -111,4 +114,22 @@ public static class Extensions
 
     public static string GetDecorator(this string name) =>
         string.IsNullOrEmpty(DecoratorFormat) ? "" : $"{string.Format(DecoratorFormat, name)} ";
+
+    public static Task DisplayAsync(this Exception ex, DialogService dialogService)
+        => dialogService.OpenAsync<CustomDialog>(
+            "Error",
+            new Dictionary<string, object?>
+            {
+                { "Type", Enums.DialogTypes.Error },
+                { "Message", $"{ex}" }
+            }, Constants.DialogOptions);
+
+    public static void Display(this Exception ex, DialogService dialogService)
+        => dialogService.Open<CustomDialog>(
+            "Error",
+            new Dictionary<string, object?>
+            {
+                { "Type", Enums.DialogTypes.Error },
+                { "Message", ex.Message }
+            }, Constants.DialogOptions);
 }

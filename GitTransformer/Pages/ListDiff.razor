@@ -168,7 +168,7 @@
         }
     }
 
-    async Task RenderList()
+    void RenderList()
     {
         try
         {
@@ -204,13 +204,7 @@
         }
         catch (Exception ex)
         {
-            await DialogService.OpenAsync<CustomDialog>(
-                "Rendering Error",
-                new Dictionary<string, object?>
-                {
-                    { "Type", Enums.DialogTypes.Error },
-                    { "Message", $"{ex}" }
-                }, Constants.DialogOptions);
+            ex.Display(DialogService);
         }
     }
 

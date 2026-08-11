@@ -217,15 +217,19 @@ public partial class Transformer
                 public record Root({Environment.NewLine}{string.Join(",\n", rootFields)});
                 """));
         }
-        catch (Exception ex)
+        catch(JsonReaderException jsEx)
         {
             await DialogService.OpenAsync<CustomDialog>(
                 "JsonToClass Error",
                 new Dictionary<string, object?>
                 {
                     { "Type", Enums.DialogTypes.Error },
-                    { "Message", $"{ex.Message}\n{ex.StackTrace}" }
+                    { "Message", $"{jsEx.Message}" }
                 }, Constants.DialogOptions);
+        }
+        catch (Exception ex)
+        {
+            await ex.DisplayAsync(DialogService);
         }
     }
 

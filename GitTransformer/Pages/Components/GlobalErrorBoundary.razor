@@ -1,0 +1,29 @@
+@inherits ErrorBoundary
+@inject DialogService DialogService
+@inject ILogger<GlobalErrorBoundary> Logger
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else if (ErrorContent is not null)
+{
+    @ErrorContent(CurrentException)
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>An unexpected error has occurred.</strong>
+        <div>@CurrentException?.Message</div>
+        <button class="btn btn-primary mt-2" @onclick="Recover">Retry</button>
+    </div>
+}
+
+@code {
+
+    protected override async Task OnErrorAsync(Exception exception)
+    {
+        Logger.LogError(exception, "An unhandled exception occurred in the application.");
+        await exception.DisplayAsync(DialogService);
+    }
+}
