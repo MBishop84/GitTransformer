@@ -1,0 +1,52 @@
+@inject DialogService DialogService
+@inject IJSRuntime JS
+
+<RadzenButton Variant="Variant.Outlined"
+              Shade="Shade.Darker"
+              Click="CopyToClipboard"
+              Icon="@icon"
+              ButtonStyle="@style"
+              IsBusy="@isBusy"
+              Size="ButtonSize.Small" />
+
+@code {
+    [Parameter]
+    public string? Text { get; set; }
+
+    string icon = "content_copy";
+    ButtonStyle style = ButtonStyle.Secondary;
+    bool isBusy;
+
+    async Task CopyToClipboard()
+    {
+        isBusy = true;
+        try
+        {
+            if (await JS.InvokeAsync<bool>("copyToClipboard", Text ?? string.Empty))
+            {
+                isBusy = false;
+                icon = "download_done";
+                style = ButtonStyle.Success;
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(250);
+            }
+        }
+        catch (Exception ex)
+        {
+            await DialogService.OpenAsync<CustomDialog>(
+                "Copying Error",
+                new Dictionary<string, object?>
+                {
+                    { "Type", Enums.DialogTypes.Error },
+                    { "Message", $"{ex}" }
+                }, Constants.DialogOptions);
+        }
+        finally
+        {
+            icon = "content_copy";
+            style = ButtonStyle.Secondary;
+            isBusy = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

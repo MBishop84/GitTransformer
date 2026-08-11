@@ -2,8 +2,7 @@
 @page "/GitTransformer/"
 
 @rendermode InteractiveWebAssembly
-@inject Services.LocalFileService FileService
-@inject Services.QuotableApiService QuotableService
+@inject IQuoteService QuoteService
 
 <PageTitle>Home</PageTitle>
 
@@ -18,7 +17,7 @@
     }
     else
     {
-        <RadzenText TextStyle="TextStyle.Subtitle1" Style="textStyle">@_quote.Text</RadzenText>
+        <RadzenText TextStyle="TextStyle.Subtitle1" Style="@textStyle">@_quote.Text</RadzenText>
         <RadzenText TextStyle="TextStyle.Subtitle2">@_quote.Author.Name</RadzenText>
     }
     <RadzenButton Variant="Variant.Outlined" Shade="Shade.Darker" Click="@GetQuote" Text="Refresh Quote" ButtonStyle="ButtonStyle.Secondary" />
@@ -43,11 +42,7 @@
         await InvokeAsync(StateHasChanged);
         try
         {
-            _quote = await QuotableService.GetRandomQuote();
-            if (_quote.Author.Name == "Unknown"){
-                textStyle += "color: var(--rz-danger)"; 
-                _quote = await FileService.GetRandomQuote() ?? new();
-            }
+            _quote = await QuoteService.GetRandomQuoteAsync();
         }
         catch (Exception ex)
         {

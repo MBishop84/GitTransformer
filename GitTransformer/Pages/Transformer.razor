@@ -280,8 +280,10 @@
                                       Click="@(async _ => {
                                           _openInModal = true;
                                           await Task.Delay(500);
-                                          await OpenInModalAsync<VSCodeJS>(
-                                              "Custom JavaScript", new() { { "InModal", true }, { "UserCode", UserCode } });
+                                          await DialogService.OpenAsync<VSCodeJS>(
+                                              "Custom JavaScript",
+                                              new() { { "InModal", true }, { "UserCode", UserCode } },
+                                              Constants.LargeDialogOptions);
                                       })" />
                     </RadzenStack>
                 </RadzenAccordionItem>
@@ -302,7 +304,7 @@
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
                           Click="@(() => Orientation = Orientation == Orientation.Horizontal
-                                                        ? Orientation.Vertical : Orientation.Horizontal)"
+                                                                    ? Orientation.Vertical : Orientation.Horizontal)"
                           Text="Change Orientation"
                           ButtonStyle="ButtonStyle.Secondary" />
             @if (Orientation == Orientation.Horizontal)
@@ -311,23 +313,18 @@
                              Style="width: 40%"
                              AlternateText="transformer" />
             }
-
         </RadzenStack>
     </RadzenFieldset>
     <RadzenFieldset Style="width: 100%">
         <HeaderTemplate>
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
-                          Click="@(async _ => await OpenInModalAsync<CustomDialog>("Output", new(){{ "Message", _output ?? "" }}))"
+                          Click="@(async _ => await DialogService.OpenAsync<CustomDialog>(
+                                          "Output", new() { { "Message", _output ?? "" } }, Constants.LargeDialogOptions))"
                           Icon="open_in_new"
                           ButtonStyle="ButtonStyle.Secondary"
                           Size="ButtonSize.Small" />
-            <RadzenButton Variant="Variant.Outlined"
-                          Shade="Shade.Darker"
-                          Click="@(async _ => await CopyToClipboard(_output ?? string.Empty))"
-                          Icon="@copyIcon"
-                          ButtonStyle="@copyStyle"
-                          Size="ButtonSize.Small" />
+            <ClipboardButton Text="@_output" />
         </HeaderTemplate>
         <ChildContent>
             <RadzenTextArea @bind-Value="@_output"

@@ -3,7 +3,6 @@
 @inject AppData AppData
 @using GitTransformer.Pages.Components
 @inject DialogService DialogService
-@inject IJSRuntime JS
 
 <RadzenStack Orientation="Orientation.Vertical"
              AlignItems="AlignItems.Center"
@@ -67,12 +66,7 @@
                              JustifyContent="JustifyContent.Center"
                              Gap="5px">
                     <RadzenText TextStyle="TextStyle.Button">A Only</RadzenText>
-                    <RadzenButton Variant="Variant.Outlined"
-                                  Shade="Shade.Darker"
-                                  Click="@(async _ => await CopyToClipboard(0, aOnly ?? string.Empty))"
-                                  Icon="@CopyButtons[0].Icon"
-                                  ButtonStyle="@CopyButtons[0].Style"
-                                  Size="ButtonSize.Small" />
+                    <ClipboardButton Text="@aOnly" />
                 </RadzenStack>
             </HeaderTemplate>
             <ChildContent>
@@ -88,12 +82,7 @@
                              JustifyContent="JustifyContent.Center"
                              Gap="5px">
                     <RadzenText TextStyle="TextStyle.Button">B Only</RadzenText>
-                    <RadzenButton Variant="Variant.Outlined"
-                                  Shade="Shade.Darker"
-                                  Click="@(async _ => await CopyToClipboard(1, bOnly ?? string.Empty))"
-                                  Icon="@CopyButtons[1].Icon"
-                                  ButtonStyle="@CopyButtons[1].Style"
-                                  Size="ButtonSize.Small" />
+                    <ClipboardButton Text="@bOnly" />
                 </RadzenStack>
             </HeaderTemplate>
             <ChildContent>
@@ -110,12 +99,7 @@
                              JustifyContent="JustifyContent.Center"
                              Gap="5px">
                     <RadzenText TextStyle="TextStyle.Button">A & B (Both)</RadzenText>
-                    <RadzenButton Variant="Variant.Outlined"
-                                  Shade="Shade.Darker"
-                                  Click="@(async _ => await CopyToClipboard(2, aAndB ?? string.Empty))"
-                                  Icon="@CopyButtons[2].Icon"
-                                  ButtonStyle="@CopyButtons[2].Style"
-                                  Size="ButtonSize.Small" />
+                    <ClipboardButton Text="@aAndB" />
                 </RadzenStack>
             </HeaderTemplate>
             <ChildContent>
@@ -131,12 +115,7 @@
                              JustifyContent="JustifyContent.Center"
                              Gap="5px">
                     <RadzenText TextStyle="TextStyle.Button">A Or B (All)</RadzenText>
-                    <RadzenButton Variant="Variant.Outlined"
-                                  Shade="Shade.Darker"
-                                  Click="@(async _ => await CopyToClipboard(3, aOrB ?? string.Empty))"
-                                  Icon="@CopyButtons[3].Icon"
-                                  ButtonStyle="@CopyButtons[3].Style"
-                                  Size="ButtonSize.Small" />
+                    <ClipboardButton Text="@aOrB" />
                 </RadzenStack>
             </HeaderTemplate>
             <ChildContent>
@@ -156,29 +135,6 @@
         bOnly,
         aAndB,
         aOrB;
-    class CopyButton()
-    {
-        public string Icon { get; set; } = "content_copy";
-        public ButtonStyle Style { get; set; } = ButtonStyle.Secondary;
-        public void SetCopied()
-        {
-            Icon = "download_done";
-            Style = ButtonStyle.Success;
-        }
-        public void SetDefault()
-        {
-            Icon = "content_copy";
-            Style = ButtonStyle.Secondary;
-        }
-    }
-    List<CopyButton> CopyButtons = [
-        new CopyButton(),
-        new CopyButton(),
-        new CopyButton(),
-        new CopyButton()
-    ];
-    string copyIcon = "content_copy";
-    ButtonStyle copyStyle = ButtonStyle.Secondary;
     Orientation Orientation { get; set; } = Orientation.Horizontal;
     FlexWrap Wrap { get; set; } = FlexWrap.NoWrap;
     IEnumerable<int> options = [2, 3];
@@ -258,28 +214,4 @@
         }
     }
 
-    async Task CopyToClipboard(int buttonId, string text)
-    {
-        try
-        {
-            if(await JS.InvokeAsync<bool>("copyToClipboard", text))
-            {
-                CopyButtons[buttonId].SetCopied();
-                await InvokeAsync(StateHasChanged);
-                await Task.Delay(500);
-                CopyButtons[buttonId].SetDefault();
-                await InvokeAsync(StateHasChanged);
-            }
-        }
-        catch (Exception ex)
-        {
-            await DialogService.OpenAsync<CustomDialog>(
-                 "Copying Error",
-                 new Dictionary<string, object?>
-                 {
-                    { "Type", Enums.DialogTypes.Error },
-                    { "Message", $"{ex}" }
-                 }, Constants.DialogOptions);
-        }
-    }
 }

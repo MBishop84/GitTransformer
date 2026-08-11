@@ -22,6 +22,11 @@
 		<PackageReference Include="Radzen.Blazor" Version="11.2.2" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\GitTransformer.Application\GitTransformer.Application.csproj" />
+		<ProjectReference Include="..\GitTransformer.Core\GitTransformer.Core.csproj" />
+		<ProjectReference Include="..\GitTransformer.Infrastructure\GitTransformer.Infrastructure.csproj" />
+	</ItemGroup>
+	<ItemGroup>
 		<Content Update="wwwroot\404.html">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>

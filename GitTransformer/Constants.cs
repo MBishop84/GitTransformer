@@ -11,6 +11,16 @@ public static class Constants
         Style = "max-width: 90vw; max-height: 90vh"
     };
 
+    public static DialogOptions LargeDialogOptions => new()
+    {
+        ShowClose = false,
+        Resizable = true,
+        Draggable = true,
+        CloseDialogOnOverlayClick = true,
+        Width = "80vw",
+        Height = "80vh"
+    };
+
     public const string SnippetTemplate = """
         {
           "CodeSnippets": {

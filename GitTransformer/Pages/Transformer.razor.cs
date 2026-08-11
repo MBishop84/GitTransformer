@@ -1,12 +1,11 @@
 ﻿using GitTransformer.Pages.Components;
+using GitTransformer.Application.Abstractions;
+using GitTransformer.Core.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Radzen;
-using System.Globalization;
-using System.Text;
-using System.Xml;
 
 namespace GitTransformer.Pages;
 
@@ -23,6 +22,7 @@ public partial class Transformer
     [Inject] private IJSRuntime JS { get; init; } = null!;
     [Inject] private DialogService DialogService { get; init; } = null!;
     [Inject] private AppData AppData { get; set; } = null!;
+    [Inject] private ITextTransformationService TransformationService { get; init; } = null!;
 
     #endregion
 
@@ -35,8 +35,6 @@ public partial class Transformer
     }
     private string UserCode { get; set; } = string.Empty;
     private Orientation Orientation { get; set; } = Orientation.Horizontal;
-    private string copyIcon = "content_copy";
-    private ButtonStyle copyStyle = ButtonStyle.Secondary;
 
     #endregion
 
@@ -91,24 +89,16 @@ public partial class Transformer
         try
         {
             ArgumentException.ThrowIfNullOrEmpty(_input);
-
-            var split = _split?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
-            var join = _join?.Replace("\\n", "\n").Replace("\\t", "\t") ?? string.Empty;
-
-            var outputArray = string.IsNullOrEmpty(split)
-                ? _input?.ToCharArray().Select(x => SplitFunction(x.ToString())) ?? []
-                : _input?.Split(split).Select(SplitFunction) ?? [];
-
-            if (_sort)
-            {
-                outputArray = [.. outputArray.OrderBy(x => x)];
-            }
-            if (_dupes)
-            {
-                outputArray = outputArray.Distinct();
-            }
-
-            _output = $"{_boundAll.Prefix}{string.Join(join, outputArray)}{_boundAll.Suffix}";
+            _output = TransformationService.Transform(
+                _input,
+                new TextTransformOptions(
+                    _split,
+                    _join,
+                    new TextBounds(_boundAll.Prefix, _boundAll.Suffix),
+                    new TextBounds(_boundEach.Prefix, _boundEach.Suffix),
+                    _dynamic,
+                    _sort,
+                    _dupes));
         }
         catch (Exception ex)
         {
@@ -120,17 +110,6 @@ public partial class Transformer
                     { "Message", $"{ex.Message}\n\n{ex.StackTrace}" }
                 }, Constants.DialogOptions);
         }
-    }
-
-    private string SplitFunction(string input)
-    {
-        return _dynamic switch
-        {
-            true => int.TryParse(input, out var _)
-                ? $"{input}"
-                : $"{_boundEach.Prefix}{input}{_boundEach.Suffix}",
-            false => $"{_boundEach.Prefix}{input}{_boundEach.Suffix}",
-        };
     }
 
     private void ClearField(string field)
@@ -174,49 +153,7 @@ public partial class Transformer
                 "Comments",
                 new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" }) ?? false;
 
-            var lines = _input.Split("\n");
-            var result = new StringBuilder();
-
-            foreach (var line in lines)
-            {
-                var properties = line.Split("\t");
-                if (comments) result.Append($"///<summary>\n/// Gets/Sets the {properties[0]}.\n///</summary>\n");
-                switch (properties.Length)
-                {
-                    case 1:
-                        throw new ArgumentException("Insufficient arguments.\n\n");
-                    case 2:
-                        _ = result.Append(properties[1] switch
-                        {
-                            var a when a.Contains("int", StringComparison.OrdinalIgnoreCase) =>
-                                $"public int {properties[0]} {{ get; set; }}\n\n",
-                            var b when b.Contains("date", StringComparison.OrdinalIgnoreCase) =>
-                                $"public DateTime {properties[0]} {{ get; set; }}\n\n",
-                            var b when b.Contains("bit", StringComparison.OrdinalIgnoreCase) =>
-                                $"public bool {properties[0]} {{ get; set; }}\n\n",
-                            var b when b.Contains("unique", StringComparison.OrdinalIgnoreCase) =>
-                                $"public Guid {properties[0]} {{ get; set; }}\n\n",
-                            _ => $"public string {properties[0]} {{ get; set; }}\n\n"
-                        });
-                        break;
-                    case 3:
-                        var isNullable = properties[2].Equals("YES", StringComparison.OrdinalIgnoreCase) ? "?" : "";
-                        _ = result.Append(properties[1] switch
-                        {
-                            var a when a.Contains("int", StringComparison.OrdinalIgnoreCase) =>
-                                $"public int{isNullable} {properties[0]} {{ get; set; }}\n\n",
-                            var b when b.Contains("date", StringComparison.OrdinalIgnoreCase) =>
-                                $"public DateTime{isNullable} {properties[0]} {{ get; set; }}\n\n",
-                            var b when b.Contains("bit", StringComparison.OrdinalIgnoreCase) =>
-                                $"public bool{isNullable} {properties[0]} {{ get; set; }}\n\n",
-                            var b when b.Contains("unique", StringComparison.OrdinalIgnoreCase) =>
-                                $"public Guid{isNullable} {properties[0]} {{ get; set; }}\n\n",
-                            _ => $"public string {properties[0]} {{ get; set; }}\n\n"
-                        });
-                        break;
-                }
-            }
-            _output = result.ToString();
+            _output = TransformationService.ClassFromQuery(_input, comments);
         }
         catch (Exception ex)
         {
@@ -296,60 +233,8 @@ public partial class Transformer
     {
         try
         {
-            if (string.IsNullOrEmpty(_input))
-            {
-                throw new ArgumentException("Input is Empty");
-            }
-
-            if (_input.Contains("&lt;") || _input.Contains("&gt;"))
-            {
-                _input = _input.Replace("&lt;", "<").Replace("&gt;", ">");
-            }
-
-            var xml = new XmlDocument();
-            xml.LoadXml(_input);
-            var result = new StringBuilder();
-            var xmlRoot = xml.DocumentElement ?? throw new ArgumentException("XML must have a root element");
-            _ = result.Append(
-                $"public class {xmlRoot.Name}\n{{\n");
-
-            foreach (XmlNode node in xmlRoot.ChildNodes)
-            {
-                if (node.NodeType == XmlNodeType.Comment)
-                {
-                    continue;
-                }
-
-                if (string.IsNullOrEmpty(node.InnerText) || node.ChildNodes.Count > 1)
-                {
-                    _ = result.AppendFormat(
-                        "\n\t///<summary>\n\t/// Gets/Sets the {0}.\n\t///</summary>\n\tpublic {1} {0} {{ get; set; }}\n",
-                        node.Name,
-                        $"{char.ToUpper(node.Name[0])}{node.Name[1..]}");
-                }
-                else
-                {
-                    _ = result.AppendFormat(
-                        "\n\t///<summary>\n\t/// Gets/Sets the {0}.\n\t///</summary>\n\tpublic {1} {0} {{ get; set; }} = {2};\n",
-                        node.Name,
-                        node.InnerText switch
-                        {
-                            var a when int.TryParse(a, out _) => "int",
-                            var b when DateTime.TryParse(b, CultureInfo.InvariantCulture, DateTimeStyles.None, out _) => "DateTime",
-                            var c when bool.TryParse(c, out _) => "bool",
-                            _ => "string"
-                        },
-                        node.InnerText switch
-                        {
-                            var a when int.TryParse(a, out _) => "0",
-                            var b when DateTime.TryParse(b, CultureInfo.InvariantCulture, DateTimeStyles.None, out _) => "DateTime.MinValue",
-                            var c when bool.TryParse(c, out _) => "false",
-                            _ => "string.Empty"
-                        });
-                }
-            }
-            _ = result.Append('}');
-            _output = result.ToString();
+            ArgumentException.ThrowIfNullOrEmpty(_input);
+            _output = TransformationService.XmlToClass(_input);
         }
         catch (Exception ex)
         {
@@ -373,15 +258,7 @@ public partial class Transformer
     {
         try
         {
-            var doc = JsonConvert.DeserializeXmlNode(input);
-            using var sw = new StringWriter();
-            await sw.WriteLineAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            var writer = new XmlTextWriter(sw)
-            {
-                Formatting = System.Xml.Formatting.Indented
-            };
-            doc?.WriteContentTo(writer);
-            _output = sw.ToString();
+            _output = TransformationService.JsonToXml(input);
         }
         catch (Exception ex)
         {
@@ -487,14 +364,8 @@ public partial class Transformer
     {
         try
         {
-            if (string.IsNullOrEmpty(_input))
-            {
-                throw new ArgumentException("Input is Empty");
-            }
-
-            var doc = new XmlDocument();
-            doc.LoadXml(_input);
-            _output = JsonConvert.SerializeObject(doc, Newtonsoft.Json.Formatting.Indented);
+            ArgumentException.ThrowIfNullOrEmpty(_input);
+            _output = TransformationService.XmlToJson(_input);
         }
         catch (Exception ex)
         {
@@ -508,23 +379,6 @@ public partial class Transformer
         }
     }
 
-    private Task<dynamic?> OpenInModalAsync<T>(
-        string title = "Dialog", Dictionary<string, object?>? parameters = null) where T : ComponentBase
-    {
-        return DialogService.OpenAsync<T>(
-                title,
-                parameters,
-                new DialogOptions()
-                {
-                    ShowClose = false,
-                    Resizable = true,
-                    Draggable = true,
-                    CloseDialogOnOverlayClick = true,
-                    Width = "80vw",
-                    Height = "80vh"
-                });
-    }
-
     private void DialogClose(dynamic editorValue)
     {
         if (editorValue is string value)
@@ -534,31 +388,6 @@ public partial class Transformer
 
         _openInModal = false;
         StateHasChanged();
-    }
-
-    async Task CopyToClipboard(string text)
-    {
-        try
-        {
-            await JS.InvokeVoidAsync("copyToClipboard", text);
-            copyIcon = "download_done";
-            copyStyle = ButtonStyle.Success;
-            await InvokeAsync(StateHasChanged);
-            await Task.Delay(500);
-            copyIcon = "content_copy";
-            copyStyle = ButtonStyle.Secondary;
-            await InvokeAsync(StateHasChanged);
-        }
-        catch (Exception ex)
-        {
-            await DialogService.OpenAsync<CustomDialog>(
-                 "Copying Error",
-                 new Dictionary<string, object?>
-                 {
-                    { "Type", Enums.DialogTypes.Error },
-                    { "Message", $"{ex}" }
-                 }, Constants.DialogOptions);
-        }
     }
 
     #endregion

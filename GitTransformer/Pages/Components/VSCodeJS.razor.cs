@@ -1,5 +1,6 @@
 ﻿using BlazorMonaco.Editor;
-using GitTransformer.Services;
+using GitTransformer.Core.Abstractions;
+using GitTransformer.Core.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
@@ -19,7 +20,9 @@ public partial class VSCodeJS : IAsyncDisposable
     [Inject]
     private DialogService DialogService { get; init; } = null!;
     [Inject]
-    private LocalFileService FileClient { get; init; } = null!;
+    private ILocalContentRepository LocalContent { get; init; } = null!;
+    [Inject]
+    private IEditorThemeProvider<StandaloneThemeData> ThemeProvider { get; init; } = null!;
     [Parameter]
     public string UserCode { get; set; } = string.Empty;
     [Parameter]
@@ -43,11 +46,11 @@ public partial class VSCodeJS : IAsyncDisposable
 
     protected override async Task OnInitializedAsync()
     {
-        var themes = await FileClient.GetMonacoThemes();
+        var themes = await LocalContent.GetMonacoThemesAsync();
         _monacoThemes = [.. themes
             .Concat(_defaultThemes)
             .Distinct(StringComparer.Ordinal)];
-        _jsTransforms = await FileClient.GetFileTransforms();
+        _jsTransforms = [.. await LocalContent.GetFileTransformsAsync()];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -348,7 +351,7 @@ public partial class VSCodeJS : IAsyncDisposable
             if (!_defaultThemes.Contains(theme))
             {
                 await Global.DefineTheme(JS, myTheme,
-                    await FileClient.GetStandaloneThemeData(theme));
+                    await ThemeProvider.GetThemeAsync(theme));
             }
 
             await Global.SetTheme(JS, myTheme);

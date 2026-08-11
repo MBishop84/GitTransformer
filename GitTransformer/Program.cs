@@ -1,5 +1,9 @@
 using GitTransformer;
-using GitTransformer.Services;
+using BlazorMonaco.Editor;
+using GitTransformer.Application.Abstractions;
+using GitTransformer.Application.Services;
+using GitTransformer.Core.Abstractions;
+using GitTransformer.Infrastructure.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Radzen;
@@ -10,12 +14,14 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services
     .AddScoped<AppData>()
-    .AddSingleton<QuotableApiService>()
-    .AddSingleton<LocalFileService>()
-    .AddKeyedSingleton("quotable", (_, _) => new HttpClient()
-        { BaseAddress = new Uri("https://qapi.vercel.app/api/") })
-    .AddKeyedSingleton("local", (_, _) => new HttpClient
-        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+    .AddScoped<ITextTransformationService, TextTransformationService>()
+    .AddScoped<IQuoteService, QuoteService>()
+    .AddScoped<IRemoteQuoteSource>(_ => new RemoteQuoteSource(new HttpClient
+        { BaseAddress = new Uri("https://qapi.vercel.app/api/") }))
+    .AddScoped(_ => new LocalContentRepository(new HttpClient
+        { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) }))
+    .AddScoped<ILocalContentRepository>(services => services.GetRequiredService<LocalContentRepository>())
+    .AddScoped<IEditorThemeProvider<StandaloneThemeData>>(services => services.GetRequiredService<LocalContentRepository>())
     .AddRadzenComponents();
 
 await builder.Build().RunAsync();
