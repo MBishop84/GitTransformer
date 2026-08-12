@@ -6,9 +6,22 @@
 
 <RadzenLayout>
     <RadzenHeader id="site_header">
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
-            <RadzenLabel Text="Transformer" />
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     JustifyContent="JustifyContent.SpaceBetween"
+                     AlignItems="AlignItems.Center">
+            <RadzenStack Orientation="Orientation.Horizontal"
+                         JustifyContent="JustifyContent.Left"
+                         AlignItems="AlignItems.Center"
+                         Gap="0">
+                <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
+                <RadzenLabel Text="Transformer" />
+            </RadzenStack>
+            <RadzenFormField Text="Theme" Variant="Variant.Outlined">
+                <RadzenDropDown TValue="string"
+                                Value="@_theme"
+                                Data="@_themes"
+                                Change="@(async args => await ChangeTheme($"{args}"))" Name="ThemeSelect" />
+            </RadzenFormField>
         </RadzenStack>
     </RadzenHeader>
     <RadzenSidebar @bind-Expanded="@_sidebar1Expanded">
@@ -35,7 +48,17 @@
 </RadzenLayout>
 
 <RadzenComponents />
+
 @code {
+    readonly string[] _themes =
+    [
+        "default",
+        "dark",
+        "software",
+        "humanistic-dark",
+        "standard"
+    ];
+    string _theme = "Select Theme";
     bool _sidebar1Expanded = true;
     GlobalErrorBoundary? _errorBoundary;
 
@@ -57,7 +80,20 @@
         if (!firstRender)
             return;
 
+        _theme = await JS.InvokeAsync<string>("localStorage.getItem", "RadzenTheme")
+            ?? "Select Theme";
+
         if (!AppData.IsLoaded)
             await AppData.LoadAsync(JS);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ChangeTheme(string theme)
+    {
+        _theme = theme;
+        await JS.InvokeVoidAsync("localStorage.setItem", "RadzenTheme", theme);
+        await JS.InvokeVoidAsync("GetSetTheme", theme);
+        await InvokeAsync(StateHasChanged);
     }
 }

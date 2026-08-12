@@ -1,53 +1,19 @@
-﻿@inject IJSRuntime JsRuntime
-@inject NavigationManager NavigationManager
+﻿@inject NavigationManager NavigationManager
 
 <RadzenPanelMenu Multiple="true">
-    <RadzenPanelMenuItem Text="Home" Path="@($"{NavigationManager.BaseUri}")" Icon="psychology"></RadzenPanelMenuItem>
-    <RadzenPanelMenuItem Text="Transformer" Path="@($"{NavigationManager.BaseUri}transformer")" Icon="robot_2"></RadzenPanelMenuItem>
-    <RadzenPanelMenuItem Text="List Diff" Path="@($"{NavigationManager.BaseUri}list_diff")" Icon="list"></RadzenPanelMenuItem>
-    <RadzenPanelMenuItem Text="Score Keeper" Path="@($"{NavigationManager.BaseUri}score_keeper")" Icon="functions"></RadzenPanelMenuItem>
-    <RadzenPanelMenuItem Text="Doc Viewer" Path="@($"{NavigationManager.BaseUri}documents")" Icon="assignment"></RadzenPanelMenuItem>
+    <RadzenPanelMenuItem Text="Home"
+                         Path="@NavigationManager.BaseUri"
+                         Icon="psychology" />
+    <RadzenPanelMenuItem Text="Transformer"
+                         Path="@($"{NavigationManager.BaseUri}transformer")"
+                         Icon="robot_2" />
+    <RadzenPanelMenuItem Text="List Diff"
+                         Path="@($"{NavigationManager.BaseUri}list_diff")"
+                         Icon="list" />
+    <RadzenPanelMenuItem Text="Score Keeper"
+                         Path="@($"{NavigationManager.BaseUri}score_keeper")"
+                         Icon="functions" />
+    @* <RadzenPanelMenuItem Text="Doc Viewer" Path="@($"{NavigationManager.BaseUri}documents")" Icon="assignment"></RadzenPanelMenuItem> *@
     @* <RadzenPanelMenuItem Text="About" Path="@($"{NavigationManager.BaseUri}about")" Icon="person"></RadzenPanelMenuItem> *@
 </RadzenPanelMenu>
 <hr />
-<RadzenStack Orientation="Orientation.Vertical"
-             AlignItems="AlignItems.Center"
-             JustifyContent="JustifyContent.SpaceBetween"
-             Style="height: 70vh">
-    <div>
-        <RadzenLabel Component="ThemeSelect" Text="Change Theme" />
-        <RadzenDropDown TValue="string"
-                        Value="@_theme"
-                        Data="@_themes"
-                        Change="@(async args => await ChangeTheme($"{args}"))" Name="ThemeSelect" />
-    </div>
-    
-</RadzenStack>
-
-@code {
-    readonly string[] _themes =
-    [
-        "default",
-        "dark",
-        "software",
-        "humanistic-dark",
-        "standard"
-    ];
-    string _theme = "Select Theme";
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-            return;
-
-        _theme = await JsRuntime.InvokeAsync<string>("localStorage.getItem", "RadzenTheme");
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task ChangeTheme(string theme)
-    {
-        await JsRuntime.InvokeVoidAsync("localStorage.setItem", "RadzenTheme", theme);
-        NavigationManager.NavigateTo(NavigationManager.BaseUri);
-        NavigationManager.Refresh(true);
-    }
-}
