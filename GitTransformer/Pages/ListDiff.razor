@@ -14,13 +14,15 @@
                  JustifyContent="JustifyContent.Center"
                  Gap="5px"
                  Style="width: 100%">
-        <RadzenFieldset Text="List A" Style="width: 100%">
+        <RadzenFieldset Text="@($"List A [{stringA?.Split('\n', StringSplitOptions.RemoveEmptyEntries).Count() ?? 0}]")"
+                        Style="width: 100%">
             <RadzenTextArea @bind-Value="@stringA"
                             Rows="@(AppData.WindowHeight / 75)"
                             Style="width: 100%"
                             Change="RenderList" />
         </RadzenFieldset>
-        <RadzenFieldset Text="List B" Style="width: 100%">
+        <RadzenFieldset Text="@($"List A [{stringB?.Split('\n', StringSplitOptions.RemoveEmptyEntries).Count() ?? 0}]")"
+                        Style="width: 100%">
             <RadzenTextArea @bind-Value="@stringB"
                             Rows="@(AppData.WindowHeight / 75)"
                             Style="width: 100%"
@@ -59,82 +61,37 @@
                  Gap="5px"
                  Style="width: 100%"
                  Wrap="@Wrap">
-        <RadzenFieldset Style="width: 100%">
-            <HeaderTemplate>
-                <RadzenStack Orientation="Orientation.Horizontal"
-                             AlignItems="AlignItems.Center"
-                             JustifyContent="JustifyContent.Center"
-                             Gap="5px">
-                    <RadzenText TextStyle="TextStyle.Button">A Only</RadzenText>
-                    <ClipboardButton Text="@aOnly" />
-                </RadzenStack>
-            </HeaderTemplate>
-            <ChildContent>
-                <RadzenTextArea @bind-Value="@aOnly"
-                                Rows="@(AppData.WindowHeight / 75)"
-                                Style="width: 100%" />
-            </ChildContent>
-        </RadzenFieldset>
-        <RadzenFieldset Style="width: 100%">
-            <HeaderTemplate>
-                <RadzenStack Orientation="Orientation.Horizontal"
-                             AlignItems="AlignItems.Center"
-                             JustifyContent="JustifyContent.Center"
-                             Gap="5px">
-                    <RadzenText TextStyle="TextStyle.Button">B Only</RadzenText>
-                    <ClipboardButton Text="@bOnly" />
-                </RadzenStack>
-            </HeaderTemplate>
-            <ChildContent>
-                <RadzenTextArea @bind-Value="@bOnly"
-                                Rows="@(AppData.WindowHeight / 75)"
-                                Style="width: 100%" />
-            </ChildContent>
-
-        </RadzenFieldset>
-        <RadzenFieldset Style="width: 100%">
-            <HeaderTemplate>
-                <RadzenStack Orientation="Orientation.Horizontal"
-                             AlignItems="AlignItems.Center"
-                             JustifyContent="JustifyContent.Center"
-                             Gap="5px">
-                    <RadzenText TextStyle="TextStyle.Button">A & B (Both)</RadzenText>
-                    <ClipboardButton Text="@aAndB" />
-                </RadzenStack>
-            </HeaderTemplate>
-            <ChildContent>
-                <RadzenTextArea @bind-Value="@aAndB"
-                                Rows="@(AppData.WindowHeight / 75)"
-                                Style="width: 100%" />
-            </ChildContent>
-        </RadzenFieldset>
-        <RadzenFieldset Style="width: 100%">
-            <HeaderTemplate>
-                <RadzenStack Orientation="Orientation.Horizontal"
-                             AlignItems="AlignItems.Center"
-                             JustifyContent="JustifyContent.Center"
-                             Gap="5px">
-                    <RadzenText TextStyle="TextStyle.Button">A Or B (All)</RadzenText>
-                    <ClipboardButton Text="@aOrB" />
-                </RadzenStack>
-            </HeaderTemplate>
-            <ChildContent>
-                <RadzenTextArea @bind-Value="@aOrB"
-                                Rows="@(AppData.WindowHeight / 75)"
-                                Style="width: 100%" />
-            </ChildContent>
-        </RadzenFieldset>
+        <ListDiffResult Title="A Only"
+                        Count="@aOnlyList.Count"
+                        @bind-Text="@aOnly"
+                        Rows="@(AppData.WindowHeight / 75)" />
+        <ListDiffResult Title="B Only"
+                        Count="@bOnlyList.Count"
+                        @bind-Text="@bOnly"
+                        Rows="@(AppData.WindowHeight / 75)" />
+        <ListDiffResult Title="A &amp; B (Both)"
+                        Count="@bothList.Count"
+                        @bind-Text="@both"
+                        Rows="@(AppData.WindowHeight / 75)" />
+        <ListDiffResult Title="A Or B (All)"
+                        Count="@allList.Count"
+                        @bind-Text="@all"
+                        Rows="@(AppData.WindowHeight / 75)" />
     </RadzenStack>
 </RadzenStack>
 
 @code {
     string? stringA,
-        stringB,
-        splitString,
-        aOnly,
-        bOnly,
-        aAndB,
-        aOrB;
+            stringB,
+            splitString,
+            aOnly,
+            bOnly,
+            both,
+            all;
+    List<string> aOnlyList = [],
+                 bOnlyList = [],
+                 bothList = [],
+                 allList = [];
     Orientation Orientation { get; set; } = Orientation.Horizontal;
     FlexWrap Wrap { get; set; } = FlexWrap.NoWrap;
     IEnumerable<int> options = [2, 3];
@@ -184,23 +141,23 @@
             var listB = stringB?.Split(ignoreList, splitOptions | StringSplitOptions.RemoveEmptyEntries) ?? [];
             var setA = new HashSet<string>(listA, caseOption);
             var setB = new HashSet<string>(listB, caseOption);
-            var both = listA.Union(listB, caseOption);
+            allList = listA.Union(listB, caseOption)?.ToList() ?? [];
 
-            List<string> aOnlyList = [.. setA.Except(setB, caseOption)];
-            List<string> bOnlyList = [.. setB.Except(setA, caseOption)];
-            List<string> aAndBList = [.. setA.Intersect(setB, caseOption)];
+            aOnlyList = [.. setA.Except(setB, caseOption)];
+            bOnlyList = [.. setB.Except(setA, caseOption)];
+            bothList = [.. setA.Intersect(setB, caseOption)];
 
             if (sort)
             {
                 aOnlyList.Sort(caseOption);
                 bOnlyList.Sort(caseOption);
-                aAndBList.Sort(caseOption);
-                both = both.Order(caseOption);
+                bothList.Sort(caseOption);
+                allList.Sort(caseOption);
             }
             aOnly = string.Join(System.Environment.NewLine, aOnlyList);
             bOnly = string.Join(System.Environment.NewLine, bOnlyList);
-            aAndB = string.Join(System.Environment.NewLine, aAndBList);
-            aOrB = string.Join(System.Environment.NewLine, both);
+            both = string.Join(System.Environment.NewLine, bothList);
+            all = string.Join(System.Environment.NewLine, allList);
         }
         catch (Exception ex)
         {
