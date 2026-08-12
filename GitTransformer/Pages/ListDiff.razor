@@ -17,14 +17,14 @@
         <RadzenFieldset Text="@($"List A [{stringA?.Split('\n', StringSplitOptions.RemoveEmptyEntries).Count() ?? 0}]")"
                         Style="width: 100%">
             <RadzenTextArea @bind-Value="@stringA"
-                            Rows="@(AppData.WindowHeight / 75)"
+                            Rows="@textRows"
                             Style="width: 100%"
                             Change="RenderList" />
         </RadzenFieldset>
-        <RadzenFieldset Text="@($"List A [{stringB?.Split('\n', StringSplitOptions.RemoveEmptyEntries).Count() ?? 0}]")"
+        <RadzenFieldset Text="@($"List B [{stringB?.Split('\n', StringSplitOptions.RemoveEmptyEntries).Count() ?? 0}]")"
                         Style="width: 100%">
             <RadzenTextArea @bind-Value="@stringB"
-                            Rows="@(AppData.WindowHeight / 75)"
+                            Rows="@textRows"
                             Style="width: 100%"
                             Change="RenderList" />
         </RadzenFieldset>
@@ -53,34 +53,81 @@
                            Style="width: 100%; max-width: 400px;"
                            Placeholder="Split chars..."
                            Change="RenderList" />
+            <RadzenButton Variant="Variant.Outlined"
+                          Shade="Shade.Darker"
+                          Click="@(() => viewTable = !viewTable)"
+                          Text="@(viewTable ? "View Text" : "View Table")"
+                          ButtonStyle="ButtonStyle.Secondary" />
         </RadzenStack>
     </RadzenFieldset>
-    <RadzenStack Orientation="Orientation.Horizontal"
-                 AlignItems="AlignItems.Center"
-                 JustifyContent="JustifyContent.Center"
-                 Gap="5px"
-                 Style="width: 100%"
-                 Wrap="@Wrap">
-        <ListDiffResult Title="A Only"
-                        Count="@aOnlyList.Count"
-                        @bind-Text="@aOnly"
-                        Rows="@(AppData.WindowHeight / 75)" />
-        <ListDiffResult Title="B Only"
-                        Count="@bOnlyList.Count"
-                        @bind-Text="@bOnly"
-                        Rows="@(AppData.WindowHeight / 75)" />
-        <ListDiffResult Title="A &amp; B (Both)"
-                        Count="@bothList.Count"
-                        @bind-Text="@both"
-                        Rows="@(AppData.WindowHeight / 75)" />
-        <ListDiffResult Title="A Or B (All)"
-                        Count="@allList.Count"
-                        @bind-Text="@all"
-                        Rows="@(AppData.WindowHeight / 75)" />
-    </RadzenStack>
+    @if (!viewTable)
+    {
+        <RadzenStack Orientation="Orientation.Horizontal"
+                     AlignItems="AlignItems.Center"
+                     JustifyContent="JustifyContent.Center"
+                     Gap="5px"
+                     Style="width: 100%"
+                     Wrap="@Wrap">
+            <ListDiffResult Title="A Only"
+                            Count="@aOnlyList.Count"
+                            @bind-Text="@aOnly"
+                            Rows="@textRows" />
+            <ListDiffResult Title="B Only"
+                            Count="@bOnlyList.Count"
+                            @bind-Text="@bOnly"
+                            Rows="@textRows" />
+            <ListDiffResult Title="A &amp; B (Both)"
+                            Count="@bothList.Count"
+                            @bind-Text="@both"
+                            Rows="@textRows" />
+            <ListDiffResult Title="A Or B (All)"
+                            Count="@allList.Count"
+                            @bind-Text="@all"
+                            Rows="@textRows" />
+        </RadzenStack>
+    }
+    else
+    {
+        <RadzenTable>
+            <RadzenTableHeader>
+                <RadzenTableHeaderRow>
+                    <RadzenTableHeaderCell>
+                        A Only [@aOnlyList.Count]
+                        <ClipboardButton Text="@aOnly" />
+                    </RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell>
+                        B Only [@bOnlyList.Count]
+                        <ClipboardButton Text="@bOnly" />
+                    </RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell>
+                        A &amp; B [@bothList.Count]
+                        <ClipboardButton Text="@both" />
+                    </RadzenTableHeaderCell>
+                    <RadzenTableHeaderCell>
+                        A Or B [@allList.Count]
+                        <ClipboardButton Text="@all" />
+                    </RadzenTableHeaderCell>
+                </RadzenTableHeaderRow>
+            </RadzenTableHeader>
+            <RadzenTableBody>
+                @for (var i = 0; i < allList.Count; i++)
+                {
+                    var index = i;
+                    <RadzenTableRow>
+                        <RadzenTableCell>@(aOnlyList.Count > index ? aOnlyList[index] : string.Empty)</RadzenTableCell>
+                        <RadzenTableCell>@(bOnlyList.Count > index ? bOnlyList[index] : string.Empty)</RadzenTableCell>
+                        <RadzenTableCell>@(bothList.Count > index ? bothList[index] : string.Empty)</RadzenTableCell>
+                        <RadzenTableCell>@allList[index]</RadzenTableCell>
+                    </RadzenTableRow>
+                }
+            </RadzenTableBody>
+        </RadzenTable>
+    }
 </RadzenStack>
 
-@code {
+    @code {
+    int textRows = 5;
+    bool viewTable;
     string? stringA,
             stringB,
             splitString,
@@ -96,6 +143,12 @@
     FlexWrap Wrap { get; set; } = FlexWrap.NoWrap;
     IEnumerable<int> options = [2, 3];
 
+    protected override Task OnParametersSetAsync()
+    {
+        textRows = Math.Max(AppData.WindowHeight / 75, 5);
+        return base.OnParametersSetAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
@@ -110,7 +163,7 @@
                 Orientation = Orientation.Vertical;
                 Wrap = FlexWrap.Wrap;
             }
-
+            textRows = Math.Max(AppData.WindowHeight / 75, 5);
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
