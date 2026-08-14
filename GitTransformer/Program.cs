@@ -2,6 +2,7 @@ using GitTransformer;
 using BlazorMonaco.Editor;
 using GitTransformer.Application.Abstractions;
 using GitTransformer.Application.Services;
+using GitTransformer.Browser;
 using GitTransformer.Core.Abstractions;
 using GitTransformer.Infrastructure.Http;
 using Microsoft.AspNetCore.Components.Web;
@@ -14,6 +15,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services
     .AddScoped<AppData>()
+    .AddScoped<IJsTransformStore, IndexedDbJsTransformStore>()
     .AddScoped<ITextTransformationService, TextTransformationService>()
     .AddScoped<IQuoteService, QuoteService>()
     .AddScoped<IRemoteQuoteSource>(_ => new RemoteQuoteSource(new HttpClient

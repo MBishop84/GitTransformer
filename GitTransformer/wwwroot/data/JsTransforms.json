@@ -6,10 +6,10 @@
     "Code": "output = input.split('\\t')\n\t.map(x => `${x} = source.${x}`)\n\t.join(',\\n')"
   },
   {
-    "Id": 1,
+    "Id": 0,
     "AddedBy": "Mitch",
     "Name": "//ADSSnippet",
-    "Code": "output = input.split('\\n')\n\t.map(y => y.replace('     ', '\\\\t'))\n    .map(y => y.replace('    ', '\\\\t'))\n    .map(y => y.replace('   ', '\\\\t'))\n    .map(y => y.replace('  ', '\\\\t'))\n    .map(y => y.replace('\\t', '\\\\t'))\n    .map(x => `\"${x}\"`)\n    .join(',\\n')"
+    "Code": "output = `\"<Name>\": {\n\t\t\"prefix\": \"<Prefix>\",\n\t\t\"description\": \"<Desc>\",\n\t\t\"body\": [\n\t\t\t`\noutput += input.split('\\n')\n\t.map(y => y.replace('     ', '\\\\t'))\n  .map(y => y.replace('    ', '\\\\t'))\n  .map(y => y.replace('   ', '\\\\t'))\n  .map(y => y.replace('  ', '\\\\t'))\n  .map(y => y.replace('\\t', '\\\\t'))\n  .map(x => `\"${x}\"`)\n  .join(',\\n\\t\\t\\t');\noutput += `\n\t\t]\n\t},`"
   },
   {
     "Id": 2,

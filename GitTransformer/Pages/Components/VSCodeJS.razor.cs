@@ -4,6 +4,7 @@ using GitTransformer.Core.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Radzen;
 using Radzen.Blazor;
 using System.Security.Cryptography;
@@ -13,35 +14,33 @@ namespace GitTransformer.Pages.Components;
 
 public partial class VSCodeJS : IAsyncDisposable
 {
-    [Inject]
-    private AppData AppData { get; set; } = null!;
-    [Inject]
-    private IJSRuntime JS { get; init; } = null!;
-    [Inject]
-    private DialogService DialogService { get; init; } = null!;
-    [Inject]
-    private ILocalContentRepository LocalContent { get; init; } = null!;
-    [Inject]
-    private IEditorThemeProvider<StandaloneThemeData> ThemeProvider { get; init; } = null!;
-    [Parameter]
-    public string UserCode { get; set; } = string.Empty;
-    [Parameter]
-    public EventCallback<string> UserCodeChanged { get; set; }
-    [Parameter]
-    public bool InModal { get; set; } = false;
-    private StandaloneCodeEditor Editor { get; set; } = null!;
+    [Inject] AppData AppData { get; set; } = null!;
+    [Inject] IJSRuntime JS { get; init; } = null!;
+    [Inject] DialogService DialogService { get; init; } = null!;
+    [Inject] ILocalContentRepository LocalContent { get; init; } = null!;
+    [Inject] IJsTransformStore JsTransformStore { get; init; } = null!;
+    [Inject] IEditorThemeProvider<StandaloneThemeData> ThemeProvider { get; init; } = null!;
+    [Parameter] public string Output { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> OutputChanged { get; set; }
+    [Parameter] public string UserCode { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> UserCodeChanged { get; set; }
+    [Parameter] public bool InModal { get; set; } = false;
+    StandaloneCodeEditor Editor { get; set; } = null!;
 
-    private List<string> _monacoThemes = [];
-    private List<JsTransform?> _jsTransforms = [];
-    private readonly string[] _defaultThemes = ["vs-dark", "vs-light"];
-    private string? _entry;
-    private bool _isDisposed;
-
+    List<string> _monacoThemes = [];
+    List<JsTransform?> _jsTransforms = [];
+    readonly string[] _defaultThemes = ["vs-dark", "vs-light"];
+    string? _entry;
+    bool _isDisposed;
+    bool _isDebug;
 
     protected override void OnInitialized()
     {
         AppData.OnChange += StateHasChanged;
         DialogService.OnClose += DialogClose;
+#if DEBUG
+        _isDebug = true;
+#endif
     }
 
     protected override async Task OnInitializedAsync()
@@ -59,17 +58,19 @@ public partial class VSCodeJS : IAsyncDisposable
             return;
         try
         {
-            var localTransforms = await JS.InvokeAsync<string?>("localStorage.getItem", "JsTransforms");
-
-            if (!string.IsNullOrEmpty(localTransforms))
+            var storedTransforms = await JsTransformStore.GetAllAsync(_jsTransforms.OfType<JsTransform>().ToArray());
+            foreach (var transform in storedTransforms)
             {
-                var items = JsonConvert.DeserializeObject<List<JsTransform>>(localTransforms)!;
-                _jsTransforms.AddRange(items.Where(x => !_jsTransforms.Select(y => y?.Name).Contains(x.Name)));
+                var existingIndex = _jsTransforms.FindIndex(item => item?.Name == transform.Name);
+                if (existingIndex >= 0)
+                    _jsTransforms[existingIndex] = transform;
+                else
+                    _jsTransforms.Add(transform);
             }
 
             await ChangeTheme(AppData.MonacoTheme);
 
-            if(!string.IsNullOrEmpty(UserCode))
+            if (!string.IsNullOrEmpty(UserCode))
                 await Editor.SetValue(UserCode);
 
             await InvokeAsync(StateHasChanged);
@@ -108,12 +109,12 @@ public partial class VSCodeJS : IAsyncDisposable
 
     private async Task JavaScript(RadzenSplitButtonItem item)
     {
-        if (item?.Text == "1")
+        if (item?.Text == "Save")
         {
             await SaveJs();
             return;
         }
-        if (item?.Text == "2")
+        if (item?.Text == "Delete")
         {
             await DeleteJs();
             return;
@@ -129,7 +130,8 @@ public partial class VSCodeJS : IAsyncDisposable
             if (!userCode.Contains("input"))
                 throw new ArgumentException("You must use the input.");
 
-            await JS.InvokeVoidAsync("RunUserScript", userCode);
+            Output = await JS.InvokeAsync<string>("RunUserScript", userCode);
+            await OutputChanged.InvokeAsync(Output);
         }
         catch (Exception ex)
         {
@@ -154,7 +156,7 @@ public partial class VSCodeJS : IAsyncDisposable
         {
             var userCode = await Editor.GetValue();
             if (string.IsNullOrEmpty(userCode))
-                throw new ArgumentException("Input is Empty");
+                throw new ArgumentException("Code is Empty");
             var name = userCode.Split("\n")[0];
             if (!await DialogService.Confirm(
                 $"Is {name} the name for your transform?",
@@ -188,16 +190,17 @@ public partial class VSCodeJS : IAsyncDisposable
             if (string.IsNullOrEmpty(_entry))
                 throw new ArgumentException("Name is Empty");
 
-            if (_jsTransforms.Exists(x => x?.Name == name))
-                _jsTransforms.Remove(_jsTransforms.Find(x => x?.Name == name)!);
-
             var newTransform = new JsTransform(0, _entry, name, userCode);
-            _jsTransforms.Add(newTransform);
-            await JS.InvokeAsync<string>("localStorage.setItem", "JsTransforms", JsonConvert.SerializeObject(_jsTransforms));
-            await InvokeAsync(StateHasChanged);
-            await DialogService.Alert(
-                JsonConvert.SerializeObject(newTransform, Newtonsoft.Json.Formatting.Indented),
-                "Transform Added!");
+            await JsTransformStore.UpsertAsync(newTransform);
+            var existingIndex = _jsTransforms.FindIndex(transform => transform?.Name == name);
+            if (existingIndex >= 0)
+                _jsTransforms[existingIndex] = newTransform;
+            else
+                _jsTransforms.Add(newTransform);
+
+            if (_isDebug) await DownloadJsTransformsJson();
+
+            await DialogService.Alert("Transform Added!", "Success");
         }
         catch (Exception ex)
         {
@@ -232,21 +235,11 @@ public partial class VSCodeJS : IAsyncDisposable
                 "Final Confirmation",
                 new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" }) ?? false)
             {
-                await DialogService.OpenAsync<CustomDialog>("Password", new Dictionary<string, object?>
-            {
-                { "Type", Enums.DialogTypes.Password },
-                { "Message", "Please enter your key to permanently delete this code." }
-            }, new DialogOptions() { Width = "max-content", Height = "200px" });
-
-                if (string.IsNullOrEmpty(_entry))
-                    throw new ArgumentException("Password is Empty");
-                if ("+aGrr99mKAuTRZp/t0aSzvD6vSHtr0nNv4NFTVuxTH0="
-                    !.Equals(Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(_entry)))))
-                {
-                    deleteMessage = $"{name} has been permanently deleted.";
-                }
+                await JsTransformStore.DeleteAsync(jsTransform.Name);
                 _jsTransforms.Remove(jsTransform);
-                await JS.InvokeAsync<string>("localStorage.setItem", "JsTransforms", _jsTransforms);
+
+                if (_isDebug) await DownloadJsTransformsJson();
+
                 await Editor.SetValue(string.Empty);
                 await InvokeAsync(StateHasChanged);
                 await DialogService.Alert(deleteMessage, "Success!");
@@ -406,5 +399,20 @@ public partial class VSCodeJS : IAsyncDisposable
             }
             _isDisposed = true;
         }
+    }
+
+    async Task DownloadJsTransformsJson()
+    {
+        if (!_isDebug) return;
+
+        var json = JsonConvert.SerializeObject(
+            _jsTransforms.OfType<JsTransform>(),
+            Formatting.Indented);
+
+        await JS.InvokeVoidAsync(
+            "downloadTextFile",
+            "JsTransforms.json",
+            json,
+            "application/json");
     }
 }

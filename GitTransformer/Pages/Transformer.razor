@@ -270,7 +270,7 @@
                         @if (!_openInModal)
                         {
                             <div style="width: 100%; height: 35vh">
-                                <VSCodeJS @bind-UserCode="UserCode" />
+                                <VSCodeJS @bind-UserCode="UserCode" @bind-Output="_output"/>
                             </div>
                         }
                         <RadzenButton Variant="Variant.Outlined"
@@ -282,7 +282,10 @@
                                           await Task.Delay(500);
                                           await DialogService.OpenAsync<VSCodeJS>(
                                               "Custom JavaScript",
-                                              new() { { "InModal", true }, { "UserCode", UserCode } },
+                                              new() { 
+                                                { "InModal", true }, 
+                                                { "UserCode", UserCode },
+                                                { "Output", _output } },
                                               Constants.LargeDialogOptions);
                                       })" />
                     </RadzenStack>
@@ -304,7 +307,7 @@
             <RadzenButton Variant="Variant.Outlined"
                           Shade="Shade.Darker"
                           Click="@(() => Orientation = Orientation == Orientation.Horizontal
-                                                                    ? Orientation.Vertical : Orientation.Horizontal)"
+                            ? Orientation.Vertical : Orientation.Horizontal)"
                           Text="Change Orientation"
                           ButtonStyle="ButtonStyle.Secondary" />
             @if (Orientation == Orientation.Horizontal)
