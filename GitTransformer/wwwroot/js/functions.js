@@ -46,18 +46,18 @@ globalThis.copyToClipboard = async (text) => {
     }
 }
 
-globalThis.RunUserScript = (userCode) => {
+globalThis.RunUserScript = (userCode) => new Promise((resolve) => {
     const input = document.getElementById('input').value;
     let output = '';
     if (!input) {
         alert('Please provide input');
-        return output;
+        resolve(output);
     }
     const myWorker = new Worker('js/userScriptWorker.js');
 
     if (!myWorker) {
         alert('Web Worker not found.');
-        return output;
+        resolve(output);
     }
 
     const timer = setTimeout(() => {
@@ -66,19 +66,19 @@ globalThis.RunUserScript = (userCode) => {
     }, 1500);
 
     myWorker.onmessage = (e) => {
-        output = `${e.data}`;
-        // document.getElementById('output').value = `${e.data}`;
-        clearTimeout(timer)
-        return output
+        clearTimeout(timer);
+        myWorker.terminate();
+        resolve(`${e.data}`);
     };
 
     myWorker.onerror = (e) => {
         myWorker.terminate();
         alert(e.data);
+        resolve(e.data);
     };
 
     myWorker.postMessage({ code: userCode, input: input });
-};
+});
 
 globalThis.RunWorkerScript = (workerScript) => {
     const myWorker = new Worker('service-worker.js');
