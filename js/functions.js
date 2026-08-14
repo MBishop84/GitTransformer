@@ -48,15 +48,16 @@ globalThis.copyToClipboard = async (text) => {
 
 globalThis.RunUserScript = (userCode) => {
     const input = document.getElementById('input').value;
+    let output = '';
     if (!input) {
         alert('Please provide input');
-        return;
+        return output;
     }
     const myWorker = new Worker('js/userScriptWorker.js');
 
     if (!myWorker) {
         alert('Web Worker not found.');
-        return;
+        return output;
     }
 
     const timer = setTimeout(() => {
@@ -65,8 +66,10 @@ globalThis.RunUserScript = (userCode) => {
     }, 1500);
 
     myWorker.onmessage = (e) => {
-        document.getElementById('output').value = `${e.data}`;
+        output = `${e.data}`;
+        // document.getElementById('output').value = `${e.data}`;
         clearTimeout(timer)
+        return output
     };
 
     myWorker.onerror = (e) => {
@@ -112,4 +115,15 @@ globalThis.setSource = async (elementId, stream, contentType, title) => {
         URL.revokeObjectURL(url);
     }
     element.src = url;
+}
+
+globalThis.downloadTextFile = (fileName, content, contentType) => {
+    const blob = new Blob([content], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
 }
